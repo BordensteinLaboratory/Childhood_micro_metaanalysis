@@ -1,0 +1,229 @@
+---
+title: "16S preliminary analysis"
+author: "Liz Mallott"
+date: "12/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Loading required libraries
+
+The following libraries are required for this analysis:
+tidyverse (v.1.3.0)
+vegan (v.2.5-6)
+pairwiseAdonis (v.0.3, https://github.com/pmartinezarbizu/pairwiseAdonis)
+cowplot (v.1.1.0)
+glmmTMB (v.1.0.2.1)
+multcomp (v.1.4-14)
+car (v.3.0-9)
+fdrtool (v.1.2.15)
+
+```{r load_libraries}
+library(tidyverse)
+library(vegan)
+library(pairwiseAdonis)
+library(cowplot)
+library(glmmTMB)
+library(multcomp)
+library(car)
+library(fdrtool)
+library(ggpubr)
+```
+
+## Importing data
+
+Import distance matrices created in QIIME2-2021.2. Import feature table. Import metadata.
+
+```{r import_distances}
+unweighted_re = read_tsv("unweighted-distance-matrix-re.tsv")
+weighted_re = read_tsv("weighted-distance-matrix-re.tsv")
+unweighted_re_age = read_tsv("unweighted-distance-matrix-re-age.tsv")
+weighted_re_age = read_tsv("weighted-distance-matrix-re-age.tsv")
+unweighted_re_age_sex = read_tsv("unweighted-distance-matrix-re-age-sex.tsv")
+weighted_re_age_sex = read_tsv("weighted-distance-matrix-re-age-sex.tsv")
+unweighted_re_age_sex_delivery = read_tsv("unweighted-distance-matrix-re-age-sex-delivery.tsv")
+weighted_re_age_sex_delivery = read_tsv("weighted-distance-matrix-re-age-sex-delivery.tsv")
+unweighted_re_age_sex_feeding = read_tsv("unweighted-distance-matrix-re-age-sex-feeding.tsv")
+weighted_re_age_sex_feeding = read_tsv("weighted-distance-matrix-re-age-sex-feeding.tsv")
+unweighted_re_age_sex_delivery_feeding = read_tsv("unweighted-distance-matrix-re-age-sex-delivery-feeding.tsv")
+weighted_re_re_age_sex_delivery_feeding = read_tsv("weighted-distance-matrix-re-age-sex-delivery-feeding.tsv")
+
+asvs = read_tsv("feature-table-full.tsv")
+
+metadata = read_tsv("metadata-combined-re.txt", 
+                    col_types = "cccccffffffffffdddfdffffdfdffffffffffddd") 
+metadata_re = metadata %>% 
+  right_join(unweighted_re, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+
+metadata_re_age = metadata %>% 
+  right_join(unweighted_re_age, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+
+metadata_re_age_sex = metadata %>% 
+  right_join(unweighted_re_age_sex, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+
+metadata_re_age_sex_del = metadata %>% 
+  right_join(unweighted_re_age_sex_delivery, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+
+metadata_re_age_sex_fed = rmetadata %>% 
+  right_join(unweighted_re_age_sex_feeding, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+
+metadata_re_age_sex_del_fed = metadata %>% 
+  right_join(unweighted_re_age_sex_delivery_feeding, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+
+unweighted_re_dist = as.dist(unweighted_re[,2:2844])
+weighted_re_dist = as.dist(weighted_re[,2:2844])
+unweighted_re_age_dist = as.dist(unweighted_re_age[,2:2844])
+weighted_re_age_dist = as.dist(weighted_re_age[,2:2844])
+unweighted_re_age_sex_dist = as.dist(unweighted_re_age_sex[,2:2844])
+weighted_re_age_sex_dist = as.dist(weighted_age_sex_re[,2:2844])
+unweighted_re_age_sex_del_dist = as.dist(unweighted_re_age_sex_delivery[,2:2844])
+weighted_re_age_sex_dist = as.dist(weighted_re_age_sex_delivery[,2:2844])
+unweighted_re_age_sex_fed_dist = as.dist(unweighted_re_age_sex_feeding[,2:2844])
+weighted_re_age_sex_fed_dist = as.dist(weighted_re_age_sex_feeding[,2:2844])
+unweighted_re_age_sex_del_fed_dist = as.dist(unweighted_re_age_sex_delivery_feeding[,2:2844])
+weighted_re_age_sex_del_fed_dist = as.dist(weighted_re_age_sex_delivery_feeding[,2:2844])
+```
+
+## PERMANOVAs
+
+Permanovas were performed to assess the effect of race and ethnicity on microbial community composition, controlling for study, sequencing method.
+
+```{r permanovas_unweighted}
+adonis2(unweighted_re_dist ~ Race + Ethnicity + Study + host_subject_id, data=metadata_re, by = "margin", permutations = 4999)
+
+adonis2(unweighted_re_age_dist ~ Race + Ethnicity + Study + Host_age_cat + host_subject_id, data = metadata_re_age, by = "margin", permutations = 4999)
+
+adonis2(unweighted_re_age_sex_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_subject_id, data = metadata_re_age_sex, by = "margin", permutations = 4999)
+
+adonis2(unweighted_re_age_sex_del_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + host_subject_id, data = metadata_re_age_sex_del, by = "margin", permutations = 4999)
+
+adonis2(unweighted_re_age_sex_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + Breastfeeding + host_subject_id, data = metadata_re_age_sex_fed, by = "margin", permutations = 4999)
+
+adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 4999)
+```
+
+```{r permanovas_weighted}
+adonis2(weighted ~ Race + Study, data=metadata2, 
+        by = "margin", permutations = 4999)
+```
+
+### Pairwise comparisons
+Pairwise PERMANOVAs were used to examine differences between ethnicities.
+
+```{r pairwise_permanova_bray}
+pairwise.adonis(bray, factors = metadata2$Race, perm = 5000, 
+                p.adjust.m='holm')
+```
+
+```{r pairwise_permanova_bray}
+pairwise.adonis(unweighted, factors = metadata2$Race, perm = 5000, 
+                p.adjust.m='holm')
+```
+
+```{r pairwise_permanova_weighted}
+pairwise.adonis(weighted, factors = metadata$Ethnicity, perm = 5000, 
+                p.adjust.m='holm')
+```
+
+### NMDS plots
+
+NMDS plots were created for each distance matrix to visualize ethnicity-associated differences.
+
+#### Weighted
+```{r nmds_weighted}
+mds_otus_weighted<-metaMDS(weighted, k=2, trymax=4999)
+mds_otus_weighted_points<-mds_otus_weighted$points
+mds_otus_weighted_points2<-merge(x=mds_otus_weighted_points, y = metadata2, 
+                                 by.x = "row.names", by.y = "SampleID")
+
+nmds1v2w <- ggplot(mds_otus_weighted_points2, aes(x = MDS1, y = MDS2, 
+                                                 color = Race, shape = Study)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5)))
+```
+
+```{r nmds_weighted_plot}
+tiff(file="nmds_plot_weighted.tif", res=300, width=8, height=6, units="in")
+nmds1v2w
+dev.off()
+```
+#### Unweighted
+```{r nmds_unweighted}
+mds_otus_unweighted<-metaMDS(unweighted, k=2, trymax=4999)
+mds_otus_unweighted_points<-mds_otus_unweighted$points
+mds_otus_unweighted_points2<-merge(x=mds_otus_unweighted_points, y = metadata2, 
+                                 by.x = "row.names", by.y = "SampleID")
+
+nmds1v2u <- ggplot(mds_otus_unweighted_points2, aes(x = MDS1, y = MDS2, 
+                                                 color = Race, shape = Study)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5)))
+```
+
+```{r nmds_unweighted_plot}
+tiff(file="nmds_plot_unweighted.tif", res=300, width=8, height=6, units="in")
+nmds1v2u
+dev.off()
+```
+#### Bray
+```{r nmds_bray}
+mds_otus_bray<-metaMDS(bray, k=2, trymax=4999)
+mds_otus_bray_points<-mds_otus_bray$points
+mds_otus_bray_points2<-merge(x=mds_otus_bray_points, y = metadata2, 
+                                 by.x = "row.names", by.y = "SampleID")
+
+nmds1v2b <- ggplot(mds_otus_bray_points2, aes(x = MDS1, y = MDS2, 
+                                                 color = Ethnicity, shape = Study)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5)))
+
+```
+
+```{r nmds_bray_plot}
+tiff(file="nmds_plot_bray", res=300, width=8, height=6, units="in")
+nmds1v2b
+dev.off()
+```
+
+#### Combo
+```{r nmds_bray_combo}
+tiff(file="nmds_plot_combo.tif", res=300, width=18, height=7, units="in")
+legend1 = get_legend(nmds1v2w + theme(legend.box.margin = margin(0, 0, 0, 12)))
+col1 = plot_grid(nmds1v2u + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('A'), 
+                 label_size = 20)
+col2 = plot_grid(nmds1v2w + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('B'), 
+                 label_size = 20) 
+plot = plot_grid(col1, col2, legend1, nrow = 1, ncol = 3, 
+          rel_widths = c(1.5, 1.5, 0.75), align = "h", axis = "t")
+plot
+dev.off()
+```
