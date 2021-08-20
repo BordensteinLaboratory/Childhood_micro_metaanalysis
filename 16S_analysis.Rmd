@@ -49,7 +49,7 @@ weighted_re_age_sex_delivery = read_tsv("weighted-distance-matrix-re-age-sex-del
 unweighted_re_age_sex_feeding = read_tsv("unweighted-distance-matrix-re-age-sex-feeding.tsv")
 weighted_re_age_sex_feeding = read_tsv("weighted-distance-matrix-re-age-sex-feeding.tsv")
 unweighted_re_age_sex_delivery_feeding = read_tsv("unweighted-distance-matrix-re-age-sex-delivery-feeding.tsv")
-weighted_re_re_age_sex_delivery_feeding = read_tsv("weighted-distance-matrix-re-age-sex-delivery-feeding.tsv")
+weighted_re_age_sex_delivery_feeding = read_tsv("weighted-distance-matrix-re-age-sex-delivery-feeding.tsv")
 
 asvs = read_tsv("feature-table-full.tsv")
 
@@ -71,7 +71,7 @@ metadata_re_age_sex_del = metadata %>%
   right_join(unweighted_re_age_sex_delivery, by = c("SampleID" = "X1")) %>% 
                dplyr::select(1:40)
 
-metadata_re_age_sex_fed = rmetadata %>% 
+metadata_re_age_sex_fed = metadata %>% 
   right_join(unweighted_re_age_sex_feeding, by = c("SampleID" = "X1")) %>% 
                dplyr::select(1:40)
 
@@ -81,16 +81,16 @@ metadata_re_age_sex_del_fed = metadata %>%
 
 unweighted_re_dist = as.dist(unweighted_re[,2:2844])
 weighted_re_dist = as.dist(weighted_re[,2:2844])
-unweighted_re_age_dist = as.dist(unweighted_re_age[,2:2844])
-weighted_re_age_dist = as.dist(weighted_re_age[,2:2844])
-unweighted_re_age_sex_dist = as.dist(unweighted_re_age_sex[,2:2844])
-weighted_re_age_sex_dist = as.dist(weighted_age_sex_re[,2:2844])
-unweighted_re_age_sex_del_dist = as.dist(unweighted_re_age_sex_delivery[,2:2844])
-weighted_re_age_sex_dist = as.dist(weighted_re_age_sex_delivery[,2:2844])
-unweighted_re_age_sex_fed_dist = as.dist(unweighted_re_age_sex_feeding[,2:2844])
-weighted_re_age_sex_fed_dist = as.dist(weighted_re_age_sex_feeding[,2:2844])
-unweighted_re_age_sex_del_fed_dist = as.dist(unweighted_re_age_sex_delivery_feeding[,2:2844])
-weighted_re_age_sex_del_fed_dist = as.dist(weighted_re_age_sex_delivery_feeding[,2:2844])
+unweighted_re_age_dist = as.dist(unweighted_re_age[,2:2822])
+weighted_re_age_dist = as.dist(weighted_re_age[,2:2822])
+unweighted_re_age_sex_dist = as.dist(unweighted_re_age_sex[,2:2816])
+weighted_re_age_sex_dist = as.dist(weighted_re_age_sex[,2:2816])
+unweighted_re_age_sex_del_dist = as.dist(unweighted_re_age_sex_delivery[,2:2348])
+weighted_re_age_sex_dist = as.dist(weighted_re_age_sex_delivery[,2:2348])
+unweighted_re_age_sex_fed_dist = as.dist(unweighted_re_age_sex_feeding[,2:2641])
+weighted_re_age_sex_fed_dist = as.dist(weighted_re_age_sex_feeding[,2:2641])
+unweighted_re_age_sex_del_fed_dist = as.dist(unweighted_re_age_sex_delivery_feeding[,2:2324])
+weighted_re_age_sex_del_fed_dist = as.dist(weighted_re_age_sex_delivery_feeding[,2:2324])
 ```
 
 ## PERMANOVAs
@@ -98,22 +98,35 @@ weighted_re_age_sex_del_fed_dist = as.dist(weighted_re_age_sex_delivery_feeding[
 Permanovas were performed to assess the effect of race and ethnicity on microbial community composition, controlling for study, sequencing method.
 
 ```{r permanovas_unweighted}
-adonis2(unweighted_re_dist ~ Race + Ethnicity + Study + host_subject_id, data=metadata_re, by = "margin", permutations = 4999)
+adonis2(unweighted_re_dist ~ Race + Ethnicity + Study + host_subject_id, data=metadata_re, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_re_dist, group = metadata_re$Race))
+anova(betadisper(unweighted_re_dist, group = metadata_re$Ethnicity))
+anova(betadisper(unweighted_re_dist, group = metadata_re$Study))
+anova(betadisper(unweighted_re_dist, group = metadata_re$host_subject_id))
 
-adonis2(unweighted_re_age_dist ~ Race + Ethnicity + Study + Host_age_cat + host_subject_id, data = metadata_re_age, by = "margin", permutations = 4999)
+adonis2(unweighted_re_age_dist ~ Race + Ethnicity + Study + Host_age_cat + host_subject_id, data = metadata_re_age, by = "margin", permutations = 499)
 
-adonis2(unweighted_re_age_sex_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_subject_id, data = metadata_re_age_sex, by = "margin", permutations = 4999)
+adonis2(unweighted_re_age_sex_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_subject_id, data = metadata_re_age_sex, by = "margin", permutations = 499)
 
-adonis2(unweighted_re_age_sex_del_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + host_subject_id, data = metadata_re_age_sex_del, by = "margin", permutations = 4999)
+adonis2(unweighted_re_age_sex_del_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + host_subject_id, data = metadata_re_age_sex_del, by = "margin", permutations = 499)
 
-adonis2(unweighted_re_age_sex_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + Breastfeeding + host_subject_id, data = metadata_re_age_sex_fed, by = "margin", permutations = 4999)
+adonis2(unweighted_re_age_sex_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + Breastfeeding + host_subject_id, data = metadata_re_age_sex_fed, by = "margin", permutations = 499)
 
-adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 4999)
+adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499)
 ```
 
 ```{r permanovas_weighted}
-adonis2(weighted ~ Race + Study, data=metadata2, 
-        by = "margin", permutations = 4999)
+adonis2(weighted_re_dist ~ Race + Ethnicity + Study + host_subject_id, data=metadata_re, by = "margin", permutations = 499)
+
+adonis2(weighted_re_age_dist ~ Race + Ethnicity + Study + Host_age_cat + host_subject_id, data = metadata_re_age, by = "margin", permutations = 499)
+
+adonis2(weighted_re_age_sex_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_subject_id, data = metadata_re_age_sex, by = "margin", permutations = 499)
+
+adonis2(weighted_re_age_sex_del_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + host_subject_id, data = metadata_re_age_sex_del, by = "margin", permutations = 499)
+
+adonis2(weighted_re_age_sex_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + Breastfeeding + host_subject_id, data = metadata_re_age_sex_fed, by = "margin", permutations = 499)
+
+adonis2(weighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499)
 ```
 
 ### Pairwise comparisons
