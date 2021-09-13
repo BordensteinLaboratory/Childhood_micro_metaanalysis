@@ -25,12 +25,17 @@ fdrtool (v.1.2.15)
 library(tidyverse)
 library(vegan)
 library(pairwiseAdonis)
+library(ggplot)
+library(ggtext)
 library(cowplot)
 library(glmmTMB)
-library(multcomp)
+library(lme4)
+library(emmeans)
 library(car)
 library(fdrtool)
 library(ggpubr)
+library(phyloseq)
+library(ANCOMBC)
 ```
 
 ## Importing data
@@ -50,6 +55,33 @@ unweighted_re_age_sex_feeding = read_tsv("unweighted-distance-matrix-re-age-sex-
 weighted_re_age_sex_feeding = read_tsv("weighted-distance-matrix-re-age-sex-feeding.tsv")
 unweighted_re_age_sex_delivery_feeding = read_tsv("unweighted-distance-matrix-re-age-sex-delivery-feeding.tsv")
 weighted_re_age_sex_delivery_feeding = read_tsv("weighted-distance-matrix-re-age-sex-delivery-feeding.tsv")
+
+unweighted_re_onesubj = read_tsv("unweighted-distance-matrix-re-onesubj.tsv")
+weighted_re_onesubj = read_tsv("weighted-distance-matrix-re-onesubj.tsv")
+
+unweighted_re_age_sex_delivery_feeding_onesubj = read_tsv("unweighted-distance-matrix-re-age-sex-del-fed-onesubj.tsv")
+weighted_re_age_sex_delivery_feeding_onesubj = read_tsv("weighted-distance-matrix-re-age-sex-del-fed-onesubj.tsv")
+
+unweighted_re_01week = read_tsv("unweighted-distance-matrix-re-01week.tsv")
+weighted_re_01week = read_tsv("weighted-distance-matrix-re-01week.tsv")
+unweighted_re_16week = read_tsv("unweighted-distance-matrix-re-16week.tsv")
+weighted_re_16week = read_tsv("weighted-distance-matrix-re-16week.tsv")
+unweighted_re_06week = read_tsv("unweighted-distance-matrix-re-06week.tsv")
+weighted_re_06week = read_tsv("weighted-distance-matrix-re-06week.tsv")
+unweighted_re_6week3month = read_tsv("unweighted-distance-matrix-re-6week3month.tsv")
+weighted_re_6week3month = read_tsv("weighted-distance-matrix-re-6week3month.tsv")
+unweighted_re_312month = read_tsv("unweighted-distance-matrix-re-312month.tsv")
+weighted_re_312month = read_tsv("weighted-distance-matrix-re-312month.tsv")
+unweighted_re_012month = read_tsv("unweighted-distance-matrix-re-012month.tsv")
+weighted_re_012month = read_tsv("weighted-distance-matrix-re-012month.tsv")
+unweighted_re_13year = read_tsv("unweighted-distance-matrix-re-13year.tsv")
+weighted_re_13year = read_tsv("weighted-distance-matrix-re-13year.tsv")
+unweighted_re_36year = read_tsv("unweighted-distance-matrix-re-36year.tsv")
+weighted_re_36year = read_tsv("weighted-distance-matrix-re-36year.tsv")
+unweighted_re_612year = read_tsv("unweighted-distance-matrix-re-612year.tsv")
+weighted_re_612year = read_tsv("weighted-distance-matrix-re-612year.tsv")
+unweighted_re_312year = read_tsv("unweighted-distance-matrix-re-312year.tsv")
+weighted_re_312year = read_tsv("weighted-distance-matrix-re-312year.tsv")
 
 asvs = read_tsv("feature-table-full.tsv")
 
@@ -79,6 +111,45 @@ metadata_re_age_sex_del_fed = metadata %>%
   right_join(unweighted_re_age_sex_delivery_feeding, by = c("SampleID" = "X1")) %>% 
                dplyr::select(1:40)
 
+metadata_re_onesubj = metadata %>% 
+  right_join(unweighted_re_onesubj, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+
+metadata_re_age_sex_del_fed_onesubj = metadata %>% 
+  right_join(unweighted_re_age_sex_delivery_feeding_onesubj, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+
+metadata_re_01week = metadata %>% 
+  right_join(unweighted_re_01week, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_16week = metadata %>% 
+  right_join(unweighted_re_16week, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_06week = metadata %>% 
+  right_join(unweighted_re_06week, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_6week3month = metadata %>% 
+  right_join(unweighted_re_6week3month, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_312month = metadata %>% 
+  right_join(unweighted_re_312month, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_012month = metadata %>% 
+  right_join(unweighted_re_012month, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_13year = metadata %>% 
+  right_join(unweighted_re_13year, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_36year = metadata %>% 
+  right_join(unweighted_re_36year, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_612year = metadata %>% 
+  right_join(unweighted_re_612year, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_312year = metadata %>% 
+  right_join(unweighted_re_312year, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+
 unweighted_re_dist = as.dist(unweighted_re[,2:2844])
 weighted_re_dist = as.dist(weighted_re[,2:2844])
 unweighted_re_age_dist = as.dist(unweighted_re_age[,2:2822])
@@ -86,157 +157,2838 @@ weighted_re_age_dist = as.dist(weighted_re_age[,2:2822])
 unweighted_re_age_sex_dist = as.dist(unweighted_re_age_sex[,2:2816])
 weighted_re_age_sex_dist = as.dist(weighted_re_age_sex[,2:2816])
 unweighted_re_age_sex_del_dist = as.dist(unweighted_re_age_sex_delivery[,2:2348])
-weighted_re_age_sex_dist = as.dist(weighted_re_age_sex_delivery[,2:2348])
+weighted_re_age_sex_del_dist = as.dist(weighted_re_age_sex_delivery[,2:2348])
 unweighted_re_age_sex_fed_dist = as.dist(unweighted_re_age_sex_feeding[,2:2641])
 weighted_re_age_sex_fed_dist = as.dist(weighted_re_age_sex_feeding[,2:2641])
 unweighted_re_age_sex_del_fed_dist = as.dist(unweighted_re_age_sex_delivery_feeding[,2:2324])
 weighted_re_age_sex_del_fed_dist = as.dist(weighted_re_age_sex_delivery_feeding[,2:2324])
+unweighted_re_onesubj_dist = as.dist(unweighted_re_onesubj[,2:747])
+weighted_re_onesubj_dist = as.dist(weighted_re_onesubj[,2:747])
+unweighted_re_age_sex_del_fed_onesubj_dist = as.dist(unweighted_re_age_sex_delivery_feeding_onesubj[,2:459])
+weighted_re_age_sex_del_fed_onesubj_dist = as.dist(weighted_re_age_sex_delivery_feeding_onesubj[,2:459])
+
+unweighted_re_01week_dist = as.dist(unweighted_re_01week[,2:122])
+weighted_re_01week_dist = as.dist(weighted_re_01week[,2:122])
+unweighted_re_16week_dist = as.dist(unweighted_re_16week[,2:296])
+weighted_re_16week_dist = as.dist(weighted_re_16week[,2:296])
+unweighted_re_06week_dist = as.dist(unweighted_re_06week[,2:417])
+weighted_re_06week_dist = as.dist(weighted_re_06week[,2:417])
+unweighted_re_6week3month_dist = as.dist(unweighted_re_6week3month[,2:249])
+weighted_re_6week3month_dist = as.dist(weighted_re_6week3month[,2:249])
+unweighted_re_312month_dist = as.dist(unweighted_re_312month[,2:848])
+weighted_re_312month_dist = as.dist(weighted_re_312month[,2:848])
+unweighted_re_012month_dist = as.dist(unweighted_re_012month[,2:1512])
+weighted_re_012month_dist = as.dist(weighted_re_012month[,2:1512])
+unweighted_re_13year_dist = as.dist(unweighted_re_13year[,2:1025])
+weighted_re_13year_dist = as.dist(weighted_re_13year[,2:1025])
+unweighted_re_36year_dist = as.dist(unweighted_re_36year[,2:198])
+weighted_re_36year_dist = as.dist(weighted_re_36year[,2:198])
+unweighted_re_612year_dist = as.dist(unweighted_re_612year[,2:90])
+weighted_re_612year_dist = as.dist(weighted_re_612year[,2:90])
+unweighted_re_312year_dist = as.dist(unweighted_re_312year[,2:287])
+weighted_re_312year_dist = as.dist(weighted_re_312year[,2:287])
 ```
 
 ## PERMANOVAs
 
 Permanovas were performed to assess the effect of race and ethnicity on microbial community composition, controlling for study, sequencing method.
 
+#### Unweighted
 ```{r permanovas_unweighted}
+adonis2(unweighted_re_dist ~ Race + Ethnicity + host_subject_id, data=metadata_re, by = "margin", permutations = 499, parallel = 4)
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re, Study)
+adonis2(unweighted_re_dist ~ Race + Ethnicity + host_subject_id, data=metadata_re, by = "margin", permutations = perm, parallel = 4)
+
 adonis2(unweighted_re_dist ~ Race + Ethnicity + Study + host_subject_id, data=metadata_re, by = "margin", permutations = 499, parallel = 4)
 anova(betadisper(unweighted_re_dist, group = metadata_re$Race))
 anova(betadisper(unweighted_re_dist, group = metadata_re$Ethnicity))
 anova(betadisper(unweighted_re_dist, group = metadata_re$Study))
 anova(betadisper(unweighted_re_dist, group = metadata_re$host_subject_id))
 
-adonis2(unweighted_re_age_dist ~ Race + Ethnicity + Study + Host_age_cat + host_subject_id, data = metadata_re_age, by = "margin", permutations = 499)
+adonis2(unweighted_re_age_dist ~ Race + Ethnicity + Study + Host_age_cat + host_subject_id, data = metadata_re_age, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_re_age_dist, group = metadata_re_age$Race))
+anova(betadisper(unweighted_re_age_dist, group = metadata_re_age$Ethnicity))
+anova(betadisper(unweighted_re_age_dist, group = metadata_re_age$Study))
+anova(betadisper(unweighted_re_age_dist, group = metadata_re_age$Host_age_cat))
+anova(betadisper(unweighted_re_age_dist, group = metadata_re_age$host_subject_id))
 
-adonis2(unweighted_re_age_sex_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_subject_id, data = metadata_re_age_sex, by = "margin", permutations = 499)
+adonis2(unweighted_re_age_sex_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_subject_id, data = metadata_re_age_sex, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_re_age_sex_dist, group = metadata_re_age_sex$Race))
+anova(betadisper(unweighted_re_age_sex_dist, group = metadata_re_age_sex$Ethnicity))
+anova(betadisper(unweighted_re_age_sex_dist, group = metadata_re_age_sex$Study))
+anova(betadisper(unweighted_re_age_sex_dist, group = metadata_re_age_sex$Host_age_cat))
+anova(betadisper(unweighted_re_age_sex_dist, group = metadata_re_age_sex$host_sex))
+anova(betadisper(unweighted_re_age_sex_dist, group = metadata_re_age_sex$host_subject_id))
 
-adonis2(unweighted_re_age_sex_del_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + host_subject_id, data = metadata_re_age_sex_del, by = "margin", permutations = 499)
+adonis2(unweighted_re_age_sex_del_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + host_subject_id, data = metadata_re_age_sex_del, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$Race))
+anova(betadisper(unweighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$Ethnicity))
+anova(betadisper(unweighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$Study))
+anova(betadisper(unweighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$Host_age_cat))
+anova(betadisper(unweighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$host_sex))
+anova(betadisper(unweighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$host_del_route))
+anova(betadisper(unweighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$host_subject_id))
 
-adonis2(unweighted_re_age_sex_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + Breastfeeding + host_subject_id, data = metadata_re_age_sex_fed, by = "margin", permutations = 499)
+adonis2(unweighted_re_age_sex_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + Breastfeeding + host_subject_id, data = metadata_re_age_sex_fed, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Race))
+anova(betadisper(unweighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Ethnicity))
+anova(betadisper(unweighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Study))
+anova(betadisper(unweighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Host_age_cat))
+anova(betadisper(unweighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$host_sex))
+anova(betadisper(unweighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Breastfeeding))
+anova(betadisper(unweighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$host_subject_id))
 
-adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499)
+adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Race))
+anova(betadisper(unweighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Ethnicity))
+anova(betadisper(unweighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Study))
+anova(betadisper(unweighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Host_age_cat))
+anova(betadisper(unweighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$host_sex))
+anova(betadisper(unweighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$host_del_route))
+anova(betadisper(unweighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Breastfeeding))
+anova(betadisper(unweighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$host_subject_id))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_age_sex_del_fed, Study)
+adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = perm, parallel = 4)
+
+adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499, parallel = 4)
+
+adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499, parallel = 4)
+
+adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499, parallel = 4)
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_age_sex_del_fed, Study)
+adonis2(unweighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed, by = "margin", permutations = perm, parallel = 4)
+
+adonis2(unweighted_re_age_sex_del_fed_onesubj_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed_onesubj, by = "margin", permutations = 499, parallel = 4)
+
+adonis2(unweighted_re_age_sex_del_fed_onesubj_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed_onesubj, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Race))
+anova(betadisper(unweighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Ethnicity))
+anova(betadisper(unweighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Study))
+anova(betadisper(unweighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Host_age_cat))
+anova(betadisper(unweighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$host_sex))
+anova(betadisper(unweighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$host_del_route))
+anova(betadisper(unweighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Breastfeeding))
+
+adonis2(unweighted_re_onesubj_dist ~ Race + Ethnicity, data = metadata_re_onesubj, by = "margin", permutations = 499, parallel = 4)
+
+adonis2(unweighted_re_onesubj_dist ~ Race + Ethnicity + Study, data = metadata_re_onesubj, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_re_onesubj_dist, group = metadata_re_onesubj$Race))
+anova(betadisper(unweighted_re_onesubj_dist, group = metadata_re_onesubj$Ethnicity))
+anova(betadisper(unweighted_re_onesubj_dist, group = metadata_re_onesubj$Study))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_onesubj, Study)
+adonis2(unweighted_re_onesubj_dist ~ Race + Ethnicity, data = metadata_re_onesubj, by = "margin", permutations = perm, parallel = 4)
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_age_sex_del_fed_onesubj, Study)
+adonis2(unweighted_re_age_sex_del_fed_onesubj_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed_onesubj, by = "margin", permutations = perm, parallel = 4)
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_01week, Study)
+adonis2(unweighted_re_01week_dist ~ Race + Ethnicity, data = metadata_re_01week, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_01week_dist, group = metadata_re_01week$Race))
+anova(betadisper(unweighted_re_01week_dist, group = metadata_re_01week$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_01week, Study)
+adonis2(unweighted_re_01week_dist ~ Race + Ethnicity, data = metadata_re_01week, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_01week_dist, group = metadata_re_01week$Race))
+anova(betadisper(unweighted_re_01week_dist, group = metadata_re_01week$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_16week, Study)
+adonis2(unweighted_re_16week_dist ~ Race + Ethnicity, data = metadata_re_16week, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_16week_dist, group = metadata_re_16week$Race))
+anova(betadisper(unweighted_re_16week_dist, group = metadata_re_16week$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_06week, Study)
+adonis2(unweighted_re_06week_dist ~ Race + Ethnicity, data = metadata_re_06week, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_06week_dist, group = metadata_re_06week$Race))
+anova(betadisper(unweighted_re_06week_dist, group = metadata_re_06week$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_6week3month, Study)
+adonis2(unweighted_re_6week3month_dist ~ Race + Ethnicity, data = metadata_re_6week3month, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_6week3month_dist, group = metadata_re_6week3month$Race))
+anova(betadisper(unweighted_re_6week3month_dist, group = metadata_re_6week3month$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_312month, Study)
+adonis2(unweighted_re_312month_dist ~ Race + Ethnicity, data = metadata_re_312month, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_312month_dist, group = metadata_re_312month$Race))
+anova(betadisper(unweighted_re_312month_dist, group = metadata_re_312month$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_012month, Study)
+adonis2(unweighted_re_012month_dist ~ Race + Ethnicity + host_subject_id, data = metadata_re_012month, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_012month_dist, group = metadata_re_012month$Race))
+anova(betadisper(unweighted_re_012month_dist, group = metadata_re_012month$Ethnicity))
+anova(betadisper(unweighted_re_012month_dist, group = metadata_re_012month$host_subject_id))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_13year, Study)
+adonis2(unweighted_re_13year_dist ~ Race + Ethnicity, data = metadata_re_13year, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_13year_dist, group = metadata_re_13year$Race))
+anova(betadisper(unweighted_re_13year_dist, group = metadata_re_13year$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_36year, Study)
+adonis2(unweighted_re_36year_dist ~ Race + Ethnicity, data = metadata_re_36year, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_36year_dist, group = metadata_re_36year$Race))
+anova(betadisper(unweighted_re_36year_dist, group = metadata_re_36year$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_612year, Study)
+adonis2(unweighted_re_612year_dist ~ Race + Ethnicity, data = metadata_re_612year, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_612year_dist, group = metadata_re_612year$Race))
+anova(betadisper(unweighted_re_612year_dist, group = metadata_re_612year$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_312year, Study)
+adonis2(unweighted_re_312year_dist ~ Race + Ethnicity, data = metadata_re_312year, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(unweighted_re_312year_dist, group = metadata_re_312year$Race))
+anova(betadisper(unweighted_re_312year_dist, group = metadata_re_312year$Ethnicity))
 ```
-
+#### Weighted
 ```{r permanovas_weighted}
-adonis2(weighted_re_dist ~ Race + Ethnicity + Study + host_subject_id, data=metadata_re, by = "margin", permutations = 499)
+adonis2(weighted_re_dist ~ Race + Ethnicity + host_subject_id, data=metadata_re, by = "margin", permutations = 499, parallel = 4)
 
-adonis2(weighted_re_age_dist ~ Race + Ethnicity + Study + Host_age_cat + host_subject_id, data = metadata_re_age, by = "margin", permutations = 499)
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re, Study)
+adonis2(weighted_re_dist ~ Race + Ethnicity + host_subject_id, data=metadata_re, by = "margin", permutations = perm, parallel = 4)
 
-adonis2(weighted_re_age_sex_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_subject_id, data = metadata_re_age_sex, by = "margin", permutations = 499)
+adonis2(weighted_re_dist ~ Race + Ethnicity + Study + host_subject_id, data=metadata_re, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_re_dist, group = metadata_re$Race))
+anova(betadisper(weighted_re_dist, group = metadata_re$Ethnicity))
+anova(betadisper(weighted_re_dist, group = metadata_re$Study))
+anova(betadisper(weighted_re_dist, group = metadata_re$host_subject_id))
 
-adonis2(weighted_re_age_sex_del_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + host_subject_id, data = metadata_re_age_sex_del, by = "margin", permutations = 499)
+adonis2(weighted_re_age_dist ~ Race + Ethnicity + Study + Host_age_cat + host_subject_id, data = metadata_re_age, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_re_age_dist, group = metadata_re_age$Race))
+anova(betadisper(weighted_re_age_dist, group = metadata_re_age$Ethnicity))
+anova(betadisper(weighted_re_age_dist, group = metadata_re_age$Study))
+anova(betadisper(weighted_re_age_dist, group = metadata_re_age$Host_age_cat))
+anova(betadisper(weighted_re_age_dist, group = metadata_re_age$host_subject_id))
 
-adonis2(weighted_re_age_sex_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + Breastfeeding + host_subject_id, data = metadata_re_age_sex_fed, by = "margin", permutations = 499)
+adonis2(weighted_re_age_sex_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_subject_id, data = metadata_re_age_sex, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_re_age_sex_dist, group = metadata_re_age_sex$Race))
+anova(betadisper(weighted_re_age_sex_dist, group = metadata_re_age_sex$Ethnicity))
+anova(betadisper(weighted_re_age_sex_dist, group = metadata_re_age_sex$Study))
+anova(betadisper(weighted_re_age_sex_dist, group = metadata_re_age_sex$Host_age_cat))
+anova(betadisper(weighted_re_age_sex_dist, group = metadata_re_age_sex$host_sex))
+anova(betadisper(weighted_re_age_sex_dist, group = metadata_re_age_sex$host_subject_id))
 
-adonis2(weighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499)
+adonis2(weighted_re_age_sex_del_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + host_subject_id, data = metadata_re_age_sex_del, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$Race))
+anova(betadisper(weighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$Ethnicity))
+anova(betadisper(weighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$Study))
+anova(betadisper(weighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$Host_age_cat))
+anova(betadisper(weighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$host_sex))
+anova(betadisper(weighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$host_del_route))
+anova(betadisper(weighted_re_age_sex_del_dist, group = metadata_re_age_sex_del$host_subject_id))
+
+adonis2(weighted_re_age_sex_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + Breastfeeding + host_subject_id, data = metadata_re_age_sex_fed, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Race))
+anova(betadisper(weighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Ethnicity))
+anova(betadisper(weighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Study))
+anova(betadisper(weighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Host_age_cat))
+anova(betadisper(weighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$host_sex))
+anova(betadisper(weighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$Breastfeeding))
+anova(betadisper(weighted_re_age_sex_fed_dist, group = metadata_re_age_sex_fed$host_subject_id))
+
+adonis2(weighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Race))
+anova(betadisper(weighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Ethnicity))
+anova(betadisper(weighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Study))
+anova(betadisper(weighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Host_age_cat))
+anova(betadisper(weighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$host_sex))
+anova(betadisper(weighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$host_del_route))
+anova(betadisper(weighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$Breastfeeding))
+anova(betadisper(weighted_re_age_sex_del_fed_dist, group = metadata_re_age_sex_del_fed$host_subject_id))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_age_sex_del_fed, Study)
+adonis2(weighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = perm, parallel = 4)
+
+adonis2(weighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + host_subject_id, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499, parallel = 4)
+
+adonis2(weighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499, parallel = 4)
+
+adonis2(weighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed, by = "margin", permutations = 499, parallel = 4)
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_age_sex_del_fed, Study)
+adonis2(weighted_re_age_sex_del_fed_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed, by = "margin", permutations = perm, parallel = 4)
+
+adonis2(weighted_re_age_sex_del_fed_onesubj_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed_onesubj, by = "margin", permutations = 499, parallel = 4)
+
+adonis2(weighted_re_age_sex_del_fed_onesubj_dist ~ Race + Ethnicity + Study + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed_onesubj, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Race))
+anova(betadisper(weighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Ethnicity))
+anova(betadisper(weighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Study))
+anova(betadisper(weighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Host_age_cat))
+anova(betadisper(weighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$host_sex))
+anova(betadisper(weighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$host_del_route))
+anova(betadisper(weighted_re_age_sex_del_fed_onesubj_dist, group = metadata_re_age_sex_del_fed_onesubj$Breastfeeding))
+
+adonis2(weighted_re_onesubj_dist ~ Race + Ethnicity, data = metadata_re_onesubj, by = "margin", permutations = 499, parallel = 4)
+
+adonis2(weighted_re_onesubj_dist ~ Race + Ethnicity + Study, data = metadata_re_onesubj, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_re_onesubj_dist, group = metadata_re_onesubj$Race))
+anova(betadisper(weighted_re_onesubj_dist, group = metadata_re_onesubj$Ethnicity))
+anova(betadisper(weighted_re_onesubj_dist, group = metadata_re_onesubj$Study))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_onesubj, Study)
+adonis2(weighted_re_onesubj_dist ~ Race + Ethnicity, data = metadata_re_onesubj, by = "margin", permutations = perm, parallel = 4)
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_age_sex_del_fed_onesubj, Study)
+adonis2(weighted_re_age_sex_del_fed_onesubj_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data = metadata_re_age_sex_del_fed_onesubj, by = "margin", permutations = perm, parallel = 4)
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_01week, Study)
+adonis2(weighted_re_01week_dist ~ Race + Ethnicity, data = metadata_re_01week, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_01week_dist, group = metadata_re_01week$Race))
+anova(betadisper(weighted_re_01week_dist, group = metadata_re_01week$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_16week, Study)
+adonis2(weighted_re_16week_dist ~ Race + Ethnicity, data = metadata_re_16week, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_16week_dist, group = metadata_re_16week$Race))
+anova(betadisper(weighted_re_16week_dist, group = metadata_re_16week$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_06week, Study)
+adonis2(weighted_re_06week_dist ~ Race + Ethnicity, data = metadata_re_06week, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_06week_dist, group = metadata_re_06week$Race))
+anova(betadisper(weighted_re_06week_dist, group = metadata_re_06week$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_6week3month, Study)
+adonis2(weighted_re_6week3month_dist ~ Race + Ethnicity, data = metadata_re_6week3month, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_6week3month_dist, group = metadata_re_6week3month$Race))
+anova(betadisper(weighted_re_6week3month_dist, group = metadata_re_6week3month$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_312month, Study)
+adonis2(weighted_re_312month_dist ~ Race + Ethnicity, data = metadata_re_312month, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_312month_dist, group = metadata_re_312month$Race))
+anova(betadisper(weighted_re_312month_dist, group = metadata_re_312month$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_012month, Study)
+adonis2(weighted_re_012month_dist ~ Race + Ethnicity + host_subject_id, data = metadata_re_012month, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_012month_dist, group = metadata_re_012month$Race))
+anova(betadisper(weighted_re_012month_dist, group = metadata_re_012month$Ethnicity))
+anova(betadisper(weighted_re_012month_dist, group = metadata_re_012month$host_subject_id))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_13year, Study)
+adonis2(weighted_re_13year_dist ~ Race + Ethnicity, data = metadata_re_13year, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_13year_dist, group = metadata_re_13year$Race))
+anova(betadisper(weighted_re_13year_dist, group = metadata_re_13year$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_36year, Study)
+adonis2(weighted_re_36year_dist ~ Race + Ethnicity, data = metadata_re_36year, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_36year_dist, group = metadata_re_36year$Race))
+anova(betadisper(weighted_re_36year_dist, group = metadata_re_36year$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_612year, Study)
+adonis2(weighted_re_612year_dist ~ Race + Ethnicity, data = metadata_re_612year, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_612year_dist, group = metadata_re_612year$Race))
+anova(betadisper(weighted_re_612year_dist, group = metadata_re_612year$Ethnicity))
+
+perm = how(nperm = 499)
+setBlocks(perm) = with(metadata_re_312year, Study)
+adonis2(weighted_re_312year_dist ~ Race + Ethnicity, data = metadata_re_312year, by = "margin", permutations = perm, parallel = 4)
+anova(betadisper(weighted_re_312year_dist, group = metadata_re_312year$Race))
+anova(betadisper(weighted_re_312year_dist, group = metadata_re_312year$Ethnicity))
 ```
 
 ### Pairwise comparisons
 Pairwise PERMANOVAs were used to examine differences between ethnicities.
 
-```{r pairwise_permanova_bray}
-pairwise.adonis(bray, factors = metadata2$Race, perm = 5000, 
-                p.adjust.m='holm')
-```
-
-```{r pairwise_permanova_bray}
-pairwise.adonis(unweighted, factors = metadata2$Race, perm = 5000, 
-                p.adjust.m='holm')
+```{r pairwise_permanova_unweighted}
+pairwise.adonis(unweighted_re_dist, factors = metadata_re$Race, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(unweighted_re_dist, factors = metadata_re$Ethnicity, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(unweighted_re_dist, factors = metadata_re$Study, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(unweighted_re_age_dist, factors = metadata_re_age$Host_age_cat, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(unweighted_re_age_sex_dist, 
+                factors = metadata_re_age_sex$host_sex, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(unweighted_re_age_sex_del_dist, 
+                factors = metadata_re_age_sex_del$host_del_route, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(unweighted_re_age_sex_fed_dist, 
+                factors = metadata_re_age_sex_fed$Breastfeeding, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(unweighted_re_onesubj_dist, 
+                factors = metadata_re_onesubj$Race, 
+                p.adjust.m='holm', perm = 499)
+pairwise.adonis(unweighted_re_onesubj_dist, 
+                factors = metadata_re_onesubj$Ethnicity, 
+                p.adjust.m='holm', perm = 499)
+pairwise.adonis(unweighted_re_age_sex_del_fed_onesubj_dist, 
+                factors = metadata_re_age_sex_del_fed_onesubj$Race, 
+                p.adjust.m='holm', perm = 499)
+pairwise.adonis(unweighted_re_age_sex_del_fed_onesubj_dist, 
+                factors = metadata_re_age_sex_del_fed_onesubj$Ethnicity, 
+                p.adjust.m='holm', perm = 499)
 ```
 
 ```{r pairwise_permanova_weighted}
-pairwise.adonis(weighted, factors = metadata$Ethnicity, perm = 5000, 
-                p.adjust.m='holm')
+pairwise.adonis(weighted_re_dist, factors = metadata_re$Race, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(weighted_re_dist, factors = metadata_re$Ethnicity, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(weighted_re_dist, factors = metadata_re$Study, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(weighted_re_age_dist, factors = metadata_re_age$Host_age_cat, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(weighted_re_age_sex_dist, 
+                factors = metadata_re_age_sex$host_sex, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(weighted_re_age_sex_del_dist, 
+                factors = metadata_re_age_sex_del$host_del_route, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(weighted_re_age_sex_fed_dist, 
+                factors = metadata_re_age_sex_fed$Breastfeeding, 
+                perm = 499, p.adjust.m='holm')
+pairwise.adonis(weighted_re_onesubj_dist, 
+                factors = metadata_re_onesubj$Race, 
+                p.adjust.m='holm', perm = 499)
+pairwise.adonis(weighted_re_onesubj_dist, 
+                factors = metadata_re_onesubj$Ethnicity, 
+                p.adjust.m='holm', perm = 499)
+pairwise.adonis(weighted_re_age_sex_del_fed_onesubj_dist, 
+                factors = metadata_re_age_sex_del_fed_onesubj$Race, 
+                p.adjust.m='holm', perm = 499)
+pairwise.adonis(weighted_re_age_sex_del_fed_onesubj_dist, 
+                factors = metadata_re_age_sex_del_fed_onesubj$Ethnicity, 
+                p.adjust.m='holm', perm = 499)
 ```
 
-### NMDS plots
+## NMDS plots
 
 NMDS plots were created for each distance matrix to visualize ethnicity-associated differences.
 
 #### Weighted
 ```{r nmds_weighted}
-mds_otus_weighted<-metaMDS(weighted, k=2, trymax=4999)
+mds_otus_weighted<-metaMDS(weighted_re_dist, k=2, trymax=499)
 mds_otus_weighted_points<-mds_otus_weighted$points
-mds_otus_weighted_points2<-merge(x=mds_otus_weighted_points, y = metadata2, 
+mds_otus_weighted_points2<-merge(x=mds_otus_weighted_points, 
+                                 y = metadata_re, 
                                  by.x = "row.names", by.y = "SampleID")
 
-nmds1v2w <- ggplot(mds_otus_weighted_points2, aes(x = MDS1, y = MDS2, 
-                                                 color = Race, shape = Study)) +
+weight_race <- ggplot(mds_otus_weighted_points2, 
+                      aes(x = MDS1, y = MDS2, color = Race, 
+                          shape = Ethnicity)) +
   geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
-  theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(2)), 
         axis.title.y=element_text(size=rel(2)),
         plot.title = element_text(size=rel(3)),
         legend.title = element_text(size=rel(2)),
-        legend.text = element_text(size = rel(1.5)))
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Weighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
+                   linetype = Race), 
+               type = "t", level = 0.95) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.094, R<sup>2</sup> = 0.03%<br>
+           Ethnicity: p = 0.246, R<sup>2</sup> = 0.02%<br>
+           <b>Age: p = 0.002, R<sup>2</sup> = 7.8%</b><br>
+           Infant diet: p = 0.074, R<sup>2</sup> = 0.05%<br>
+           <b>Subject: p = 0.002, R<sup>2</sup> = 33.7%", 
+           x = -Inf, y = -Inf, size = 5,
+           hjust = 0, vjust = 0)
+
+mds_otus_weighted_one<-metaMDS(weighted_re_onesubj_dist, 
+                               k=2, trymax=499)
+mds_otus_weighted_one_points<-mds_otus_weighted_one$points
+mds_otus_weighted_one_points2<-merge(x=mds_otus_weighted_one_points, 
+                                 y = metadata_re_onesubj, 
+                                 by.x = "row.names", by.y = "SampleID")
+
+weight_race_one <- ggplot(mds_otus_weighted_one_points2, 
+                      aes(x = MDS1, y = MDS2, color = Race, 
+                          shape = Ethnicity)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Weighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
+                   linetype = Race), 
+               type = "t", level = 0.95) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.096, R<sup>2</sup> = 3.2%<br>
+           Ethnicity: p = 0.930, R<sup>2</sup> = 1.5%<br>
+           Age: p = 0.438, R<sup>2</sup> = 1.4%<br>
+           Sex: p = 0.186, R<sup>2</sup> = 0.3%<br>
+           Delivery mode: p = 0.270, R<sup>2</sup> = 0.3%<br>
+           Infant diet: p = 0.178, R<sup>2</sup> = 0.8%", 
+           x = -Inf, y = -Inf, size = 5,
+           hjust = 0, vjust = 0)
+
+mds_otus_weighted_points2_age = mds_otus_weighted_one_points2 %>% 
+  filter(Host_age_cat != is.na(.)) %>% 
+  filter(Host_age_cat != "6-12 years")
+mds_otus_weighted_points2_age$Host_age_cat = factor(mds_otus_weighted_points2_age$Host_age_cat, 
+                                    levels = c("0-1 week", "1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-6 years"))
+weight_age <- ggplot(mds_otus_weighted_points2_age, 
+                      aes(x = MDS1, y = MDS2, color = Host_age_cat)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Weighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Host_age_cat, 
+                   linetype = Host_age_cat), 
+               type = "t", level = 0.95)
+
+mds_otus_weighted_points2_sex = mds_otus_weighted_one_points2 %>% 
+  filter(host_sex != is.na(.))
+weight_sex <- ggplot(mds_otus_weighted_points2_sex, 
+                      aes(x = MDS1, y = MDS2, color = host_sex)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Weighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = host_sex, 
+                   linetype = host_sex), 
+               type = "t", level = 0.95)
+
+mds_otus_weighted_points2_del = mds_otus_weighted_one_points2 %>% 
+  filter(host_del_route != is.na(.))
+weight_del <- ggplot(mds_otus_weighted_points2_del, 
+                      aes(x = MDS1, y = MDS2, color = host_del_route)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Weighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = host_del_route, 
+                   linetype = host_del_route), 
+               type = "t", level = 0.95)
+
+mds_otus_weighted_points2_feed = mds_otus_weighted_one_points2 %>% 
+  filter(Breastfeeding != is.na(.))
+weight_diet <- ggplot(mds_otus_weighted_points2_feed, 
+                      aes(x = MDS1, y = MDS2, color = Breastfeeding)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Weighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Breastfeeding, 
+                   linetype = Breastfeeding), 
+               type = "t", level = 0.95)
+
+weight_study <- ggplot(mds_otus_weighted_points2, 
+                      aes(x = MDS1, y = MDS2, color = Study)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Weighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Study, 
+                   linetype = Study), 
+               type = "t", level = 0.95)
 ```
 
-```{r nmds_weighted_plot}
-tiff(file="nmds_plot_weighted.tif", res=300, width=8, height=6, units="in")
-nmds1v2w
-dev.off()
-```
 #### Unweighted
 ```{r nmds_unweighted}
-mds_otus_unweighted<-metaMDS(unweighted, k=2, trymax=4999)
+mds_otus_unweighted<-metaMDS(unweighted_re_dist, k=2, trymax=499)
 mds_otus_unweighted_points<-mds_otus_unweighted$points
-mds_otus_unweighted_points2<-merge(x=mds_otus_unweighted_points, y = metadata2, 
+mds_otus_unweighted_points2<-merge(x=mds_otus_unweighted_points, y = metadata_re, 
                                  by.x = "row.names", by.y = "SampleID")
 
-nmds1v2u <- ggplot(mds_otus_unweighted_points2, aes(x = MDS1, y = MDS2, 
-                                                 color = Race, shape = Study)) +
+unweight_race <- ggplot(mds_otus_unweighted_points2, 
+                      aes(x = MDS1, y = MDS2, color = Race, 
+                          shape = Ethnicity)) +
   geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
-  theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(2)), 
         axis.title.y=element_text(size=rel(2)),
         plot.title = element_text(size=rel(3)),
         legend.title = element_text(size=rel(2)),
-        legend.text = element_text(size = rel(1.5)))
-```
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Unweighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
+                   linetype = Race), 
+               type = "t", level = 0.95) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b>Race: p = 0.002, R<sup>2</sup> = 0.04%</b><br>
+           Ethnicity: p = 0.380, R<sup>2</sup> = 0.01%<br>
+           <b>Age: p = 0.002, R<sup>2</sup> = 5.1%</b><br>
+           Infant diet: p = 0.026, R<sup>2</sup> = 0.04%<br>
+           Subject: p = 0.002, R<sup>2</sup> = 34.6%", 
+           x = -Inf, y = -Inf, size = 5,
+           hjust = 0, vjust = 0)
 
-```{r nmds_unweighted_plot}
-tiff(file="nmds_plot_unweighted.tif", res=300, width=8, height=6, units="in")
-nmds1v2u
-dev.off()
-```
-#### Bray
-```{r nmds_bray}
-mds_otus_bray<-metaMDS(bray, k=2, trymax=4999)
-mds_otus_bray_points<-mds_otus_bray$points
-mds_otus_bray_points2<-merge(x=mds_otus_bray_points, y = metadata2, 
+mds_otus_unweighted_one<-metaMDS(unweighted_re_onesubj_dist, k=2, trymax=499)
+mds_otus_unweighted_one_points<-mds_otus_unweighted_one$points
+mds_otus_unweighted_one_points2<-merge(x=mds_otus_unweighted_one_points, 
+                                 y = metadata_re_onesubj, 
                                  by.x = "row.names", by.y = "SampleID")
 
-nmds1v2b <- ggplot(mds_otus_bray_points2, aes(x = MDS1, y = MDS2, 
-                                                 color = Ethnicity, shape = Study)) +
+unweight_race_one <- ggplot(mds_otus_unweighted_one_points2, 
+                      aes(x = MDS1, y = MDS2, color = Race, 
+                          shape = Ethnicity)) +
   geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
-  theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(2)), 
         axis.title.y=element_text(size=rel(2)),
         plot.title = element_text(size=rel(3)),
         legend.title = element_text(size=rel(2)),
-        legend.text = element_text(size = rel(1.5)))
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Unweighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
+                   linetype = Race), 
+               type = "t", level = 0.95) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.846, R<sup>2</sup> = 3.7%<br>
+           Ethnicity: p = 0.178, R<sup>2</sup> = 2.2%<br>
+           Age: p = 0.094, R<sup>2</sup> = 1.9%<br>
+           Sex: p = 0.146, R<sup>2</sup> = 0.2%<br>
+           Delivery mode: p = 0.204, R<sup>2</sup> = 0.2%<br>
+           <b>Infant diet: p = 0.022, R<sup>2</sup> = 1.0%", 
+           x = -Inf, y = -Inf, size = 5,
+           hjust = 0, vjust = 0)
 
-```
+mds_otus_unweighted_points2_age = mds_otus_unweighted_one_points2 %>% 
+  filter(Host_age_cat != is.na(.)) %>% 
+  filter(Host_age_cat != "6-12 years")
+mds_otus_unweighted_points2_age$Host_age_cat = factor(mds_otus_unweighted_points2_age$Host_age_cat, 
+                                    levels = c("0-1 week", "1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-6 years"))
+unweight_age <- ggplot(mds_otus_unweighted_points2_age, 
+                      aes(x = MDS1, y = MDS2, color = Host_age_cat)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Unweighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Host_age_cat, 
+                   linetype = Host_age_cat), 
+               type = "t", level = 0.95)
 
-```{r nmds_bray_plot}
-tiff(file="nmds_plot_bray", res=300, width=8, height=6, units="in")
-nmds1v2b
-dev.off()
+mds_otus_unweighted_points2_sex = mds_otus_unweighted_one_points2 %>% 
+  filter(host_sex != is.na(.))
+unweight_sex <- ggplot(mds_otus_unweighted_points2_sex, 
+                      aes(x = MDS1, y = MDS2, color = host_sex)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Unweighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = host_sex, 
+                   linetype = host_sex), 
+               type = "t", level = 0.95)
+
+mds_otus_unweighted_points2_del = mds_otus_unweighted_one_points2 %>% 
+  filter(host_del_route != is.na(.))
+unweight_del <- ggplot(mds_otus_unweighted_points2_del, 
+                      aes(x = MDS1, y = MDS2, color = host_del_route)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Unweighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = host_del_route, 
+                   linetype = host_del_route), 
+               type = "t", level = 0.95)
+
+mds_otus_unweighted_points2_feed = mds_otus_unweighted_one_points2 %>% 
+  filter(Breastfeeding != is.na(.))
+unweight_diet <- ggplot(mds_otus_unweighted_points2_feed, 
+                      aes(x = MDS1, y = MDS2, color = Breastfeeding)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Unweighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Breastfeeding, 
+                   linetype = Breastfeeding), 
+               type = "t", level = 0.95)
+
+unweight_study <- ggplot(mds_otus_unweighted_points2, 
+                      aes(x = MDS1, y = MDS2, color = Study)) +
+  geom_point(size=3) + scale_color_brewer(palette = 'Set1') +
+  theme(panel.background = element_rect(fill = 'white', 
+                                        colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.5))) + 
+  ggtitle("Unweighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Study, 
+                   linetype = Study), 
+               type = "t", level = 0.95)
 ```
 
 #### Combo
-```{r nmds_bray_combo}
-tiff(file="nmds_plot_combo.tif", res=300, width=18, height=7, units="in")
-legend1 = get_legend(nmds1v2w + theme(legend.box.margin = margin(0, 0, 0, 12)))
-col1 = plot_grid(nmds1v2u + theme(legend.position = "none"),
+```{r nmds_race_combo}
+tiff(file="nmds_plot_race.tif", res=300, width=18, height=9, units="in")
+legend1 = get_legend(weight_race + theme(legend.box.margin = margin(0, 0, 0, 12)))
+col1 = plot_grid(weight_race + theme(legend.position = "none"),
                  nrow = 1, ncol = 1, labels = c('A'), 
                  label_size = 20)
-col2 = plot_grid(nmds1v2w + theme(legend.position = "none"),
+col2 = plot_grid(unweight_race + theme(legend.position = "none"),
                  nrow = 1, ncol = 1, labels = c('B'), 
                  label_size = 20) 
 plot = plot_grid(col1, col2, legend1, nrow = 1, ncol = 3, 
           rel_widths = c(1.5, 1.5, 0.75), align = "h", axis = "t")
 plot
 dev.off()
+```
+
+```{r nmds_race_one_combo}
+tiff(file="nmds_plot_race_one.tif", res=300, width=18, height=9, units="in")
+legend1 = get_legend(weight_race_one + theme(legend.box.margin = margin(0, 0, 0, 12)))
+col1 = plot_grid(weight_race_one + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('A'), 
+                 label_size = 20)
+col2 = plot_grid(unweight_race_one + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('B'), 
+                 label_size = 20) 
+plot = plot_grid(col1, col2, legend1, nrow = 1, ncol = 3, 
+          rel_widths = c(1.5, 1.5, 0.75), align = "h", axis = "t")
+plot
+dev.off()
+```
+
+```{r nmds_diet_combo}
+tiff(file="nmds_plot_diet.tif", res=300, width=18, height=9, units="in")
+legend1 = get_legend(weight_diet + theme(legend.box.margin = margin(0, 0, 0, 12)))
+col1 = plot_grid(weight_diet + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('A'), 
+                 label_size = 20)
+col2 = plot_grid(unweight_diet + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('B'), 
+                 label_size = 20) 
+plot = plot_grid(col1, col2, legend1, nrow = 1, ncol = 3, 
+          rel_widths = c(1.5, 1.5, 0.75), align = "h", axis = "t")
+plot
+dev.off()
+```
+
+```{r nmds_age_combo}
+tiff(file="nmds_plot_age.tif", res=300, width=18, height=9, units="in")
+legend1 = get_legend(weight_age + theme(legend.box.margin = margin(0, 0, 0, 12)))
+col1 = plot_grid(weight_age + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('A'), 
+                 label_size = 20)
+col2 = plot_grid(unweight_age + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('B'), 
+                 label_size = 20) 
+plot = plot_grid(col1, col2, legend1, nrow = 1, ncol = 3, 
+          rel_widths = c(1.5, 1.5, 0.75), align = "h", axis = "t")
+plot
+dev.off()
+```
+
+```{r nmds_sex_combo}
+tiff(file="nmds_plot_sex.tif", res=300, width=18, height=9, units="in")
+legend1 = get_legend(weight_sex + theme(legend.box.margin = margin(0, 0, 0, 12)))
+col1 = plot_grid(weight_sex + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('A'), 
+                 label_size = 20)
+col2 = plot_grid(unweight_sex + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('B'), 
+                 label_size = 20) 
+plot = plot_grid(col1, col2, legend1, nrow = 1, ncol = 3, 
+          rel_widths = c(1.5, 1.5, 0.75), align = "h", axis = "t")
+plot
+dev.off()
+```
+
+```{r nmds_del_combo}
+tiff(file="nmds_plot_del.tif", res=300, width=18, height=9, units="in")
+legend1 = get_legend(weight_del + theme(legend.box.margin = margin(0, 0, 0, 12)))
+col1 = plot_grid(weight_del + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('A'), 
+                 label_size = 20)
+col2 = plot_grid(unweight_del + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('B'), 
+                 label_size = 20) 
+plot = plot_grid(col1, col2, legend1, nrow = 1, ncol = 3, 
+          rel_widths = c(1.5, 1.5, 0.75), align = "h", axis = "t")
+plot
+dev.off()
+```
+
+```{r nmds_study_combo}
+tiff(file="nmds_plot_study.tif", res=300, width=18, height=9, units="in")
+legend1 = get_legend(weight_study + theme(legend.box.margin = margin(0, 0, 0, 12)))
+col1 = plot_grid(weight_study + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('A'), 
+                 label_size = 20)
+col2 = plot_grid(unweight_study + theme(legend.position = "none"),
+                 nrow = 1, ncol = 1, labels = c('B'), 
+                 label_size = 20) 
+plot = plot_grid(col1, col2, legend1, nrow = 1, ncol = 3, 
+          rel_widths = c(1.5, 1.5, 0.75), align = "h", axis = "t")
+plot
+dev.off()
+```
+
+##Alpha diversity
+```{r alpha_div}
+faith = read.table("alpha_out/faith_pd.tsv", header=T)
+otus = read.table("alpha_out/observed_features.tsv", header = T)
+shannon = read.table("alpha_out/shannon.tsv", header = T)
+
+faith2 = faith %>% rownames_to_column("SampleID")
+otus2 = otus %>% rownames_to_column("SampleID")
+shannon2 = shannon %>% rownames_to_column("SampleID")
+
+alpha_all = inner_join(metadata, faith2, by = "SampleID") %>% inner_join(otus2, by = "SampleID") %>% inner_join(shannon2, by = "SampleID")
+
+alpha_one = inner_join(metadata_re_onesubj, faith2, by = "SampleID") %>% inner_join(otus2, by = "SampleID") %>% inner_join(shannon2, by = "SampleID")
+
+f = lmer(faith_pd ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_all, na.action = na.omit)
+summary(f)
+Anova(f)
+emmeans(glht(f,linfct=mcp(Host_age_cat="Tukey")))
+
+f1 = lmer(faith_pd ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|Study), data=alpha_one, na.action = na.omit)
+summary(f1)
+Anova(f1)
+summary(glht(f1,linfct=mcp(Host_age_cat="Tukey")))
+summary(glht(f1,linfct=mcp(Breastfeeding="Tukey")))
+
+o = lmer(observed_features ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_all, na.action = na.omit)
+summary(o)
+Anova(o)
+summary(glht(o,linfct=mcp(Race="Tukey")))
+summary(glht(o,linfct=mcp(Host_age_cat="Tukey")))
+summary(glht(o,linfct=mcp(host_sex="Tukey")))
+
+o1 = lmer(observed_features ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|Study), data=alpha_one, na.action = na.omit)
+summary(o1)
+Anova(o1)
+summary(glht(o1,linfct=mcp(Race="Tukey")))
+summary(glht(o1,linfct=mcp(Host_age_cat="Tukey")))
+summary(glht(o1,linfct=mcp(Breastfeeding="Tukey")))
+
+s = lmer(shannon_entropy ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_all, na.action = na.omit)
+summary(s)
+Anova(s)
+summary(glht(s,linfct=mcp(Race="Tukey")))
+summary(glht(s,linfct=mcp(Host_age_cat="Tukey")))
+summary(glht(s,linfct=mcp(Breastfeeding="Tukey")))
+
+s1 = lmer(shannon_entropy ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|Study), data=alpha_one, na.action = na.omit)
+summary(s1)
+Anova(s1)
+summary(glht(s1,linfct=mcp(Race="Tukey")))
+summary(glht(s1,linfct=mcp(Host_age_cat="Tukey")))
+summary(glht(s1,linfct=mcp(Breastfeeding="Tukey")))
+```
+
+#### Graphs
+Each comparison of interest was graphed, using the full dataset.
+```{r alpha_div_race_graphs}
+plot1 = ggboxplot(alpha_all, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity") 
+plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+plot2 = ggboxplot(alpha_all, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.0001, 0.001, 
+                                            0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "ns")))
+
+plot3 = ggboxplot(alpha_all, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3 = ggpar(plot3, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.0001, 0.001, 
+                                            0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "ns")))
+
+tiff(file="alpha_combined_race.tif", 
+     res=300, width=15, height=4, units="in")
+ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+          common.legend = T, align = "h", legend = "right",
+          labels = c("A", "B", "C"))
+dev.off()
+```
+
+```{r alpha_div_eth_graphs}
+plot1 = ggboxplot(alpha_all, x = "Ethnicity", 
+                  y = "faith_pd", color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity") 
+plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") 
+
+plot2 = ggboxplot(alpha_all, x = "Ethnicity", 
+                  y = "observed_features", color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+plot3 = ggboxplot(alpha_all, x = "Ethnicity", 
+                  y = "shannon_entropy", color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3 = ggpar(plot3, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+tiff(file="alpha_combined_ethnicity.tif", 
+     res=300, width=15, height=4, units="in")
+ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+          common.legend = T, align = "h", legend = "right",
+          labels = c("A", "B", "C"))
+dev.off()
+```
+
+```{r alpha_div_age_graphs}
+alpha_all_age = alpha_all %>% filter(Host_age_cat != is.na(.)) %>% 
+  filter(Host_age_cat != "6-12 years")
+
+alpha_all_age$Host_age_cat = factor(alpha_all_age$Host_age_cat, 
+                                    levels = c("0-1 week", "1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-6 years"))
+
+plot1 = ggboxplot(alpha_all_age, x = "Host_age_cat", 
+                  y = "faith_pd", color = "Host_age_cat", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity") 
+plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("0-1 week", "1-3 years"),
+                                        c("0-1 week", "3-6 years"),
+                                        c("1-6 weeks", "3-12 months"),
+                                        c("1-6 weeks", "1-3 years"),
+                                        c("1-6 weeks", "3-6 years"),
+                                        c("6 weeks-3 months", 
+                                          "3-12 months"),
+                                        c("6 weeks-3 months",
+                                          "1-3 years"),
+                                        c("6 weeks-3 months", 
+                                          "3-6 years"),
+                                        c("3-12 months","1-3 years"),
+                                        c("3-12 months","3-6 years")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.0001, 0.001, 
+                                            0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "ns")))
+
+plot2 = ggboxplot(alpha_all_age, x = "Host_age_cat", 
+                  y = "observed_features", color = "Host_age_cat", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("0-1 week", "1-6 weeks"),
+                                        c("0-1 week", 
+                                          "6 weeks-3 months"),
+                                        c("0-1 week", "1-3 years"),
+                                        c("0-1 week", "3-6 years"),
+                                        c("1-6 weeks", "3-12 months"),
+                                        c("1-6 weeks", "1-3 years"),
+                                        c("1-6 weeks", "3-6 years"),
+                                        c("6 weeks-3 months", 
+                                          "3-12 months"),
+                                        c("6 weeks-3 months",
+                                          "1-3 years"),
+                                        c("6 weeks-3 months", 
+                                          "3-6 years"),
+                                        c("3-12 months","1-3 years"),
+                                        c("3-12 months","3-6 years")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.0001, 0.001, 
+                                            0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "ns")))
+
+plot3 = ggboxplot(alpha_all_age, x = "Host_age_cat", 
+                  y = "shannon_entropy", color = "Host_age_cat", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3 = ggpar(plot3, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("0-1 week", "1-6 weeks"),
+                                        c("0-1 week", "3-12 months"),
+                                        c("0-1 week", "1-3 years"),
+                                        c("0-1 week", "3-6 years"),
+                                        c("1-6 weeks", 
+                                          "6 weeks-3 months"),
+                                        c("1-6 weeks", "3-12 months"),
+                                        c("1-6 weeks", "1-3 years"),
+                                        c("1-6 weeks", "3-6 years"),
+                                        c("6 weeks-3 months", 
+                                          "3-12 months"),
+                                        c("6 weeks-3 months",
+                                          "1-3 years"),
+                                        c("6 weeks-3 months", 
+                                          "3-6 years"),
+                                        c("3-12 months","1-3 years"),
+                                        c("3-12 months","3-6 years")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.0001, 0.001, 
+                                            0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "ns")))
+
+tiff(file="alpha_combined_age.tif", 
+     res=300, width=15, height=6, units="in")
+ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+          common.legend = T, align = "h", legend = "right",
+          labels = c("A", "B", "C"))
+dev.off()
+```
+
+```{r alpha_div_sex_graphs}
+alpha_all_sex = alpha_all %>% dplyr::filter(host_sex != is.na(.))
+
+plot1 = ggboxplot(alpha_all_sex, x = "host_sex", 
+                  y = "faith_pd", color = "host_sex", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity") 
+plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+plot2 = ggboxplot(alpha_all_sex, x = "host_sex", 
+                  y = "observed_features", color = "host_sex", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Female", "Male")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.0001, 0.001, 
+                                            0.05, 0.999, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "ns")))
+
+plot3 = ggboxplot(alpha_all_sex, x = "host_sex", 
+                  y = "shannon_entropy", color = "host_sex", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3 = ggpar(plot3, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+tiff(file="alpha_combined_sex.tif", 
+     res=300, width=15, height=4, units="in")
+ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+          common.legend = T, align = "h", legend = "right",
+          labels = c("A", "B", "C"))
+dev.off()
+```
+
+```{r alpha_div_del_graphs}
+alpha_all_del = alpha_all %>% dplyr::filter(host_del_route != is.na(.))
+
+plot1 = ggboxplot(alpha_all_del, x = "host_del_route", 
+                  y = "faith_pd", color = "host_del_route", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity") 
+plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+plot2 = ggboxplot(alpha_all_del, x = "host_del_route", 
+                  y = "observed_features", color = "host_del_route", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+plot3 = ggboxplot(alpha_all_del, x = "host_del_route", 
+                  y = "shannon_entropy", color = "host_del_route", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3 = ggpar(plot3, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+tiff(file="alpha_combined_del.tif", 
+     res=300, width=15, height=4, units="in")
+ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+          common.legend = T, align = "h", legend = "right",
+          labels = c("A", "B", "C"))
+dev.off()
+```
+
+```{r alpha_div_feed_graphs}
+alpha_all_fed = alpha_all %>% dplyr::filter(Breastfeeding != is.na(.))
+
+plot1 = ggboxplot(alpha_all_fed, x = "Breastfeeding", 
+                  y = "faith_pd", color = "Breastfeeding", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity") 
+plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+plot2 = ggboxplot(alpha_all_fed, x = "Breastfeeding", 
+                  y = "observed_features", color = "Breastfeeding", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title")
+
+plot3 = ggboxplot(alpha_all_fed, x = "Breastfeeding", 
+                  y = "shannon_entropy", color = "Breastfeeding", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3 = ggpar(plot3, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Formula fed", 
+                                          "Mixed feeding"), 
+                                        c("Formula fed", 
+                                          "Exclusively breastfed"), 
+                                        c("Mixed feeding", 
+                                          "Exclusively breastfed")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.0001, 0.001, 
+                                            0.05, 0.999, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "ns")))
+
+tiff(file="alpha_combined_feed.tif", 
+     res=300, width=15, height=4, units="in")
+ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+          common.legend = T, align = "h", legend = "right",
+          labels = c("A", "B", "C"))
+dev.off()
+```
+
+##Different abundance of taxa
+ANCOM-BC (a bias correcting version of analysis of microbiome compositions) was used to identify differentially abundant taxa at the level of phyla, family, and ASV.
+
+###Phyla
+```{r phyla_abund}
+phyla = read_tsv("feature-table-phyla.tsv")
+taxonomy = phyla %>% dplyr::select(Phyla)
+
+phyla_matrix = phyla %>% column_to_rownames("Phyla") %>% as.matrix()
+phyla_phylo = otu_table(phyla_matrix, taxa_are_rows = T)
+meta_phylo = metadata_re %>% column_to_rownames("SampleID") %>% 
+  sample_data()
+
+phyla_p = phyloseq(phyla_phylo, meta_phylo)
+
+#Race
+race = ancombc(phyla_p, 
+               "Race + Ethnicity + Host_age_cat + Study",
+                 p_adj_method = "fdr", lib_cut = 10000,
+                 group = "Race", global = T)
+
+res_r = race$res_global %>% 
+  filter(diff_abn == "TRUE") %>% 
+  rownames_to_column(var = "Phyla") %>% 
+  inner_join(taxonomy)
+
+write_csv(res_r, "Diff_abund_global_race_phyla.csv")
+
+#Ethnicity
+ethnicity = ancombc(phyla_p, 
+               "Race + Ethnicity + Host_age_cat + Study",
+                 p_adj_method = "fdr", lib_cut = 10000,
+                 group = "Ethnicity", global = T)
+
+res_e = ethnicity$res_global %>% 
+  filter(diff_abn == "TRUE") %>% 
+  rownames_to_column(var = "Phyla") %>% 
+  inner_join(taxonomy)
+
+write_csv(res_e, "Diff_abund_global_ethnicity_phyla.csv")
+
+#Age
+age = ancombc(phyla_p, 
+               "Race + Ethnicity + Host_age_cat + Study",
+                 p_adj_method = "fdr", lib_cut = 10000,
+                 group = "Host_age_cat", global = T)
+
+res_a = age$res_global %>% 
+  filter(diff_abn == "TRUE") %>% 
+  rownames_to_column(var = "Phyla") %>% 
+  inner_join(taxonomy)
+
+write_csv(res_a, "Diff_abund_global_age_phyla.csv")
+
+#Group pairs race
+
+##Asian vs. Black 
+meta_ab = metadata_re %>% 
+  filter(Race == "Asian/Pacific Islander" | Race == "Black") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+phyla_p_ab = phyloseq(phyla_phylo, meta_ab)
+race_ab = ancombc(phyla_p_ab, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_ab = data.frame(
+  Species = row.names(race_ab$res$beta),
+  beta = unlist(race_ab$res$beta),
+  se = unlist(race_ab$res$se),
+  W = unlist(race_ab$res$W),
+  p_val = unlist(race_ab$res$p_val),
+  q_val = unlist(race_ab$res$q_val),
+  diff_abn = unlist(race_ab$res$diff_abn))
+
+fdr_ancom_r_ab <- res_r_df_ab %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Phyla"))
+
+write_csv(fdr_ancom_r_ab, "Diff_abund_race_phyla_ab.csv")
+
+##Asian vs. Other
+meta_ao = metadata_re %>% 
+  filter(Race == "Asian/Pacific Islander" | Race == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+phyla_p_ao = phyloseq(phyla_phylo, meta_ao)
+race_ao = ancombc(phyla_p_ao, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_ao = data.frame(
+  Species = row.names(race_ao$res$beta),
+  beta = unlist(race_ao$res$beta),
+  se = unlist(race_ao$res$se),
+  W = unlist(race_ao$res$W),
+  p_val = unlist(race_ao$res$p_val),
+  q_val = unlist(race_ao$res$q_val),
+  diff_abn = unlist(race_ao$res$diff_abn))
+
+fdr_ancom_r_ao <- res_r_df_ao %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Phyla"))
+
+write_csv(fdr_ancom_r_ao, "Diff_abund_race_phyla_ao.csv")
+
+##Asian vs. White
+meta_aw = metadata_re %>% 
+  filter(Race == "Asian/Pacific Islander" | Race == "White") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+phyla_p_aw = phyloseq(phyla_phylo, meta_aw)
+race_aw = ancombc(phyla_p_aw, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_aw = data.frame(
+  Species = row.names(race_aw$res$beta),
+  beta = unlist(race_aw$res$beta),
+  se = unlist(race_aw$res$se),
+  W = unlist(race_aw$res$W),
+  p_val = unlist(race_aw$res$p_val),
+  q_val = unlist(race_aw$res$q_val),
+  diff_abn = unlist(race_aw$res$diff_abn))
+
+fdr_ancom_r_aw <- res_r_df_aw %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Phyla"))
+
+write_csv(fdr_ancom_r_aw, "Diff_abund_race_phyla_aw.csv")
+
+##Black vs. Other
+meta_bo = metadata_re %>% 
+  filter(Race == "Black" | Race == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+phyla_p_bo = phyloseq(phyla_phylo, meta_bo)
+race_bo = ancombc(phyla_p_bo, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_bo = data.frame(
+  Species = row.names(race_bo$res$beta),
+  beta = unlist(race_bo$res$beta),
+  se = unlist(race_bo$res$se),
+  W = unlist(race_bo$res$W),
+  p_val = unlist(race_bo$res$p_val),
+  q_val = unlist(race_bo$res$q_val),
+  diff_abn = unlist(race_bo$res$diff_abn))
+
+fdr_ancom_r_bo <- res_r_df_bo %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Phyla"))
+
+write_csv(fdr_ancom_r_bo, "Diff_abund_race_phyla_bo.csv")
+
+##Black vs. White
+meta_bw = metadata_re %>% 
+  filter(Race == "Black" | Race == "White") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+phyla_p_bw = phyloseq(phyla_phylo, meta_bw)
+race_bw = ancombc(phyla_p_bw, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_bw = data.frame(
+  Species = row.names(race_bw$res$beta),
+  beta = unlist(race_bw$res$beta),
+  se = unlist(race_bw$res$se),
+  W = unlist(race_bw$res$W),
+  p_val = unlist(race_bw$res$p_val),
+  q_val = unlist(race_bw$res$q_val),
+  diff_abn = unlist(race_bw$res$diff_abn))
+
+fdr_ancom_r_bw <- res_r_df_bw %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Phyla"))
+
+write_csv(fdr_ancom_r_bw, "Diff_abund_race_phyla_bw.csv")
+
+##Other vs. White
+meta_ow = metadata_re %>% 
+  filter(Race == "Other" | Race == "White") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+phyla_p_ow = phyloseq(phyla_phylo, meta_ow)
+race_ow = ancombc(phyla_p_ow, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_ow = data.frame(
+  Species = row.names(race_ow$res$beta),
+  beta = unlist(race_ow$res$beta),
+  se = unlist(race_ow$res$se),
+  W = unlist(race_ow$res$W),
+  p_val = unlist(race_ow$res$p_val),
+  q_val = unlist(race_ow$res$q_val),
+  diff_abn = unlist(race_ow$res$diff_abn))
+
+fdr_ancom_r_ow <- res_r_df_ow %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Phyla"))
+
+write_csv(fdr_ancom_r_ow, "Diff_abund_race_phyla_ow.csv")
+
+#Group pairs ethnicity
+
+##Hispanic vs. Non-Hispanic 
+meta_hn = metadata_re %>% 
+  filter(Ethnicity == "Hispanic" | Ethnicity == "Non Hispanic") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+phyla_p_hn = phyloseq(phyla_phylo, meta_hn)
+ethn_ab = ancombc(phyla_p_hn, "Ethnicity",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Ethnicity")
+
+res_e_df_hn = data.frame(
+  Species = row.names(ethn_ab$res$beta),
+  beta = unlist(ethn_ab$res$beta),
+  se = unlist(ethn_ab$res$se),
+  W = unlist(ethn_ab$res$W),
+  p_val = unlist(ethn_ab$res$p_val),
+  q_val = unlist(ethn_ab$res$q_val),
+  diff_abn = unlist(ethn_ab$res$diff_abn))
+
+fdr_ancom_e_hn <- res_e_df_hn %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Ethnicity")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Phyla"))
+
+write_csv(fdr_ancom_e_hn, "Diff_abund_ethn_phyla_hn.csv")
+
+##Non-Hispanic vs. Other
+meta_no = metadata_re %>% 
+  filter(Ethnicity == "Non Hispanic" | Ethnicity == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+phyla_p_no = phyloseq(phyla_phylo, meta_no)
+ethn_no = ancombc(phyla_p_no, "Ethnicity",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Ethnicity")
+
+res_e_df_no = data.frame(
+  Species = row.names(ethn_no$res$beta),
+  beta = unlist(ethn_no$res$beta),
+  se = unlist(ethn_no$res$se),
+  W = unlist(ethn_no$res$W),
+  p_val = unlist(ethn_no$res$p_val),
+  q_val = unlist(ethn_no$res$q_val),
+  diff_abn = unlist(ethn_no$res$diff_abn))
+
+fdr_ancom_e_no <- res_e_df_no %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Ethnicity")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Phyla"))
+
+write_csv(fdr_ancom_e_no, "Diff_abund_ethn_phyla_no.csv")
+
+##Hispanic vs. Other
+meta_ho = metadata_re %>% 
+  filter(Ethnicity == "Hispanic" | Ethnicity == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+phyla_p_ho = phyloseq(phyla_phylo, meta_ho)
+ethn_ho = ancombc(phyla_p_ho, "Ethnicity",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Ethnicity")
+
+res_e_df_ho = data.frame(
+  Species = row.names(ethn_ho$res$beta),
+  beta = unlist(ethn_ho$res$beta),
+  se = unlist(ethn_ho$res$se),
+  W = unlist(ethn_ho$res$W),
+  p_val = unlist(ethn_ho$res$p_val),
+  q_val = unlist(ethn_ho$res$q_val),
+  diff_abn = unlist(ethn_ho$res$diff_abn))
+
+fdr_ancom_e_ho <- res_e_df_ho %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Ethnicity")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Phyla"))
+
+write_csv(fdr_ancom_e_ho, "Diff_abund_ethn_phyla_ho.csv")
+```
+
+```{r phyla_graphs_race}
+phyla_ra = phyla %>% column_to_rownames("Phyla") %>% 
+  decostand(method = "total", MARGIN = 2)
+phyla_meta = phyla_ra %>% 
+  rownames_to_column("Phyla") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Phyla", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+bact = ggboxplot(phyla_meta, x = "Race", 
+                  y = "k__Bacteria;p__Bacteroidetes", color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Bacteroidetes") 
+bact = ggpar(bact, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", 
+                                          "Black"), 
+                                        c("Asian/Pacific Islander", 
+                                          "Other"), 
+                                        c("Asian/Pacific Islander", 
+                                          "White"), 
+                                        c("Black", "Other"), 
+                                        c("Black", "White"), 
+                                        c("White", "Other")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+prot = ggboxplot(phyla_meta, x = "Race", 
+                  y = "k__Bacteria;p__Proteobacteria", color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Proteobacteria") 
+prot = ggpar(prot, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", 
+                                          "White"), 
+                                        c("Black", "White"), 
+                                        c("White", "Other")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 
+                                                      0.001, 0.05, 
+                                                      0.5, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "*")))
+
+tene = ggboxplot(phyla_meta, x = "Race", 
+                  y = "k__Bacteria;p__Tenericutes", color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Tenericutes") 
+tene = ggpar(tene, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"), c("Asian/Pacific Islander", "White"), c("Black", "Other")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+verr = ggboxplot(phyla_meta, x = "Race", 
+                  y = "k__Bacteria;p__Verrucomicrobia", color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Verrucomicrobia") 
+verr = ggpar(verr, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"), c("Black", "Other")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+tiff(file="phyla_diffs_race.tif", 
+     res=300, width=12, height=9, units="in")
+ggarrange(bact, prot, tene, verr, nrow = 2, ncol = 2, 
+          common.legend = T, align = "hv", legend = "right",
+          labels = c("A", "B", "C", "D"))
+dev.off()
+```
+
+```{r phyla_graphs_ethnicity}
+phyla_ra = phyla %>% column_to_rownames("Phyla") %>% 
+  decostand(method = "total", MARGIN = 2)
+phyla_meta = phyla_ra %>% 
+  rownames_to_column("Phyla") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Phyla", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+
+prot = ggboxplot(phyla_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Proteobacteria", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Proteobacteria") 
+prot = ggpar(prot, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Non Hispanic", 
+                                          "Other"), 
+                                        c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 
+                                                      0.001, 0.05, 
+                                                      0.5, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "*")))
+
+tene = ggboxplot(phyla_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Tenericutes", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Tenericutes") 
+tene = ggpar(tene, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Hispanic", "Other"), 
+                                        c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+acti = ggboxplot(phyla_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Actinobacteria", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Actinobacteria") 
+acti = ggpar(acti, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Non Hispanic",
+                                          "Other")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+tiff(file="phyla_diffs_ethnicity.tif", 
+     res=300, width=15, height=5, units="in")
+ggarrange(acti, prot, tene, nrow = 1, ncol = 3, 
+          common.legend = T, align = "v", legend = "right",
+          labels = c("A", "B", "C"))
+dev.off()
+```
+
+###Families
+```{r families_abund}
+family = read_tsv("feature-table-family.tsv")
+taxonomy = family %>% dplyr::select(Family)
+
+family_matrix = family %>% column_to_rownames("Family") %>% 
+  as.matrix()
+family_phylo = otu_table(family_matrix, taxa_are_rows = T)
+meta_phylo = metadata_re %>% column_to_rownames("SampleID") %>% 
+  sample_data()
+
+family_p = phyloseq(family_phylo, meta_phylo)
+
+#Race
+race = ancombc(family_p, 
+               "Race + Ethnicity + Host_age_cat + Study",
+                 p_adj_method = "fdr", lib_cut = 10000,
+                 group = "Race", global = T)
+
+res_r = race$res_global %>% 
+  filter(diff_abn == "TRUE") %>% 
+  rownames_to_column(var = "Family") %>% 
+  inner_join(taxonomy)
+
+write_csv(res_r, "Diff_abund_global_race_family.csv")
+
+#Ethnicity
+ethnicity = ancombc(family_p, 
+               "Race + Ethnicity + Host_age_cat + Study",
+                 p_adj_method = "fdr", lib_cut = 10000,
+                 group = "Ethnicity", global = T)
+
+res_e = ethnicity$res_global %>% 
+  filter(diff_abn == "TRUE") %>% 
+  rownames_to_column(var = "Family") %>% 
+  inner_join(taxonomy)
+
+write_csv(res_e, "Diff_abund_global_ethnicity_family.csv")
+
+#Age
+age = ancombc(phyla_p, 
+               "Race + Ethnicity + Host_age_cat + Study",
+                 p_adj_method = "fdr", lib_cut = 10000,
+                 group = "Host_age_cat", global = T)
+
+res_a = age$res_global %>% 
+  filter(diff_abn == "TRUE") %>% 
+  rownames_to_column(var = "Family") %>% 
+  inner_join(taxonomy)
+
+write_csv(res_a, "Diff_abund_global_age_family.csv")
+
+#Group pairs race
+
+##Asian vs. Black 
+meta_ab = metadata_re %>% 
+  filter(Race == "Asian/Pacific Islander" | Race == "Black") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+family_p_ab = phyloseq(family_phylo, meta_ab)
+race_ab = ancombc(family_p_ab, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_ab = data.frame(
+  Species = row.names(race_ab$res$beta),
+  beta = unlist(race_ab$res$beta),
+  se = unlist(race_ab$res$se),
+  W = unlist(race_ab$res$W),
+  p_val = unlist(race_ab$res$p_val),
+  q_val = unlist(race_ab$res$q_val),
+  diff_abn = unlist(race_ab$res$diff_abn))
+
+fdr_ancom_r_ab <- res_r_df_ab %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Family"))
+
+write_csv(fdr_ancom_r_ab, "Diff_abund_race_family_ab.csv")
+
+##Asian vs. Other
+meta_ao = metadata_re %>% 
+  filter(Race == "Asian/Pacific Islander" | Race == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+family_p_ao = phyloseq(family_phylo, meta_ao)
+race_ao = ancombc(family_p_ao, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_ao = data.frame(
+  Species = row.names(race_ao$res$beta),
+  beta = unlist(race_ao$res$beta),
+  se = unlist(race_ao$res$se),
+  W = unlist(race_ao$res$W),
+  p_val = unlist(race_ao$res$p_val),
+  q_val = unlist(race_ao$res$q_val),
+  diff_abn = unlist(race_ao$res$diff_abn))
+
+fdr_ancom_r_ao <- res_r_df_ao %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Family"))
+
+write_csv(fdr_ancom_r_ao, "Diff_abund_race_family_ao.csv")
+
+##Asian vs. White
+meta_aw = metadata_re %>% 
+  filter(Race == "Asian/Pacific Islander" | Race == "White") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+family_p_aw = phyloseq(family_phylo, meta_aw)
+race_aw = ancombc(family_p_aw, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_aw = data.frame(
+  Species = row.names(race_aw$res$beta),
+  beta = unlist(race_aw$res$beta),
+  se = unlist(race_aw$res$se),
+  W = unlist(race_aw$res$W),
+  p_val = unlist(race_aw$res$p_val),
+  q_val = unlist(race_aw$res$q_val),
+  diff_abn = unlist(race_aw$res$diff_abn))
+
+fdr_ancom_r_aw <- res_r_df_aw %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Family"))
+
+write_csv(fdr_ancom_r_aw, "Diff_abund_race_family_aw.csv")
+
+##Black vs. Other
+meta_bo = metadata_re %>% 
+  filter(Race == "Black" | Race == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+family_p_bo = phyloseq(family_phylo, meta_bo)
+race_bo = ancombc(family_p_bo, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_bo = data.frame(
+  Species = row.names(race_bo$res$beta),
+  beta = unlist(race_bo$res$beta),
+  se = unlist(race_bo$res$se),
+  W = unlist(race_bo$res$W),
+  p_val = unlist(race_bo$res$p_val),
+  q_val = unlist(race_bo$res$q_val),
+  diff_abn = unlist(race_bo$res$diff_abn))
+
+fdr_ancom_r_bo <- res_r_df_bo %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Family"))
+
+write_csv(fdr_ancom_r_bo, "Diff_abund_race_family_bo.csv")
+
+##Black vs. White
+meta_bw = metadata_re %>% 
+  filter(Race == "Black" | Race == "White") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+family_p_bw = phyloseq(family_phylo, meta_bw)
+race_bw = ancombc(family_p_bw, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_bw = data.frame(
+  Species = row.names(race_bw$res$beta),
+  beta = unlist(race_bw$res$beta),
+  se = unlist(race_bw$res$se),
+  W = unlist(race_bw$res$W),
+  p_val = unlist(race_bw$res$p_val),
+  q_val = unlist(race_bw$res$q_val),
+  diff_abn = unlist(race_bw$res$diff_abn))
+
+fdr_ancom_r_bw <- res_r_df_bw %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Family"))
+
+write_csv(fdr_ancom_r_bw, "Diff_abund_race_family_bw.csv")
+
+##Other vs. White
+meta_ow = metadata_re %>% 
+  filter(Race == "Other" | Race == "White") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+family_p_ow = phyloseq(family_phylo, meta_ow)
+race_ow = ancombc(family_p_ow, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_ow = data.frame(
+  Species = row.names(race_ow$res$beta),
+  beta = unlist(race_ow$res$beta),
+  se = unlist(race_ow$res$se),
+  W = unlist(race_ow$res$W),
+  p_val = unlist(race_ow$res$p_val),
+  q_val = unlist(race_ow$res$q_val),
+  diff_abn = unlist(race_ow$res$diff_abn))
+
+fdr_ancom_r_ow <- res_r_df_ow %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Family"))
+
+write_csv(fdr_ancom_r_ow, "Diff_abund_race_family_ow.csv")
+
+#Group pairs ethnicity
+
+##Hispanic vs. Non-Hispanic 
+meta_hn = metadata_re %>% 
+  filter(Ethnicity == "Hispanic" | Ethnicity == "Non Hispanic") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+family_p_hn = phyloseq(family_phylo, meta_hn)
+ethn_ab = ancombc(family_p_hn, "Ethnicity",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Ethnicity")
+
+res_e_df_hn = data.frame(
+  Species = row.names(ethn_ab$res$beta),
+  beta = unlist(ethn_ab$res$beta),
+  se = unlist(ethn_ab$res$se),
+  W = unlist(ethn_ab$res$W),
+  p_val = unlist(ethn_ab$res$p_val),
+  q_val = unlist(ethn_ab$res$q_val),
+  diff_abn = unlist(ethn_ab$res$diff_abn))
+
+fdr_ancom_e_hn <- res_e_df_hn %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Ethnicity")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Family"))
+
+write_csv(fdr_ancom_e_hn, "Diff_abund_ethn_family_hn.csv")
+
+##Non-Hispanic vs. Other
+meta_no = metadata_re %>% 
+  filter(Ethnicity == "Non Hispanic" | Ethnicity == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+family_p_no = phyloseq(family_phylo, meta_no)
+ethn_no = ancombc(family_p_no, "Ethnicity",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Ethnicity")
+
+res_e_df_no = data.frame(
+  Species = row.names(ethn_no$res$beta),
+  beta = unlist(ethn_no$res$beta),
+  se = unlist(ethn_no$res$se),
+  W = unlist(ethn_no$res$W),
+  p_val = unlist(ethn_no$res$p_val),
+  q_val = unlist(ethn_no$res$q_val),
+  diff_abn = unlist(ethn_no$res$diff_abn))
+
+fdr_ancom_e_no <- res_e_df_no %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Ethnicity")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Family"))
+
+write_csv(fdr_ancom_e_no, "Diff_abund_ethn_family_no.csv")
+
+##Hispanic vs. Other
+meta_ho = metadata_re %>% 
+  filter(Ethnicity == "Hispanic" | Ethnicity == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+family_p_ho = phyloseq(family_phylo, meta_ho)
+ethn_ho = ancombc(family_p_ho, "Ethnicity",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Ethnicity")
+
+res_e_df_ho = data.frame(
+  Species = row.names(ethn_ho$res$beta),
+  beta = unlist(ethn_ho$res$beta),
+  se = unlist(ethn_ho$res$se),
+  W = unlist(ethn_ho$res$W),
+  p_val = unlist(ethn_ho$res$p_val),
+  q_val = unlist(ethn_ho$res$q_val),
+  diff_abn = unlist(ethn_ho$res$diff_abn))
+
+fdr_ancom_e_ho <- res_e_df_ho %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Ethnicity")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Family"))
+
+write_csv(fdr_ancom_e_ho, "Diff_abund_ethn_family_ho.csv")
+```
+
+```{r family_graphs_race}
+family_ra = family %>% column_to_rownames("Family") %>% 
+  decostand(method = "total", MARGIN = 2)
+family_meta = family_ra %>% 
+  rownames_to_column("Family") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Family", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+prev = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Prevotellaceae") 
+prev = ggpar(prev, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", 
+                                          "Black"),
+                                        c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "Other"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+porp = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Porphyromonadaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Porphyromonadaceae") 
+porp = ggpar(porp, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "Other"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 
+                                                      0.001, 0.05, 
+                                                      0.5, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "*")))
+
+lact = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Bacilli;o__Lactobacillales;f__Lactobacillaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Lactobacillaceae") 
+lact = ggpar(lact, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+camp = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Proteobacteria;c__Epsilonproteobacteria;o__Campylobacterales;f__Campylobacteraceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Campylobacteraceae") 
+camp = ggpar(camp, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Black", "Other"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+veil = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Veillonellaceae") 
+veil = ggpar(veil, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Asian/Pacific Islander", "Other"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+pept = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Peptostreptococcaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Peptostreptococcaceae") 
+pept = ggpar(pept, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Asian/Pacific Islander", "Other"),
+                                        c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "Other"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+tiss = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__[Tissierellaceae]", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Tissierellaceae") 
+tiss = ggpar(tiss, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+ente = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Enterobacteriaceae") 
+ente = ggpar(ente, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "Other"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+clos = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Clostridiaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Clostridiaceae") 
+clos = ggpar(clos, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "Other"),
+                                        c("Black", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+fuso = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Fusobacteria;c__Fusobacteriia;o__Fusobacteriales;f__Fusobacteriaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Fusobacteriaceae") 
+fuso = ggpar(fuso, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Asian/Pacific Islander", "Other")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+stap = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Bacilli;o__Bacillales;f__Staphylococcaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Staphylococcaceae") 
+stap = ggpar(stap, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+geme = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Bacilli;o__Gemellales;f__Gemellaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Gemellaceae") 
+geme = ggpar(geme, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+mogi = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__[Mogibacteriaceae]", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Mogibacteriaceae") 
+mogi = ggpar(mogi, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "Other"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+mora = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pseudomonadales;f__Moraxellaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Moraxellaceae") 
+mora = ggpar(mora, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "Other"),
+                                        c("Black", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+cory = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Actinobacteria;c__Actinobacteria;o__Actinomycetales;f__Corynebacteriaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Corynebacteriaceae") 
+cory = ggpar(cory, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "Other"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+entec = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Bacilli;o__Lactobacillales;f__Enterococcaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Enterococcaceae") 
+entec = ggpar(entec, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "Other"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+past = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Pasteurellaceae") 
+past = ggpar(past, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "Other"),
+                                        c("Black", "White"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+para = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Paraprevotellaceae]", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Paraprevotellaceae") 
+para = ggpar(para, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "Black"),
+                                        c("Asian/Pacific Islander", "Other"),
+                                        c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+micr = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Actinobacteria;c__Actinobacteria;o__Actinomycetales;f__Micrococcaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Micrococcaceae") 
+micr = ggpar(micr, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander",
+                                          "White"),
+                                        c("Black", "Other"),
+                                        c("Black", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+euba = ggboxplot(family_meta, x = "Race", 
+                  y = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Eubacteriaceae", 
+                 color = "Race", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Eubacteriaceae") 
+euba = ggpar(euba, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "White"),
+                                        c("Black", "Other"),
+                                        c("Other", "White")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+tiff(file="family_diffs_race.tif", 
+     res=300, width=22, height=15, units="in")
+ggarrange(prev, porp, lact, camp, veil, pept, tiss, ente, clos, fuso, stap, 
+          geme, mogi, mora, cory, entec, past, para, micr, euba, 
+          nrow = 4, ncol = 5, 
+          common.legend = T, align = "hv", legend = "right")
+dev.off()
+```
+
+```{r family_graphs_ethn}
+family_ra = family %>% column_to_rownames("Family") %>% 
+  decostand(method = "total", MARGIN = 2)
+family_meta = family_ra %>% 
+  rownames_to_column("Family") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Family", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+lach = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Lachnospiraceae") 
+lach = ggpar(lach, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+bact = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Bacteroidaceae") 
+bact = ggpar(bact, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Non Hispanic",
+                                          "Other"), 
+                                        c("Hispanic", "Other")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 
+                                                      0.001, 0.05, 
+                                                      0.5, 1),
+                                        symbols = c("*", "*", "*", 
+                                                    "*", "*")))
+
+prev = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Prevotellaceae") 
+prev = ggpar(prev, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Non Hispanic", "Other"),
+                                        c("Hispanic", "Other"),
+                                        c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+barn = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__[Barnesiellaceae]", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Barnesiellaceae") 
+barn = ggpar(barn, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+ente = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Enterobacteriaceae") 
+ente = ggpar(ente, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") 
+
+rike = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Rikenellaceae") 
+rike = ggpar(rike, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Non Hispanic", "Other"),
+                                        c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+stre = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Firmicutes;c__Bacilli;o__Lactobacillales;f__Streptococcaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Streptococcaceae") 
+stre = ggpar(stre, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+geme = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Firmicutes;c__Bacilli;o__Gemellales;f__Gemellaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Gemellaceae") 
+geme = ggpar(geme, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+chri = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Christensenellaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Christensenellaceae") 
+chri = ggpar(chri, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") 
+
+pseu = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pseudomonadales;f__Pseudomonadaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Pseudomonadaceae") 
+pseu = ggpar(pseu, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+verr = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Verrucomicrobia;c__Verrucomicrobiae;o__Verrucomicrobiales;f__Verrucomicrobiaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Verrucomicrobiaceae") 
+verr = ggpar(verr, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+turi = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Firmicutes;c__Bacilli;o__Turicibacterales;f__Turicibacteraceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Turicibacteraceae") 
+turi = ggpar(turi, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+euba = ggboxplot(family_meta, x = "Ethnicity", 
+                  y = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Eubacteriaceae", 
+                 color = "Ethnicity", 
+                  palette = "Set1", add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Relative Abundance", 
+                 title = "Eubacteriaceae") 
+euba = ggpar(euba, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Non Hispanic", "Other"),
+                                        c("Hispanic", 
+                                          "Non Hispanic")),
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.05, 0.5, 1),
+                                        symbols = c("*", "*", "*", "*", "*")))
+
+
+tiff(file="family_diffs_ethn.tif", 
+     res=300, width=22, height=12, units="in")
+ggarrange(lach, bact, prev, barn, ente, rike, stre, geme, 
+          chri, pseu, verr, turi, euba, 
+          nrow = 3, ncol = 5, 
+          common.legend = T, align = "hv", legend = "right")
+dev.off()
+```
+
+```{r family_graphs_race_heritable}
+tiff(file="family_diffs_race_heritable.tif", 
+     res=300, width=12, height=4, units="in")
+ggarrange(clos, past, pept, 
+          nrow = 1, ncol = 3, 
+          common.legend = T, align = "v", legend = "right")
+dev.off()
+```
+
+```{r family_graphs_ethn_heritable}
+tiff(file="family_diffs_ethn_heritable.tif", 
+     res=300, width=9, height=4, units="in")
+ggarrange(lach, chri, 
+          nrow = 1, ncol = 2, 
+          common.legend = T, align = "v", legend = "right")
+dev.off()
+```
+
+###Genera
+```{r genus_abund}
+genus = read_tsv("feature-table-genus.tsv")
+taxonomy = genus %>% dplyr::select(Genus)
+
+genus_matrix = genus %>% column_to_rownames("Genus") %>% as.matrix()
+genus_phylo = otu_table(genus_matrix, taxa_are_rows = T)
+meta_phylo = metadata_re %>% column_to_rownames("SampleID") %>% 
+  sample_data()
+
+genus_p = phyloseq(genus_phylo, meta_phylo)
+
+#Race
+race = ancombc(genus_p, 
+               "Race + Ethnicity + Host_age_cat + Study",
+                 p_adj_method = "fdr", lib_cut = 10000,
+                 group = "Race", global = T)
+
+res_r = race$res_global %>% 
+  filter(diff_abn == "TRUE") %>% 
+  rownames_to_column(var = "Genus") %>% 
+  inner_join(taxonomy)
+
+write_csv(res_r, "Diff_abund_global_race_genus.csv")
+
+#Ethnicity
+ethnicity = ancombc(genus_p, 
+               "Race + Ethnicity + Host_age_cat + Study",
+                 p_adj_method = "fdr", lib_cut = 10000,
+                 group = "Ethnicity", global = T)
+
+res_e = ethnicity$res_global %>% 
+  filter(diff_abn == "TRUE") %>% 
+  rownames_to_column(var = "Genus") %>% 
+  inner_join(taxonomy)
+
+write_csv(res_e, "Diff_abund_global_ethnicity_genus.csv")
+
+#Age
+age = ancombc(genus_p, 
+               "Race + Ethnicity + Host_age_cat + Study",
+                 p_adj_method = "fdr", lib_cut = 10000,
+                 group = "Host_age_cat", global = T)
+
+res_a = age$res_global %>% 
+  filter(diff_abn == "TRUE") %>% 
+  rownames_to_column(var = "Genus") %>% 
+  inner_join(taxonomy)
+
+write_csv(res_a, "Diff_abund_global_age_genus.csv")
+
+#Group pairs race
+
+##Asian vs. Black 
+meta_ab = metadata_re %>% 
+  filter(Race == "Asian/Pacific Islander" | Race == "Black") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+genus_p_ab = phyloseq(genus_phylo, meta_ab)
+race_ab = ancombc(genus_p_ab, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_ab = data.frame(
+  Species = row.names(race_ab$res$beta),
+  beta = unlist(race_ab$res$beta),
+  se = unlist(race_ab$res$se),
+  W = unlist(race_ab$res$W),
+  p_val = unlist(race_ab$res$p_val),
+  q_val = unlist(race_ab$res$q_val),
+  diff_abn = unlist(race_ab$res$diff_abn))
+
+fdr_ancom_r_ab <- res_r_df_ab %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Genus"))
+
+write_csv(fdr_ancom_r_ab, "Diff_abund_race_genus_ab.csv")
+
+##Asian vs. Other
+meta_ao = metadata_re %>% 
+  filter(Race == "Asian/Pacific Islander" | Race == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+genus_p_ao = phyloseq(genus_phylo, meta_ao)
+race_ao = ancombc(genus_p_ao, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_ao = data.frame(
+  Species = row.names(race_ao$res$beta),
+  beta = unlist(race_ao$res$beta),
+  se = unlist(race_ao$res$se),
+  W = unlist(race_ao$res$W),
+  p_val = unlist(race_ao$res$p_val),
+  q_val = unlist(race_ao$res$q_val),
+  diff_abn = unlist(race_ao$res$diff_abn))
+
+fdr_ancom_r_ao <- res_r_df_ao %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Genus"))
+
+write_csv(fdr_ancom_r_ao, "Diff_abund_race_genus_ao.csv")
+
+##Asian vs. White
+meta_aw = metadata_re %>% 
+  filter(Race == "Asian/Pacific Islander" | Race == "White") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+genus_p_aw = phyloseq(genus_phylo, meta_aw)
+race_aw = ancombc(genus_p_aw, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_aw = data.frame(
+  Species = row.names(race_aw$res$beta),
+  beta = unlist(race_aw$res$beta),
+  se = unlist(race_aw$res$se),
+  W = unlist(race_aw$res$W),
+  p_val = unlist(race_aw$res$p_val),
+  q_val = unlist(race_aw$res$q_val),
+  diff_abn = unlist(race_aw$res$diff_abn))
+
+fdr_ancom_r_aw <- res_r_df_aw %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Genus"))
+
+write_csv(fdr_ancom_r_aw, "Diff_abund_race_genus_aw.csv")
+
+##Black vs. Other
+meta_bo = metadata_re %>% 
+  filter(Race == "Black" | Race == "Other") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+genus_p_bo = phyloseq(genus_phylo, meta_bo)
+race_bo = ancombc(genus_p_bo, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_bo = data.frame(
+  Species = row.names(race_bo$res$beta),
+  beta = unlist(race_bo$res$beta),
+  se = unlist(race_bo$res$se),
+  W = unlist(race_bo$res$W),
+  p_val = unlist(race_bo$res$p_val),
+  q_val = unlist(race_bo$res$q_val),
+  diff_abn = unlist(race_bo$res$diff_abn))
+
+fdr_ancom_r_bo <- res_r_df_bo %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Genus"))
+
+write_csv(fdr_ancom_r_bo, "Diff_abund_race_genus_bo.csv")
+
+##Black vs. White
+meta_bw = metadata_re %>% 
+  filter(Race == "Black" | Race == "White") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+genus_p_bw = phyloseq(genus_phylo, meta_bw)
+race_bw = ancombc(genus_p_bw, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_bw = data.frame(
+  Species = row.names(race_bw$res$beta),
+  beta = unlist(race_bw$res$beta),
+  se = unlist(race_bw$res$se),
+  W = unlist(race_bw$res$W),
+  p_val = unlist(race_bw$res$p_val),
+  q_val = unlist(race_bw$res$q_val),
+  diff_abn = unlist(race_bw$res$diff_abn))
+
+fdr_ancom_r_bw <- res_r_df_bw %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Genus"))
+
+write_csv(fdr_ancom_r_bw, "Diff_abund_race_genus_bw.csv")
+
+##Other vs. White
+meta_ow = metadata_re %>% 
+  filter(Race == "Other" | Race == "White") %>% 
+  column_to_rownames("SampleID") %>% 
+  sample_data()
+genus_p_ow = phyloseq(genus_phylo, meta_ow)
+race_ow = ancombc(genus_p_ow, "Race",
+                       p_adj_method = "fdr", lib_cut = 10000,
+                       group = "Race")
+
+res_r_df_ow = data.frame(
+  Species = row.names(race_ow$res$beta),
+  beta = unlist(race_ow$res$beta),
+  se = unlist(race_ow$res$se),
+  W = unlist(race_ow$res$W),
+  p_val = unlist(race_ow$res$p_val),
+  q_val = unlist(race_ow$res$q_val),
+  diff_abn = unlist(race_ow$res$diff_abn))
+
+fdr_ancom_r_ow <- res_r_df_ow %>%
+  dplyr::filter(q_val < 0.05) %>% 
+  rownames_to_column(var = "Comparison") %>% 
+  dplyr::filter(str_detect(Comparison, "^Race")) %>% 
+  inner_join(taxonomy, by = c("Species" = "Genus"))
+
+write_csv(fdr_ancom_r_ow, "Diff_abund_race_genus_ow.csv")
+```
 ```
