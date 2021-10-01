@@ -570,7 +570,7 @@ weight_race <- ggplot(mds_otus_weighted_points2,
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(2)), 
         axis.title.y=element_text(size=rel(2)),
-        plot.title = element_text(size=rel(3)),
+        plot.title = element_text(size=rel(2.5)),
         legend.title = element_text(size=rel(2)),
         legend.text = element_text(size = rel(1.5))) + 
   ggtitle("Weighted UniFrac") +
@@ -727,7 +727,7 @@ unweight_race <- ggplot(mds_otus_unweighted_points2,
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(2)), 
         axis.title.y=element_text(size=rel(2)),
-        plot.title = element_text(size=rel(3)),
+        plot.title = element_text(size=rel(2.5)),
         legend.title = element_text(size=rel(2)),
         legend.text = element_text(size = rel(1.5))) + 
   ggtitle("Unweighted UniFrac") +
@@ -1036,14 +1036,14 @@ summary(glht(s1,linfct=mcp(Breastfeeding="Tukey")))
 #### Graphs
 Each comparison of interest was graphed, using the full dataset.
 ```{r alpha_div_race_graphs}
-plot1 = ggboxplot(alpha_all, x = "Race", 
+plot1_alpha = ggboxplot(alpha_all, x = "Race", 
                   y = "faith_pd", color = "Race", 
                   palette = c("#377eb8", 
                               "#ffff33", "#e41a1c"), 
                   add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Faith's Phylogenetic Diversity") 
-plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+plot1_alpha = ggpar(plot1_alpha, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") +
   annotate(geom = "richtext", fill = NA, label.color = NA,
@@ -1051,14 +1051,14 @@ plot1 = ggpar(plot1, legend = "right") + rremove("xlab") +
            x = Inf, y = Inf, size = 3,
            hjust = 1, vjust = 1)
 
-plot2 = ggboxplot(alpha_all, x = "Race", 
+plot2_alpha = ggboxplot(alpha_all, x = "Race", 
                   y = "observed_features", color = "Race", 
                   palette = c("#377eb8", 
                               "#ffff33", "#e41a1c"), 
                   add = "jitter",  
                   add.params = list(fill = "white"), 
                   ylab = "Observed ASVs") 
-plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
+plot2_alpha = ggpar(plot2_alpha, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1067,18 +1067,18 @@ plot2 = ggpar(plot2, legend = "right") + rremove("xlab") +
                                           c(0, 0.5, 1),
                                         symbols = c("***", "ns"))) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Race: p = 0.002", 
-           x = Inf, y = Inf, size = 3,
+           label = "p = 0.002", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
-plot3 = ggboxplot(alpha_all, x = "Race", 
+plot3_alpha = ggboxplot(alpha_all, x = "Race", 
                   y = "shannon_entropy", color = "Race", 
                   palette = c("#377eb8", 
                               "#ffff33", "#e41a1c"), 
                   add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Shannon Diversity") 
-plot3 = ggpar(plot3, legend = "right") + rremove("xlab") + 
+plot3_alpha = ggpar(plot3_alpha, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1087,26 +1087,26 @@ plot3 = ggpar(plot3, legend = "right") + rremove("xlab") +
                                           c(0, 0.5, 1),
                                         symbols = c("**", "ns"))) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Race: p = 0.008", 
-           x = Inf, y = Inf, size = 3,
+           label = "p = 0.008", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
 tiff(file="alpha_combined_race.tif", 
      res=300, width=15, height=4, units="in")
-ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+ggarrange(plot1_alpha, plot2_alpha, plot3_alpha, nrow = 1, ncol = 3, 
           common.legend = T, align = "h", legend = "right",
           labels = c("A", "B", "C"))
 dev.off()
 ```
 
 ```{r alpha_div_eth_graphs}
-plot1 = ggboxplot(alpha_all, x = "Ethnicity", 
+plot1_alphae = ggboxplot(alpha_all, x = "Ethnicity", 
                   y = "faith_pd", color = "Ethnicity", 
                   palette = c("light gray", "dark gray"), 
                   add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Faith's Phylogenetic Diversity") 
-plot1 = ggpar(plot1, legend = "right") + rremove("xlab") + 
+plot1_alphae = ggpar(plot1_alphae, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1120,37 +1120,37 @@ plot1 = ggpar(plot1, legend = "right") + rremove("xlab") +
            x = Inf, y = Inf, size = 3,
            hjust = 1, vjust = 1)
 
-plot2 = ggboxplot(alpha_all, x = "Ethnicity", 
+plot2_alphae = ggboxplot(alpha_all, x = "Ethnicity", 
                   y = "observed_features", color = "Ethnicity", 
                   palette = c("light gray", "dark gray"), 
                   add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Observed ASVs") 
-plot2 = ggpar(plot2, legend = "right") + rremove("xlab") + 
+plot2_alphae = ggpar(plot2_alphae, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Ethnicity: p = 0.092", 
-           x = Inf, y = Inf, size = 3,
+           label = "p = 0.092", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
-plot3 = ggboxplot(alpha_all, x = "Ethnicity", 
+plot3_alphae = ggboxplot(alpha_all, x = "Ethnicity", 
                   y = "shannon_entropy", color = "Ethnicity", 
                   palette = c("light gray", "dark gray"), 
                   add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Shannon Diversity") 
-plot3 = ggpar(plot3, legend = "right") + rremove("xlab") + 
+plot3_alphae = ggpar(plot3_alphae, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Ethnicity: p = 0.283", 
-           x = Inf, y = Inf, size = 3,
+           label = "p = 0.283", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
 tiff(file="alpha_combined_ethnicity.tif", 
      res=300, width=15, height=4, units="in")
-ggarrange(plot1, plot2, plot3, nrow = 1, ncol = 3, 
+ggarrange(plot1_alphae, plot2_alphae, plot3_alphae, nrow = 1, ncol = 3, 
           common.legend = T, align = "h", legend = "right",
           labels = c("A", "B", "C"))
 dev.off()
@@ -1748,14 +1748,13 @@ phyla_meta = phyla_ra %>%
   pivot_wider(names_from = "Phyla", values_from = "rel_abund") %>% 
   inner_join(metadata_re)
 
-bact = ggboxplot(phyla_meta, x = "Race", 
+bact_race = ggboxplot(phyla_meta, x = "Race", 
                   y = "k__Bacteria;p__Bacteroidetes", color = "Race",
                   palette = c("#377eb8", "#ffff33", "#e41a1c"), 
                  add = "jitter", 
                   add.params = list(fill = "white"), 
-                  ylab = "Relative Abundance", 
-                 title = "Bacteroidetes") 
-bact = ggpar(bact, legend = "right") + rremove("xlab") + 
+                  ylab = "Bacteroidetes") 
+bact_race = ggpar(bact_race, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1765,18 +1764,17 @@ bact = ggpar(bact, legend = "right") + rremove("xlab") +
                      symnum.args = list(cutpoints = c(0, 0.05, 1),
                                         symbols = c("***", "**"))) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Race: q < 0.001", 
-           x = Inf, y = Inf, size = 3,
+           label = "q < 0.001", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
-prot = ggboxplot(phyla_meta, x = "Race", 
+prot_race = ggboxplot(phyla_meta, x = "Race", 
                   y = "k__Bacteria;p__Proteobacteria", color = "Race", 
                   palette = c("#377eb8", "#ffff33", "#e41a1c"), 
                  add = "jitter", 
                   add.params = list(fill = "white"), 
-                  ylab = "Relative Abundance", 
-                 title = "Proteobacteria") 
-prot = ggpar(prot, legend = "right") + rremove("xlab") + 
+                  ylab = "Proteobacteria") 
+prot_race = ggpar(prot_race, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1787,18 +1785,17 @@ prot = ggpar(prot, legend = "right") + rremove("xlab") +
                                                       1),
                                         symbols = c("***", "***"))) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Race: q < 0.001", 
-           x = Inf, y = Inf, size = 3,
+           label = "q < 0.001", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
-tene = ggboxplot(phyla_meta, x = "Race", 
+tene_race = ggboxplot(phyla_meta, x = "Race", 
                   y = "k__Bacteria;p__Tenericutes", color = "Race", 
                   palette = c("#377eb8", "#ffff33", "#e41a1c"), 
                  add = "jitter", 
                   add.params = list(fill = "white"), 
-                  ylab = "Relative Abundance", 
-                 title = "Tenericutes") 
-tene = ggpar(tene, legend = "right") + rremove("xlab") + 
+                  ylab = "Tenericutes") 
+tene_race = ggpar(tene_race, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1807,18 +1804,17 @@ tene = ggpar(tene, legend = "right") + rremove("xlab") +
                      symnum.args = list(cutpoints = c(0, 0.05, 1),
                                         symbols = c("***", "***"))) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Race: q = 0.003", 
-           x = Inf, y = Inf, size = 3,
+           label = "q = 0.003", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
-verr = ggboxplot(phyla_meta, x = "Race", 
+verr_race = ggboxplot(phyla_meta, x = "Race", 
                   y = "k__Bacteria;p__Verrucomicrobia", color = "Race", 
                   palette = c("#377eb8", "#ffff33", "#e41a1c"), 
                  add = "jitter", 
                   add.params = list(fill = "white"), 
-                  ylab = "Relative Abundance", 
-                 title = "Verrucomicrobia") 
-verr = ggpar(verr, legend = "right") + rremove("xlab") + 
+                  ylab = "Verrucomicrobia") 
+verr_race = ggpar(verr_race, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1827,8 +1823,8 @@ verr = ggpar(verr, legend = "right") + rremove("xlab") +
                      symnum.args = list(cutpoints = c(0, 0.05,1),
                                         symbols = c("*", "*"))) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Race: q = 0.002", 
-           x = Inf, y = Inf, size = 3,
+           label = "q = 0.002", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
 tiff(file="phyla_diffs_race.tif", 
@@ -1849,14 +1845,13 @@ phyla_meta = phyla_ra %>%
   inner_join(metadata_re)
 
 
-prot = ggboxplot(phyla_meta, x = "Ethnicity", 
+prot_eth = ggboxplot(phyla_meta, x = "Ethnicity", 
                   y = "k__Bacteria;p__Proteobacteria", 
                  color = "Ethnicity", 
                   palette = c("light gray", "dark gray"), add = "jitter", 
                   add.params = list(fill = "white"), 
-                  ylab = "Relative Abundance", 
-                 title = "Proteobacteria") 
-prot = ggpar(prot, legend = "right") + rremove("xlab") + 
+                  ylab = "Proteobacteria") 
+prot_eth = ggpar(prot_eth, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1866,18 +1861,17 @@ prot = ggpar(prot, legend = "right") + rremove("xlab") +
                                                       0.5, 1),
                                         symbols = c("***", "***"))) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Ethnicity: q < 0.001", 
-           x = Inf, y = Inf, size = 3,
+           label = "q < 0.001", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
-tene = ggboxplot(phyla_meta, x = "Ethnicity", 
+tene_eth = ggboxplot(phyla_meta, x = "Ethnicity", 
                   y = "k__Bacteria;p__Tenericutes", 
                  color = "Ethnicity", 
                   palette = c("light gray", "dark gray"), add = "jitter", 
                   add.params = list(fill = "white"), 
-                  ylab = "Relative Abundance", 
-                 title = "Tenericutes") 
-tene = ggpar(tene, legend = "right") + rremove("xlab") + 
+                  ylab = "Tenericutes") 
+tene_eth = ggpar(tene_eth, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1885,18 +1879,17 @@ tene = ggpar(tene, legend = "right") + rremove("xlab") +
                      symnum.args = list(cutpoints = c(0, 0.5, 1),
                                         symbols = c("*", "*"))) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Ethnicity: q = 0.024", 
-           x = Inf, y = Inf, size = 3,
+           label = "q = 0.024", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
-acti = ggboxplot(phyla_meta, x = "Ethnicity", 
+acti_eth = ggboxplot(phyla_meta, x = "Ethnicity", 
                   y = "k__Bacteria;p__Actinobacteria", 
                  color = "Ethnicity", 
                   palette = c("light gray", "dark gray"), add = "jitter", 
                   add.params = list(fill = "white"), 
-                  ylab = "Relative Abundance", 
-                 title = "Actinobacteria") 
-acti = ggpar(acti, legend = "right") + rremove("xlab") + 
+                  ylab = "Actinobacteria") 
+acti_eth = ggpar(acti_eth, legend = "right") + rremove("xlab") + 
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
@@ -1905,8 +1898,8 @@ acti = ggpar(acti, legend = "right") + rremove("xlab") +
                      symnum.args = list(cutpoints = c(0, 0.5, 1),
                                         symbols = c("**", "**")))  +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Ethnicity: q = 0.004", 
-           x = Inf, y = Inf, size = 3,
+           label = "q = 0.004", 
+           x = Inf, y = Inf, size = 4,
            hjust = 1, vjust = 1)
 
 tiff(file="phyla_diffs_ethnicity.tif", 
@@ -3973,4 +3966,44 @@ fdr_ancom_e <- res_e_df %>%
   inner_join(taxonomy, by = c("Species" = "Gensu"))
 
 write_csv(fdr_ancom_e, "Diff_abund_global_ethnicity_genus_cioffi.csv")
+```
+
+##Graphs for publication
+```{r pub_graphs}
+tiff(file="fig1.tif", res=300, width=20, height=16, units="in")
+legend1 = get_legend(plot1_alpha + theme(legend.box.margin = margin(0, 0, 0, 12)))
+legend2 = get_legend(plot1_alphae + theme(legend.box.margin = margin(0, 0, 0, 12)))
+legends = plot_grid(legend1, legend2, nrow = 2, ncol = 1,
+                    align = "hv")
+left = plot_grid(unweight_race + theme(legend.position = "none"),
+                 weight_race + theme(legend.position = "none"),
+                 nrow = 2, ncol = 1, labels = c('A'), 
+                 label_size = 20, align = "v")
+right_row1 = plot_grid(plot3_alpha + theme(legend.position = "none"),
+                      plot2_alpha + theme(legend.position = "none"),
+                      plot3_alphae + theme(legend.position = "none"),
+                      plot2_alphae + theme(legend.position = "none"),
+                 nrow = 2, ncol = 2, labels = c('B'), 
+                 label_size = 20, align = "hv") 
+right_row2 = plot_grid(bact_race + theme(legend.position = "none"),
+                      prot_race + theme(legend.position = "none"),
+                      tene_race + theme(legend.position = "none"),
+                      verr_race + theme(legend.position = "none"),
+                      acti_eth + theme(legend.position = "none"),
+                      prot_eth + theme(legend.position = "none"),
+                      tene_eth + theme(legend.position = "none"),
+                      legends,
+                 nrow = 2, ncol = 4, labels = c('C'), 
+                 label_size = 20, align = "hv") 
+right = plot_grid(right_row1, right_row2, nrow = 2, ncol = 1, 
+          rel_widths = c(1.5, 1.5, 0.75), align = "v", axis = "l")
+plot = plot_grid(left, right, nrow = 1, ncol = 2, 
+          rel_widths = c(1.5, 2), axis = "tb", align = "hv")
+plot
+dev.off()
+
+setEPS()
+postscript(file="fig1.eps", width=20, height=16, paper = "special")
+plot
+dev.off()
 ```
