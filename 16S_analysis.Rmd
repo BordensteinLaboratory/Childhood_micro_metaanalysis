@@ -1,5 +1,5 @@
 ---
-title: "16S preliminary analysis"
+title: "16S analysis"
 author: "Liz Mallott"
 date: "12/11/2020"
 output: html_document
@@ -43,6 +43,7 @@ library(fdrtool)
 library(ggpubr)
 library(phyloseq)
 library(ANCOMBC)
+library(pROC)
 library(VennDiagram)
 ```
 
@@ -147,7 +148,7 @@ metadata_re_kim = metadata_re %>%
   filter(Study == "Kim")
 metadata_re_herman = metadata_re %>% 
   filter(Study == "Herman")
-metadata_re_chu = metadata_re %>% 
+metadata_re_levin = metadata_re %>% 
   filter(Study == "Chu")
 metadata_re_robinson = metadata_re %>% 
   filter(Study == "Robinson")
@@ -660,25 +661,31 @@ mds_otus_weighted_points2 = read_csv("weighted_mds_full.csv",
 weight_race <- ggplot(mds_otus_weighted_points2, 
                       aes(x = MDS1, y = MDS2, color = Race, 
                           shape = Ethnicity)) +
-  geom_point(size=3) + scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c")) +
+geom_point(aes(shape = Ethnicity, 
+                 fill = Race), size=3, color = "black") + 
+    scale_shape_manual(values = c(23, 25)) +
+  scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
+                     guide=guide_legend(override.aes=list(shape=23))) +
+  scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
-  theme(axis.title.x=element_text(size=rel(2)), 
-        axis.title.y=element_text(size=rel(2)),
-        plot.title = element_text(size=rel(2.5)),
-        legend.title = element_text(size=rel(2)),
+  theme(axis.title.x=element_text(size=rel(1.5)), 
+        axis.title.y=element_text(size=rel(1.5)),
+        legend.title = element_blank(),
         legend.text = element_text(size = rel(1.5))) + 
-  ggtitle("Weighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
+                   color = Race), 
+               type = "t", level = 0.95) +
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
                    linetype = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "<b>Race: p = 0.012, R<sup>2</sup> = 0.05%</b><br>
            Ethnicity: p = 0.738, R<sup>2</sup> = 0.01%<br>
-           Age: p = 0.002, R<sup>2</sup> = 7.9%<br>
+           <b>Age: p = 0.002, R<sup>2</sup> = 7.9%<br>
            Infant diet: p = 0.004, R<sup>2</sup> = 0.09%<br>
-           <b>Subject: p = 0.002, R<sup>2</sup> = 33.7%", 
+           Subject: p = 0.002, R<sup>2</sup> = 33.7%", 
            x = -Inf, y = -Inf, size = 5,
            hjust = 0, vjust = 0)
 
@@ -731,7 +738,7 @@ mds_otus_weighted_points2_age_01week = mds_otus_weighted_points2_age %>%
 weight_age_01week <- ggplot(mds_otus_weighted_points2_age_01week, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
   geom_point(size=3) + 
-  scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c")) +
+  scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
@@ -742,7 +749,7 @@ weight_age_01week <- ggplot(mds_otus_weighted_points2_age_01week,
         legend.text = element_text(size = rel(1.5))) + 
   ggtitle("Weighted UniFrac") +
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
-                   linetype = Race), 
+                   color = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "<b>Race: p = 0.022, R<sup>2</sup> = 2.6%</b><br>
@@ -756,7 +763,7 @@ mds_otus_weighted_points2_age_16week = mds_otus_weighted_points2_age %>%
 weight_age_16week <- ggplot(mds_otus_weighted_points2_age_16week, 
                       aes(x = MDS1, y = MDS2, color =  Race)) +
   geom_point(size=3) + 
-  scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c")) +
+  scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
@@ -767,7 +774,7 @@ weight_age_16week <- ggplot(mds_otus_weighted_points2_age_16week,
         legend.text = element_text(size = rel(1.5))) + 
   ggtitle("Weighted UniFrac") +
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
-                   linetype = Race), 
+                   color = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "Race: p = 0.904, R<sup>2</sup> = 2.5%<br>
@@ -783,9 +790,9 @@ weight_age_6week3month <- ggplot(mds_otus_weighted_points2_age_6week3month,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  scale_fill_manual(values = c("#377eb8", "#ffd92f", "#e41a1c"),
+  scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
-  scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c")) +
+  scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
@@ -794,7 +801,7 @@ geom_point(aes(shape = Ethnicity,
         legend.title = element_blank(),
         legend.text = element_text(size = rel(1.5))) + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
-                   linetype = Race), 
+                   color = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "Race: p = 0.620, R<sup>2</sup> = 2.0%<br>
@@ -810,9 +817,9 @@ weight_age_312month <- ggplot(mds_otus_weighted_points2_age_312month,
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  scale_fill_manual(values = c("#377eb8", "#ffd92f", "#e41a1c"),
+  scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
-  scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c")) +
+  scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
@@ -822,7 +829,7 @@ weight_age_312month <- ggplot(mds_otus_weighted_points2_age_312month,
         legend.title = element_text(size=rel(2)),
         legend.text = element_text(size = rel(1.5))) + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
-                   linetype = Race), 
+                   color = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "<b>Race: p = 0.002, R<sup>2</sup> = 3.5%<br>
@@ -839,9 +846,9 @@ weight_age_13year <- ggplot(mds_otus_weighted_points2_age_13year,
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  scale_fill_manual(values = c("#377eb8", "#ffd92f", "#e41a1c"),
+  scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
-  scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c")) +
+  scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
@@ -851,7 +858,7 @@ weight_age_13year <- ggplot(mds_otus_weighted_points2_age_13year,
         legend.title = element_text(size=rel(2)),
         legend.text = element_text(size = rel(1.5))) + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
-                   linetype = Race), 
+                   color = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "<b>Race: p = 0.002, R<sup>2</sup> = 2.3%<br>
@@ -867,9 +874,9 @@ weight_age_312year <- ggplot(mds_otus_weighted_points2_age_312year,
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  scale_fill_manual(values = c("#377eb8", "#ffd92f", "#e41a1c"),
+  scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
-  scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c")) +
+  scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
@@ -880,7 +887,7 @@ weight_age_312year <- ggplot(mds_otus_weighted_points2_age_312year,
         legend.text = element_text(size = rel(1.5))) + 
   ggtitle("Weighted UniFrac") +
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
-                   linetype = Race), 
+                   color = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "<b>Race: p = 0.008, R<sup>2</sup> = 1.8%</b><br>
@@ -974,16 +981,22 @@ mds_otus_unweighted_points2 = read_csv("unweighted_mds_full.csv",
 unweight_race <- ggplot(mds_otus_unweighted_points2, 
                       aes(x = MDS1, y = MDS2, color = Race, 
                           shape = Ethnicity)) +
-  geom_point(size=3) + scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c")) +
+geom_point(aes(shape = Ethnicity, 
+                 fill = Race), size=3, color = "black") + 
+    scale_shape_manual(values = c(23, 25)) +
+  scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
+                     guide=guide_legend(override.aes=list(shape=23))) +
+  scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
-  theme(axis.title.x=element_text(size=rel(2)), 
-        axis.title.y=element_text(size=rel(2)),
-        plot.title = element_text(size=rel(2.5)),
-        legend.title = element_text(size=rel(2)),
+  theme(axis.title.x=element_text(size=rel(1.5)), 
+        axis.title.y=element_text(size=rel(1.5)),
+        legend.title = element_blank(),
         legend.text = element_text(size = rel(1.5))) + 
-  ggtitle("Unweighted UniFrac") +
+  stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
+                   color = Race), 
+               type = "t", level = 0.95) + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
                    linetype = Race), 
                type = "t", level = 0.95) +
@@ -1383,7 +1396,7 @@ bray_study <- ggplot(mds_otus_bray_points2,
 
 #### Combo
 ```{r nmds_race_combo}
-tiff(file="nmds_plot_race.tif", res=150, width=18, height=9, units="in")
+tiff(file="nmds_plot_race.tif", res=300, width=20, height=9, units="in")
 legend1 = get_legend(weight_race + theme(legend.box.margin = margin(0, 0, 0, 12)))
 col1 = plot_grid(weight_race + theme(legend.position = "none"),
                  nrow = 1, ncol = 1, labels = c('A'), 
@@ -1493,12 +1506,20 @@ dev.off()
 faith = read.table("alpha_out/faith_pd.tsv", header=T)
 otus = read.table("alpha_out/observed_features.tsv", header = T)
 shannon = read.table("alpha_out/shannon.tsv", header = T)
+pielou = read.table("alpha_out/pielou_e.tsv", header=T, fill = T)
+chao = read.table("alpha_out/chao1.tsv", header=T)
 
 faith2 = faith %>% rownames_to_column("SampleID")
 otus2 = otus %>% rownames_to_column("SampleID")
 shannon2 = shannon %>% rownames_to_column("SampleID")
+pielou2 = pielou %>% rownames_to_column("SampleID")
+chao2 = chao %>% rownames_to_column("SampleID")
 
-alpha_all = inner_join(metadata_re, faith2, by = "SampleID") %>% inner_join(otus2, by = "SampleID") %>% inner_join(shannon2, by = "SampleID") %>% 
+alpha_all = inner_join(metadata_re, faith2, by = "SampleID") %>% 
+  inner_join(otus2, by = "SampleID") %>% 
+  inner_join(shannon2, by = "SampleID") %>% 
+  inner_join(pielou2, by = "SampleID") %>% 
+  inner_join(chao2, by = "SampleID") %>% 
   filter(Race != "Other") %>% 
   filter(Ethnicity != "Other")
 
@@ -1545,6 +1566,21 @@ Anova(s1)
 summary(glht(s1,linfct=mcp(Race="Tukey")))
 summary(glht(s1,linfct=mcp(Host_age_cat="Tukey")))
 summary(glht(s1,linfct=mcp(Breastfeeding="Tukey")))
+
+p = lmer(pielou_evenness ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_all, na.action = na.omit)
+summary(p)
+Anova(p)
+summary(glht(p,linfct=mcp(Race="Tukey")))
+summary(glht(p,linfct=mcp(Host_age_cat="Tukey")))
+summary(glht(p,linfct=mcp(Breastfeeding="Tukey")))
+
+c = lmer(chao1 ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_all, na.action = na.omit)
+summary(c)
+Anova(c)
+summary(glht(c,linfct=mcp(Race="Tukey")))
+summary(glht(c,linfct=mcp(Host_age_cat="Tukey")))
+summary(glht(c,linfct=mcp(host_sex="Tukey")))
+summary(glht(c,linfct=mcp(Breastfeeding="Tukey")))
 ```
 
 #### Graphs
@@ -2039,6 +2075,7 @@ f312 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeed
 summary(f312)
 Anova(f312)
 summary(glht(f312,linfct=mcp(Breastfeeding="Tukey")))
+summary(glht(f312,linfct=mcp(Race="Tukey")))
 
 o312 = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
 summary(o312)
@@ -2103,7 +2140,9 @@ Anova(s03)
 ####Graphs
 ```{r alpha_div_agerace_graphs}
 alpha_all_age = alpha_all %>% filter(Host_age_cat != is.na(.)) %>% 
-  mutate(Host_age_cat_new = case_when(Host_age_cat == "3-6 years" ~ 
+  mutate(Host_age_cat_new = case_when(Host_age_cat == "0-1 week" ~ 
+                                        "0-1 week", 
+                                      Host_age_cat == "3-6 years" ~ 
                                         "3-12 years", 
                                       Host_age_cat == "6-12 years" ~ 
                                         "3-12 years",
@@ -2115,6 +2154,11 @@ alpha_all_age = alpha_all %>% filter(Host_age_cat != is.na(.)) %>%
                                         "3-12 months",
                                       Host_age_cat == "1-3 years" ~
                                         "1-3 years"))
+
+alpha_all_age$Host_age_cat_new = factor(alpha_all_age$Host_age_cat_new, 
+                                    levels = c("1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-12 years"))
+
+alpha_all_age_filtered = alpha_all_age %>% filter(Host_age_cat != "0-1 week")
 
 alpha_all_age_01week = alpha_all_age %>% 
   filter(Host_age_cat_new == "0-1 week")
@@ -2133,6 +2177,47 @@ alpha_all_age_13year = alpha_all_age %>%
 
 alpha_all_age_312year = alpha_all_age %>% 
   filter(Host_age_cat_new == "3-12 years")
+
+alpha_all_age_graph = ggplot(alpha_all_age_filtered,
+                      aes(x = Host_age_cat_new, y = shannon_entropy)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#8dd3c7", "#bebada", "#fb8072", 
+                               "#80b1d3", "#fdb462"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#8dd3c7", "#bebada", "#fb8072", 
+                               "#80b1d3", "#fdb462"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+                  color = "black") +
+  ylab("All Age Categories\nShannon Diversity") +
+  ylim(0, 14) +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(2)),
+        axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.7, size = 6,
+                     comparisons = list(c("1-6 weeks", "3-12 months"),
+                                        c("1-6 weeks", "1-3 years"),
+                                        c("1-6 weeks", "3-12 years"),
+                                        c("6 weeks-3 months", "3-12 months"),
+                                        c("6 weeks-3 months", "1-3 years"),
+                                        c("6 weeks-3 months", "3-12 years"),
+                                        c("3-12 months", "1-3 years"),
+                                        c("3-12 months", "3-12 years")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
 
 alpha_16week = ggplot(alpha_all_age_16week,
                       aes(x = Race, y = shannon_entropy)) + 
@@ -2155,6 +2240,32 @@ alpha_16week = ggplot(alpha_all_age_16week,
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(2)),
         axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+alpha_6week3month_asvs = ggplot(alpha_all_age_6week3month,
+                      aes(x = Race, y = observed_features)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = "#bebada",
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = "#bebada",
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              aes(shape = Race),
+                  color = "black") + 
+  scale_shape_manual(values = c(16, 17, 15)) +
+  ylim(0, 7.8) +
+  theme_classic() + 
+  theme(axis.title.y=element_blank(),
+        axis.title.x=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none")
@@ -2185,6 +2296,40 @@ alpha_6week3month = ggplot(alpha_all_age_6week3month,
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none")
   
+alpha_312month_asvs = ggplot(alpha_all_age_312month,
+                      aes(x = Race, y = observed_features)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = "#fb8072",
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = "#fb8072",
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              aes(shape = Race),
+                  color = "black") + 
+  scale_shape_manual(values = c(16, 17, 15)) +
+  ylim(0, 7.8) +
+  theme_classic() + 
+  theme(axis.title.y=element_blank(),
+        axis.title.x=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8,
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
 alpha_312month = ggplot(alpha_all_age_312month,
                       aes(x = Race, y = shannon_entropy)) + 
   stat_boxplot(geom = 'errorbar', width = 0, 
@@ -2211,10 +2356,45 @@ alpha_312month = ggplot(alpha_all_age_312month,
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
   stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8,
                      comparisons = list(c("Black", "White")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.001, 
                                             0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+alpha_13year_asvs = ggplot(alpha_all_age_13year,
+                      aes(x = Race, y = observed_features)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = "#80b1d3",
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = "#80b1d3",
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              aes(shape = Race),
+                  color = "black") + 
+  scale_shape_manual(values = c(16, 17, 15)) +
+  ylim(0, 7.8) +
+  theme_classic() + 
+  theme(axis.title.y=element_blank(),
+        axis.title.x=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8, 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.01, 0.5, 1),
                                         symbols = c("***", "**", "*",
                                                     "ns")))
 
@@ -2244,12 +2424,39 @@ alpha_13year = ggplot(alpha_all_age_13year,
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
   stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8, 
                      comparisons = list(c("Black", "White")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.001, 
                                             0.01, 0.5, 1),
                                         symbols = c("***", "**", "*",
                                                     "ns")))
+
+alpha_312year_asvs = ggplot(alpha_all_age_312year,
+                      aes(x = Race, y = observed_features)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = "#fdb462",
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = "#fdb462",
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              aes(shape = Race),
+                  color = "black") + 
+  scale_shape_manual(values = c(16, 17, 15)) +
+  ylim(0, 7.8) +
+  theme_classic() + 
+  theme(axis.title.y=element_blank(),
+        axis.title.x=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
 
 alpha_312year = ggplot(alpha_all_age_312year,
                       aes(x = Race, y = shannon_entropy)) + 
@@ -2283,16 +2490,60 @@ alpha_6week3month_race = ggplot(alpha_all_age_6week3month,
                color = "black") +
   geom_boxplot(coef = 0, outlier.shape = NA,
                color = "white",
-               fill = c("#377eb8", "#ffd92f", "#e41a1c"),
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
                fatten = 4) +
   geom_boxplot(coef = 0, outlier.shape = NA, 
-               color = c("#377eb8", "#ffd92f", "#e41a1c"),
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
                fill = NA, 
                fatten = NULL) + 
   geom_jitter(width = 0.2,
                   color = "black") +
   ylab("6 weeks - 3 months\nShannon Diversity") +
   ylim(0, 7.8) +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(2)),
+        axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+alpha_6week3month_race_asvs = ggplot(alpha_all_age_6week3month,
+                      aes(x = Race, y = observed_features)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+                  color = "black") +
+  ylab("6 weeks - 3 months\nObserved ASVs") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(2)),
+        axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+alpha_6week3month_race_faith = ggplot(alpha_all_age_6week3month,
+                      aes(x = Race, y = faith_pd)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+                  color = "black") +
+  ylab("6 weeks - 3 months\nFaith's PD") +
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(2)),
         axis.title.x=element_blank(),
@@ -2306,10 +2557,10 @@ alpha_312month_race = ggplot(alpha_all_age_312month,
                color = "black") +
   geom_boxplot(coef = 0, outlier.shape = NA,
                color = "white",
-               fill = c("#377eb8", "#ffd92f", "#e41a1c"),
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
                fatten = 4) +
   geom_boxplot(coef = 0, outlier.shape = NA, 
-               color = c("#377eb8", "#ffd92f", "#e41a1c"),
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
                fill = NA, 
                fatten = NULL) + 
   geom_jitter(width = 0.2,
@@ -2323,6 +2574,7 @@ alpha_312month_race = ggplot(alpha_all_age_312month,
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
   stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8, 
                      comparisons = list(c("Black", "White")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.001, 
@@ -2330,16 +2582,68 @@ alpha_312month_race = ggplot(alpha_all_age_312month,
                                         symbols = c("***", "**", "*",
                                                     "ns")))
 
+alpha_312month_race_asvs = ggplot(alpha_all_age_312month,
+                      aes(x = Race, y = observed_features)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black") +
+  ylab("3 - 12 months\nObserved ASVs") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(2)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8, 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+alpha_312month_race_faith = ggplot(alpha_all_age_312month,
+                      aes(x = Race, y = faith_pd)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black") +
+  ylab("3 - 12 months\nFaith's PD") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(2)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
 alpha_13year_race = ggplot(alpha_all_age_13year,
                       aes(x = Race, y = shannon_entropy)) + 
   stat_boxplot(geom = 'errorbar', width = 0, 
                color = "black") +
   geom_boxplot(coef = 0, outlier.shape = NA,
                color = "white",
-               fill = c("#377eb8", "#ffd92f", "#e41a1c"),
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
                fatten = 4) +
   geom_boxplot(coef = 0, outlier.shape = NA, 
-               color = c("#377eb8", "#ffd92f", "#e41a1c"),
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
                fill = NA, 
                fatten = NULL) + 
   geom_jitter(width = 0.2,
@@ -2353,6 +2657,67 @@ alpha_13year_race = ggplot(alpha_all_age_13year,
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
   stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8, 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.01, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+alpha_13year_race_asvs = ggplot(alpha_all_age_13year,
+                      aes(x = Race, y = observed_features)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+                  color = "black") +
+  ylab("1 - 3 years\nObserved ASVs") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(2)),
+        axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8, 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.01, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+alpha_13year_race_faith = ggplot(alpha_all_age_13year,
+                      aes(x = Race, y = faith_pd)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+                  color = "black") +
+  ylab("1 - 3 years\nFaith's PD") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(2)),
+        axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8, 
                      comparisons = list(c("Black", "White")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.001, 
@@ -2438,6 +2803,7 @@ alpha_13year_eth = ggplot(alpha_all_age_13year,
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
   stat_compare_means(label = "p.signif", 
+                     bracket.size = 1, size = 8, 
                      comparisons = list(c("Hispanic", "Non Hispanic")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.001, 
@@ -2453,6 +2819,990 @@ alpha_age_race_plot = ggarrange(alpha_16week, alpha_6week3month, alpha_312month,
 alpha_age_race_plot
 dev.off()
 ```
+
+###By study
+```{r bystudy}
+alpha_kim = alpha_all %>% 
+  filter(Study == "Kim")
+f_kim = lm(faith_pd ~ Race + Ethnicity + host_sex, data=alpha_kim, na.action = na.omit)
+summary(f_kim)
+Anova(f_kim)
+
+o_kim = lm(observed_features ~ Race + Ethnicity + host_sex, data=alpha_kim, na.action = na.omit)
+summary(o_kim)
+Anova(o_kim)
+
+s_kim = lm(shannon_entropy ~ Race + Ethnicity + host_sex, data=alpha_kim, na.action = na.omit)
+summary(s_kim)
+Anova(s_kim)
+
+p_kim = lm(pielou_evenness ~ Race + Ethnicity + host_sex, data=alpha_kim, na.action = na.omit)
+summary(p_kim)
+Anova(p_kim)
+
+c_kim = lm(chao1 ~ Race + Ethnicity + host_sex, data=alpha_kim, na.action = na.omit)
+summary(c_kim)
+Anova(c_kim)
+
+alpha_herman = alpha_all %>% 
+  filter(Study == "Herman")
+f_herman = lmer(faith_pd ~ Race + Ethnicity + Host_age_cat + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_herman, na.action = na.omit)
+summary(f_herman)
+Anova(f_herman)
+summary(glht(f_herman,linfct=mcp(Race="Tukey")))
+summary(glht(f_herman,linfct=mcp(Ethnicity="Tukey")))
+
+o_herman = lmer(observed_features ~ Race + Ethnicity + Host_age_cat + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_herman, na.action = na.omit)
+summary(o_herman)
+Anova(o_herman)
+summary(glht(o_herman,linfct=mcp(Race="Tukey")))
+summary(glht(o_herman,linfct=mcp(Ethnicity="Tukey")))
+
+s_herman = lmer(shannon_entropy ~ Race + Ethnicity + Host_age_cat + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_herman, na.action = na.omit)
+summary(s_herman)
+Anova(s_herman)
+
+p_herman = lmer(pielou_evenness ~ Race + Ethnicity + Host_age_cat + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_herman, na.action = na.omit)
+summary(p_herman)
+Anova(p_herman)
+
+c_herman = lmer(chao1 ~ Race + Ethnicity + Host_age_cat + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_herman, na.action = na.omit)
+summary(c_herman)
+Anova(c_herman)
+summary(glht(c_herman,linfct=mcp(Race="Tukey")))
+summary(glht(c_herman,linfct=mcp(Ethnicity="Tukey")))
+
+alpha_levin = alpha_all %>% 
+  filter(Study == "Chu")
+f_levin = lm(faith_pd ~ Race + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(f_levin)
+Anova(f_levin)
+
+o_levin = lm(observed_features ~ Race + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(o_levin)
+Anova(o_levin)
+
+s_levin = lm(shannon_entropy ~ Race + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(s_levin)
+Anova(s_levin)
+
+p_levin = lm(pielou_evenness ~ Race + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(p_levin)
+Anova(p_levin)
+
+c_levin = lm(chao1 ~ Race + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(c_levin)
+Anova(c_levin)
+
+alpha_robinson = alpha_all %>% 
+  filter(Study == "Robinson")
+f_robinson = lm(faith_pd ~ Race + Ethnicity + host_sex, data=alpha_robinson, na.action = na.omit)
+summary(f_robinson)
+Anova(f_robinson)
+
+o_robinson = lm(observed_features ~ Race + Ethnicity + host_sex, data=alpha_robinson, na.action = na.omit)
+summary(o_robinson)
+Anova(o_robinson)
+
+s_robinson = lm(shannon_entropy ~ Race + Ethnicity + host_sex, data=alpha_robinson, na.action = na.omit)
+summary(s_robinson)
+Anova(s_robinson)
+summary(glht(s_robinson,linfct=mcp(Race="Tukey")))
+
+p_robinson = lm(pielou_evenness ~ Race + Ethnicity + host_sex, data=alpha_robinson, na.action = na.omit)
+summary(p_robinson)
+Anova(p_robinson)
+summary(glht(p_robinson,linfct=mcp(Race="Tukey")))
+
+c_robinson = lm(chao1 ~ Race + Ethnicity + host_sex, data=alpha_robinson, na.action = na.omit)
+summary(c_robinson)
+Anova(c_robinson)
+summary(glht(c_robinson,linfct=mcp(Race="Tukey")))
+
+alpha_planer = alpha_all %>% 
+  filter(Study == "Planer")
+f_planer = lmer(faith_pd ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_planer, na.action = na.omit)
+summary(f_planer)
+Anova(f_planer)
+summary(glht(f_planer,linfct=mcp(Race="Tukey")))
+summary(glht(f_planer,linfct=mcp(Ethnicity="Tukey")))
+
+o_planer = lmer(observed_features ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_planer, na.action = na.omit)
+summary(o_planer)
+Anova(o_planer)
+summary(glht(o_planer,linfct=mcp(Race="Tukey")))
+
+s_planer = lmer(shannon_entropy ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_planer, na.action = na.omit)
+summary(s_planer)
+Anova(s_planer)
+summary(glht(s_planer,linfct=mcp(Race="Tukey")))
+
+p_planer = lmer(pielou_evenness ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_planer, na.action = na.omit)
+summary(p_planer)
+Anova(p_planer)
+summary(glht(p_planer,linfct=mcp(Race="Tukey")))
+
+c_planer = lmer(chao1 ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_planer, na.action = na.omit)
+summary(c_planer)
+Anova(c_planer)
+summary(glht(c_planer,linfct=mcp(Race="Tukey")))
+
+alpha_levin = alpha_all %>% 
+  filter(Study == "Levin")
+f_levin= lm(faith_pd ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(f_levin)
+Anova(f_levin)
+summary(glht(f_levin,linfct=mcp(Race="Tukey")))
+summary(glht(f_levin,linfct=mcp(Ethnicity="Tukey")))
+
+o_levin= lm(observed_features ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(o_levin)
+Anova(o_levin)
+summary(glht(o_levin,linfct=mcp(Race="Tukey")))
+summary(glht(o_levin,linfct=mcp(Ethnicity="Tukey")))
+
+s_levin= lm(shannon_entropy ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(s_levin)
+Anova(s_levin)
+summary(glht(s_levin,linfct=mcp(Race="Tukey")))
+
+p_levin= lm(pielou_evenness ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(p_levin)
+Anova(p_levin)
+summary(glht(p_levin,linfct=mcp(Race="Tukey")))
+
+c_levin= lm(chao1 ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_levin, na.action = na.omit)
+summary(c_levin)
+Anova(c_levin)
+summary(glht(c_levin,linfct=mcp(Race="Tukey")))
+summary(glht(c_levin,linfct=mcp(Ethnicity="Tukey")))
+
+alpha_db = alpha_all %>% 
+  filter(Study == "Dominguez-Bello")
+f_db = lmer(faith_pd ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_db, na.action = na.omit)
+summary(f_db)
+Anova(f_db)
+
+o_db = lmer(observed_features ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_db, na.action = na.omit)
+summary(o_db)
+Anova(o_db)
+
+s_db = lmer(shannon_entropy ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_db, na.action = na.omit)
+summary(s_db)
+Anova(s_db)
+
+p_db = lmer(pielou_evenness ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_db, na.action = na.omit)
+summary(p_db)
+Anova(p_db)
+
+c_db = lmer(chao1 ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_db, na.action = na.omit)
+summary(c_db)
+Anova(c_db)
+
+alpha_cioffi = alpha_all %>% 
+  filter(Study == "Cioffi")
+f_cioffi = lm(faith_pd ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_cioffi, na.action = na.omit)
+summary(f_cioffi)
+Anova(f_cioffi)
+
+o_cioffi = lm(observed_features ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_cioffi, na.action = na.omit)
+summary(o_cioffi)
+Anova(o_cioffi)
+
+s_cioffi = lm(shannon_entropy ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_cioffi, na.action = na.omit)
+summary(s_cioffi)
+Anova(s_cioffi)
+
+p_cioffi = lm(pielou_evenness ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_cioffi, na.action = na.omit)
+summary(p_cioffi)
+Anova(p_cioffi)
+
+c_cioffi = lm(chao1 ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=alpha_cioffi, na.action = na.omit)
+summary(c_cioffi)
+Anova(c_cioffi)
+```
+####Graphs
+```{r alpha_div_race_study_graphs}
+plot1_faith_all = ggboxplot(alpha_all, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity",
+                  title = "All Studies") 
+plot1_faith_all = ggpar(plot1_faith_all, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.082", 
+           x = Inf, y = Inf, size = 3,
+           hjust = 1, vjust = 1)
+
+plot2_asvs_all = ggboxplot(alpha_all, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter",  
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2_asvs_all = ggpar(plot2_asvs_all, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("***", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.002", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot3_shannon_all = ggboxplot(alpha_all, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3_shannon_all = ggpar(plot3_shannon_all, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.008", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot4_pielou_all = ggboxplot(alpha_all, x = "Race", 
+                  y = "pielou_evenness", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Pielou's Evenness") 
+plot4_pielou_all = ggpar(plot4_pielou_all, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.117", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot5_chao1_all = ggboxplot(alpha_all, x = "Race", 
+                  y = "chao1", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Chao1") 
+plot5_chao1_all = ggpar(plot5_chao1_all, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p < 0.001", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot1_faith_kim = ggboxplot(alpha_kim, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity",
+                  title = "Kim") 
+plot1_faith_kim = ggpar(plot1_faith_kim, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.116", 
+           x = Inf, y = Inf, size = 3,
+           hjust = 1, vjust = 1)
+
+plot2_asvs_kim = ggboxplot(alpha_kim, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter",  
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2_asvs_kim = ggpar(plot2_asvs_kim, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.125", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot3_shannon_kim = ggboxplot(alpha_kim, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3_shannon_kim = ggpar(plot3_shannon_kim, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.124", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot4_pielou_kim = ggboxplot(alpha_kim, x = "Race", 
+                  y = "pielou_evenness", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Pielou's Evenness") 
+plot4_pielou_kim = ggpar(plot4_pielou_kim, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.110", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot5_chao1_kim = ggboxplot(alpha_kim, x = "Race", 
+                  y = "chao1", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Chao1") 
+plot5_chao1_kim = ggpar(plot5_chao1_kim, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.219", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot1_faith_herman = ggboxplot(alpha_herman, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity",
+                  title = "Herman") 
+plot1_faith_herman = ggpar(plot1_faith_herman, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Asian/Pacific Islander", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("***", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.032", 
+           x = Inf, y = Inf, size = 3,
+           hjust = 1, vjust = 1)
+
+plot2_asvs_herman = ggboxplot(alpha_herman, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter",  
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2_asvs_herman = ggpar(plot2_asvs_herman, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.099", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot3_shannon_herman = ggboxplot(alpha_herman, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3_shannon_herman = ggpar(plot3_shannon_herman, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.635", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot4_pielou_herman = ggboxplot(alpha_herman, x = "Race", 
+                  y = "pielou_evenness", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Pielou's Evenness") 
+plot4_pielou_herman = ggpar(plot4_pielou_herman, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.589", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot5_chao1_herman = ggboxplot(alpha_herman, x = "Race", 
+                  y = "chao1", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Chao1") 
+plot5_chao1_herman = ggpar(plot5_chao1_herman, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.066", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot1_faith_chu = ggboxplot(alpha_chu, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity",
+                  title = "Chu") 
+plot1_faith_chu = ggpar(plot1_faith_chu, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.910", 
+           x = Inf, y = Inf, size = 3,
+           hjust = 1, vjust = 1)
+
+plot2_asvs_chu = ggboxplot(alpha_chu, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter",  
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2_asvs_chu = ggpar(plot2_asvs_chu, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.560", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot3_shannon_chu = ggboxplot(alpha_chu, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3_shannon_chu = ggpar(plot3_shannon_chu, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.362", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot4_pielou_chu = ggboxplot(alpha_chu, x = "Race", 
+                  y = "pielou_evenness", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Pielou's Evenness") 
+plot4_pielou_chu = ggpar(plot4_pielou_chu, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.211", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot5_chao1_chu = ggboxplot(alpha_chu, x = "Race", 
+                  y = "chao1", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Chao1") 
+plot5_chao1_chu = ggpar(plot5_chao1_chu, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.572", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot1_faith_robinson = ggboxplot(alpha_robinson, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity",
+                  title = "Robinson") 
+plot1_faith_robinson = ggpar(plot1_faith_robinson, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.123", 
+           x = Inf, y = Inf, size = 3,
+           hjust = 1, vjust = 1)
+
+plot2_asvs_robinson = ggboxplot(alpha_robinson, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter",  
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2_asvs_robinson = ggpar(plot2_asvs_robinson, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.109", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot3_shannon_robinson = ggboxplot(alpha_robinson, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3_shannon_robinson = ggpar(plot3_shannon_robinson, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.027", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot4_pielou_robinson = ggboxplot(alpha_robinson, x = "Race", 
+                  y = "pielou_evenness", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Pielou's Evenness") 
+plot4_pielou_robinson = ggpar(plot4_pielou_robinson, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.044", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot5_chao1_robinson = ggboxplot(alpha_robinson, x = "Race", 
+                  y = "chao1", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Chao1") 
+plot5_chao1_robinson = ggpar(plot5_chao1_robinson, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.085", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot1_faith_planer = ggboxplot(alpha_planer, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity",
+                  title = "Planer") 
+plot1_faith_planer = ggpar(plot1_faith_planer, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.053", 
+           x = Inf, y = Inf, size = 3,
+           hjust = 1, vjust = 1)
+
+plot2_asvs_planer = ggboxplot(alpha_planer, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter",  
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2_asvs_planer = ggpar(plot2_asvs_planer, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("***", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.011", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot3_shannon_planer = ggboxplot(alpha_planer, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3_shannon_planer = ggpar(plot3_shannon_planer, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.024", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot4_pielou_planer = ggboxplot(alpha_planer, x = "Race", 
+                  y = "pielou_evenness", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Pielou's Evenness") 
+plot4_pielou_planer = ggpar(plot4_pielou_planer, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.048", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot5_chao1_planer = ggboxplot(alpha_planer, x = "Race", 
+                  y = "chao1", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Chao1") 
+plot5_chao1_planer = ggpar(plot5_chao1_planer, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.014", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot1_faith_levin = ggboxplot(alpha_levin, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity",
+                  title = "Levin") 
+plot1_faith_levin = ggpar(plot1_faith_levin, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p < 0.001", 
+           x = Inf, y = Inf, size = 3,
+           hjust = 1, vjust = 1)
+
+plot2_asvs_levin = ggboxplot(alpha_levin, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter",  
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2_asvs_levin = ggpar(plot2_asvs_levin, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("***", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p < 0.001", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot3_shannon_levin = ggboxplot(alpha_levin, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3_shannon_levin = ggpar(plot3_shannon_levin, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.006", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot4_pielou_levin = ggboxplot(alpha_levin, x = "Race", 
+                  y = "pielou_evenness", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Pielou's Evenness") 
+plot4_pielou_levin = ggpar(plot4_pielou_levin, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.111", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot5_chao1_levin = ggboxplot(alpha_levin, x = "Race", 
+                  y = "chao1", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Chao1") 
+plot5_chao1_levin = ggpar(plot5_chao1_levin, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.5, 1),
+                                        symbols = c("**", "ns"))) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p < 0.001", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot1_faith_db = ggboxplot(alpha_db, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity",
+                  title = "Dominguez-Bello") 
+plot1_faith_db = ggpar(plot1_faith_db, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.650", 
+           x = Inf, y = Inf, size = 3,
+           hjust = 1, vjust = 1)
+
+plot2_asvs_db = ggboxplot(alpha_db, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter",  
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2_asvs_db = ggpar(plot2_asvs_db, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.476", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot3_shannon_db = ggboxplot(alpha_db, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3_shannon_db = ggpar(plot3_shannon_db, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.809", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot4_pielou_db = ggboxplot(alpha_db, x = "Race", 
+                  y = "pielou_evenness", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Pielou's Evenness") 
+plot4_pielou_db = ggpar(plot4_pielou_db, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.849", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot5_chao1_db = ggboxplot(alpha_db, x = "Race", 
+                  y = "chao1", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Chao1") 
+plot5_chao1_db = ggpar(plot5_chao1_db, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.464", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot1_faith_cioffi = ggboxplot(alpha_cioffi, x = "Race", 
+                  y = "faith_pd", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Faith's Phylogenetic Diversity",
+                  title = "Cioffi") 
+plot1_faith_cioffi = ggpar(plot1_faith_cioffi, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.749", 
+           x = Inf, y = Inf, size = 3,
+           hjust = 1, vjust = 1)
+
+plot2_asvs_cioffi = ggboxplot(alpha_cioffi, x = "Race", 
+                  y = "observed_features", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter",  
+                  add.params = list(fill = "white"), 
+                  ylab = "Observed ASVs") 
+plot2_asvs_cioffi = ggpar(plot2_asvs_cioffi, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.582", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot3_shannon_cioffi = ggboxplot(alpha_cioffi, x = "Race", 
+                  y = "shannon_entropy", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Shannon Diversity") 
+plot3_shannon_cioffi = ggpar(plot3_shannon_cioffi, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.247", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot4_pielou_cioffi = ggboxplot(alpha_cioffi, x = "Race", 
+                  y = "pielou_evenness", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Pielou's Evenness") 
+plot4_pielou_cioffi = ggpar(plot4_pielou_cioffi, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.209", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+plot5_chao1_cioffi = ggboxplot(alpha_cioffi, x = "Race", 
+                  y = "chao1", color = "Race", 
+                  palette = c("#377eb8", 
+                              "#ffd92f", "#e41a1c"), 
+                  add = "jitter", 
+                  add.params = list(fill = "white"), 
+                  ylab = "Chao1") 
+plot5_chao1_cioffi = ggpar(plot5_chao1_cioffi, legend = "right") + rremove("xlab") + 
+  rremove("x.text") + rremove("x.ticks") + 
+  rremove("legend.title") +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.636", 
+           x = Inf, y = Inf, size = 4,
+           hjust = 1, vjust = 1)
+
+tiff(file="alpha_comp_studies.tif", 
+     res=100, width=30, height=15, units="in")
+ggarrange(plot1_faith_all, plot1_faith_kim, plot1_faith_herman, plot1_faith_chu,
+          plot1_faith_robinson, plot1_faith_planer, plot1_faith_levin,
+          plot1_faith_db, plot1_faith_cioffi,
+          plot2_asvs_all, plot2_asvs_kim, plot2_asvs_herman, plot2_asvs_chu,
+          plot2_asvs_robinson, plot2_asvs_planer, plot2_asvs_levin,
+          plot2_asvs_db, plot2_asvs_cioffi,
+          plot3_shannon_all, plot3_shannon_kim, plot3_shannon_herman, 
+          plot3_shannon_chu,
+          plot3_shannon_robinson, plot3_shannon_planer, plot3_shannon_levin,
+          plot3_shannon_db, plot3_shannon_cioffi,
+          plot4_pielou_all, plot4_pielou_kim, plot4_pielou_herman, 
+          plot4_pielou_chu,
+          plot4_pielou_robinson, plot4_pielou_planer, plot4_pielou_levin,
+          plot4_pielou_db, plot4_pielou_cioffi,
+          plot5_chao1_all, plot5_chao1_kim, plot5_chao1_herman, plot5_chao1_chu,
+          plot5_chao1_robinson, plot5_chao1_planer, plot5_chao1_levin,
+          plot5_chao1_db, plot5_chao1_cioffi,
+          nrow = 5, ncol = 9, 
+          common.legend = T, align = "hv", legend = "right")
+dev.off()
+```
+
+###By study and age category
+
 
 ##Different abundance of taxa
 ANCOM-BC (a bias correcting version of analysis of microbiome compositions) was used to identify differentially abundant taxa at the level of phyla, family, and ASV.
@@ -4255,19 +5605,19 @@ fdr_ancom_e <- res_e_df %>%
 write_csv(fdr_ancom_e, "Diff_abund_global_ethnicity_genus_herman.csv")
 ```
 
-```{r study_genera_chu}
+```{r study_genera_levin}
 genus = read_tsv("feature-table-genus.tsv")
 taxonomy = genus %>% dplyr::select(Gensu)
 
 genus_matrix = genus %>% column_to_rownames("Gensu") %>% as.matrix()
 genus_phylo = otu_table(genus_matrix, taxa_are_rows = T)
 
-meta_phylo_chu = metadata_re_chu %>% 
+meta_phylo_levin = metadata_re_levin %>% 
   column_to_rownames("SampleID") %>% 
   sample_data()
 
 
-genus_p = phyloseq(genus_phylo, meta_phylo_chu)
+genus_p = phyloseq(genus_phylo, meta_phylo_levin)
 
 #Race
 race = ancombc(genus_p, 
@@ -4280,12 +5630,12 @@ res_r = race$res_global %>%
   rownames_to_column(var = "Gensu") %>% 
   inner_join(taxonomy)
 
-write_csv(res_r, "Diff_abund_global_race_genus_chu.csv")
+write_csv(res_r, "Diff_abund_global_race_genus_levin.csv")
 
 #Group pairs race
 
 ##Asian vs. Black 
-meta_ab = metadata_re_chu %>% 
+meta_ab = metadata_re_levin %>% 
   filter(Race == "Asian/Pacific Islander" | Race == "Black") %>% 
   column_to_rownames("SampleID") %>% 
   sample_data()
@@ -4309,10 +5659,10 @@ fdr_ancom_r_ab <- res_r_df_ab %>%
   dplyr::filter(str_detect(Comparison, "^Race")) %>% 
   inner_join(taxonomy, by = c("Species" = "Gensu"))
 
-write_csv(fdr_ancom_r_ab, "Diff_abund_race_genus_ab_chu.csv")
+write_csv(fdr_ancom_r_ab, "Diff_abund_race_genus_ab_levin.csv")
 
 ##Asian vs. White
-meta_aw = metadata_re_chu %>% 
+meta_aw = metadata_re_levin %>% 
   filter(Race == "Asian/Pacific Islander" | Race == "White") %>% 
   column_to_rownames("SampleID") %>% 
   sample_data()
@@ -4336,10 +5686,10 @@ fdr_ancom_r_aw <- res_r_df_aw %>%
   dplyr::filter(str_detect(Comparison, "^Race")) %>% 
   inner_join(taxonomy, by = c("Species" = "Gensu"))
 
-write_csv(fdr_ancom_r_aw, "Diff_abund_race_genus_aw_chu.csv")
+write_csv(fdr_ancom_r_aw, "Diff_abund_race_genus_aw_levin.csv")
 
 ##Black vs. White
-meta_bw = metadata_re_chu %>% 
+meta_bw = metadata_re_levin %>% 
   filter(Race == "Black" | Race == "White") %>% 
   column_to_rownames("SampleID") %>% 
   sample_data()
@@ -4363,7 +5713,7 @@ fdr_ancom_r_bw <- res_r_df_bw %>%
   dplyr::filter(str_detect(Comparison, "^Race")) %>% 
   inner_join(taxonomy, by = c("Species" = "Gensu"))
 
-write_csv(fdr_ancom_r_bw, "Diff_abund_race_genus_bw_chu.csv")
+write_csv(fdr_ancom_r_bw, "Diff_abund_race_genus_bw_levin.csv")
 
 #Ethnicity
 ethnicity = ancombc(genus_p, 
@@ -4386,7 +5736,7 @@ fdr_ancom_e <- res_e_df %>%
   dplyr::filter(str_detect(Comparison, "^Ethnicity")) %>% 
   inner_join(taxonomy, by = c("Species" = "Gensu"))
 
-write_csv(fdr_ancom_e, "Diff_abund_global_ethnicity_genus_chu.csv")
+write_csv(fdr_ancom_e, "Diff_abund_global_ethnicity_genus_levin.csv")
 ```
 
 ```{r study_genera_robinson}
@@ -4837,6 +6187,777 @@ fdr_ancom_e <- res_e_df %>%
 write_csv(fdr_ancom_e, "Diff_abund_global_ethnicity_genus_cioffi.csv")
 ```
 
+###Graphs of DA taxa
+Box plots of taxa that were differentially abundant based on ANCOM results and that were identified as important features in the Random Forest model.
+```{r da_graphs}
+phyla = read_tsv("feature-table-phyla.tsv")
+phyla_ra = phyla %>% column_to_rownames("Phyla") %>% 
+  decostand(method = "total", MARGIN = 2)
+phyla_meta = phyla_ra %>% 
+  rownames_to_column("Phyla") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Phyla", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+family = read_tsv("feature-table-family.tsv")
+family_ra = family %>% column_to_rownames("Family") %>% 
+  decostand(method = "total", MARGIN = 2)
+family_meta = family_ra %>% 
+  rownames_to_column("Family") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Family", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+genus = read_tsv("feature-table-genus.tsv")
+genus_ra = genus %>% column_to_rownames("Gensu") %>% 
+  decostand(method = "total", MARGIN = 2)
+genus_meta = genus_ra %>% 
+  rownames_to_column("Gensu") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Gensu", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+species = read_tsv("feature-table-species.tsv")
+species_ra = species %>% column_to_rownames("Species") %>% 
+  decostand(method = "total", MARGIN = 2)
+species_meta = species_ra %>% 
+  rownames_to_column("Species") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Species", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+plot_OD1 = ggplot(phyla_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__OD1`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("OD1\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander"),
+                                        c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_Enterobacteriaceae = ggplot(family_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Enterobacteriaceae\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.00000001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_Bifidobacterium = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Bifidobacterium\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_Blautia = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Blautia`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Blautia\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander"),
+                                        c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.1, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "***", "*",
+                                                    "ns")))
+
+plot_B.fragilis = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides;s__fragilis`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Bacteroides fragilis\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("White", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.9, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_C.ramosum = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Clostridium;s__ramosum`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Clostridium ramosum\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "**",
+                                                    "ns")))
+
+plot_C.aerofaciens = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Collinsella;s__aerofaciens`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Collinsella aerofaciens\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_P.copri = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Prevotella copri\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_R.gnavus = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__[Ruminococcus];s__gnavus`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Ruminococcus gnavus\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander"),
+                                        c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.00001, 
+                                            0.002, 0.9, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_V.dispar = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Veillonella dispar\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_Haemo = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Haemophilus\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_Faecali = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Faecalibacterium\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_V.parvula = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Veillonella parvula\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "*", "*",
+                                                    "ns")))
+
+plot_Dialister = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Dialister;s__`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Dialister\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.0001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+```
+###Graphs of highlighted DA taxa
+Box plots of taxa that were differentially abundant based on ANCOM results and that highlighted for their relevance to health in the text.
+```{r da_highlight_graphs}
+phyla = read_tsv("feature-table-phyla.tsv")
+phyla_ra = phyla %>% column_to_rownames("Phyla") %>% 
+  decostand(method = "total", MARGIN = 2)
+phyla_meta = phyla_ra %>% 
+  rownames_to_column("Phyla") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Phyla", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+family = read_tsv("feature-table-family.tsv")
+family_ra = family %>% column_to_rownames("Family") %>% 
+  decostand(method = "total", MARGIN = 2)
+family_meta = family_ra %>% 
+  rownames_to_column("Family") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Family", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+genus = read_tsv("feature-table-genus.tsv")
+genus_ra = genus %>% column_to_rownames("Gensu") %>% 
+  decostand(method = "total", MARGIN = 2)
+genus_meta = genus_ra %>% 
+  rownames_to_column("Gensu") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Gensu", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+species = read_tsv("feature-table-species.tsv")
+species_ra = species %>% column_to_rownames("Species") %>% 
+  decostand(method = "total", MARGIN = 2)
+species_meta = species_ra %>% 
+  rownames_to_column("Species") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Species", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+
+plot_Bifidobacterium = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Bifidobacterium\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(1.1)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_P.copri = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Prevotella copri\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(1.1)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_V.dispar = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Veillonella dispar\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(1.1)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_Haemo = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Haemophilus\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(1.1)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_Faecali = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Faecalibacterium\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(1.1)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+
+plot_V.parvula = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Veillonella parvula\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1.1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(0.8)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("Black", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "*", "*",
+                                                    "ns")))
+
+plot_Dialister = ggplot(species_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Dialister;s__`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  ylab("Dialister\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(0.8)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_text(size=rel(1.1)),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none") +
+  stat_compare_means(label = "p.signif", 
+                     bracket.size = 0.6, size = 6, 
+                     comparisons = list(c("Black", "White"),
+                                        c("White", "Asian/Pacific Islander")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.0001, 
+                                            0.4, 0.5, 1),
+                                        symbols = c("***", "**", "*",
+                                                    "ns")))
+```
+
 ##Venn diagram
 ```{r venn}
 venn = read_csv("venn_input.csv")
@@ -4876,26 +6997,27 @@ response_asian = rf %>% dplyr::select(Race, `Asian/Pacific Islander`) %>%
 White = roc(response_white$Race_binary ~ response_white$White)
 Black = roc(response_black$Race_binary ~ response_black$Black)
 Asian = roc(response_asian$Race_binary ~ response_asian$`Asian/Pacific Islander`)
-roc_plot = ggroc(list(White, Black, Asian), legacy.axes = TRUE, lwd = 2) + xlab("False Positive Rate") + ylab("True Positive Rate") + scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c")) + 
-  theme(panel.background = element_rect(fill = 'white', 
-                                        colour = 'black'), 
-        legend.key=element_blank()) + 
-  theme(axis.title.x=element_text(size=rel(2)), 
-        axis.title.y=element_text(size=rel(2)),
-        plot.title = element_text(size=rel(2.5)),
-        legend.title = element_text(size=rel(2)),
-        legend.text = element_text(size = rel(1.5))) + 
-  ggtitle("Random Forest ROC") + annotate(geom = "richtext", 
+roc_plot = ggroc(list(White, Black, Asian), legacy.axes = TRUE, lwd = 2) + xlab("False Positive Rate") + ylab("True Positive Rate") + 
+  scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c"), 
+                     labels = c("White", "Black", 
+                                "Asian/Pacific Islander")) + 
+  theme(axis.title.x=element_text(size=rel(1.2)), 
+        axis.title.y=element_text(size=rel(1.2)),
+        legend.title = element_blank(),
+        legend.text = element_text(size = rel(1))) +
+  annotate(geom = "richtext", 
                                           fill = NA, label.color = NA,
            label = "White, AUC = 0.931<br>
            Black, AUC = 0.965<br>
            Asian/Pacific Islander, AUC = 0.930", 
-           x = Inf, y = -Inf, size = 5,
-           hjust = 1, vjust = 0)
+           x = Inf, y = -Inf, size = 3,
+           hjust = 1, vjust = 0) + 
+  geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1),
+               color = "grey40", linetype = "dashed", size = 1.5) 
 
 plot(White, col="#377eb8", lwd = 4, main = "Random Forest ROC", 
      legacy.axes = TRUE, xlab = "False Positive Rate",
-     ylab = "True Positive Rate")
+     ylab = "True Positive Rate", grid = T, xlim = c(1,0))
 plot(Black, col = "#e41a1c", lwd = 4, add = TRUE, legacy.axes = TRUE, 
      xlab = "False Positive Rate",
      ylab = "True Positive Rate")
@@ -4908,9 +7030,9 @@ legend("bottomright",
 ```
 
 ##Graphs for publication
-```{r pub_graphs}
+```{r pub_graphs_fig1}
 tiff(file="fig1.tif", res=300, width=20, height=20, units="in")
-row1_left = alpha_age_race_plot
+row1_left = alpha_all_age_graph
 row2_left = plot_grid(alpha_6week3month_race, alpha_6week3month_eth,
                  nrow = 1, ncol = 2, 
           rel_widths = c(1, 1), 
@@ -4925,7 +7047,7 @@ row4_left = plot_grid(alpha_13year_race, alpha_13year_eth,
           axis = "tb", align = "hv")
 left = plot_grid(row1_left, row2_left, row3_left, row4_left,
                  nrow = 4, ncol = 1,
-                 axis = "l", align = "hv",
+                 axis = "l", align = "v",
                  labels = c("A", "B", "C", "D"))
 right = plot_grid(weight_age, weight_age_6week3month,
                   weight_age_312month + theme(legend.position = "none"), 
@@ -4942,7 +7064,19 @@ setEPS()
 postscript(file="fig1.eps", width=20, height=20, paper = "special")
 plot
 dev.off()
+```
 
+```{r pub_graphs_alpha_comp}
+tiff(file="alpha_comp.tif", res=90, width=15, height=15, units="in")
+plot_grid(alpha_6week3month_race, alpha_312month_race,alpha_13year_race,
+          alpha_6week3month_race_asvs, alpha_312month_race_asvs, 
+          alpha_13year_race_asvs, alpha_6week3month_race_faith, 
+          alpha_312month_race_faith, alpha_13year_race_faith, 
+          nrow = 3, ncol = 3, align = "hv")
+dev.off()
+```
+
+```{r pub_graphs_fig2a}
 venn.diagram(x = list(c, a), 
              category.names = c("Children (57)", "Adults (226)"), 
              filename = "fig2A.tif", output = T, imagetype = "tiff", 
@@ -4962,35 +7096,66 @@ venn.diagram(x = list(c, a),
              fontfamily = "sans", cat.fontfamily = "sans",
              cat.default.pos = "outer", cat.dist = c(0.1, 0.1),
              margin = 0.2)
+```
 
+```{r fig2b}
 tiff(file="fig2B.tif", res=300, width=7, height=5, units="in")
-plot(White, col="#377eb8", lwd = 4, main = "Random Forest ROC", 
-     legacy.axes = TRUE, xlab = "False Positive Rate",
-     ylab = "True Positive Rate")
-plot(Black, col = "#e41a1c", lwd = 4, add = TRUE, legacy.axes = TRUE, 
-     xlab = "False Positive Rate",
-     ylab = "True Positive Rate")
-plot(Asian, col = "#ffd92f", lwd = 4, add = TRUE, legacy.axes = TRUE, 
-     xlab = "False Positive Rate",
-     ylab = "True Positive Rate")
-legend("bottomright", 
-       legend = c("White, AUC = 0.931", "Black, AUC = 0.965", "Asian/Pacific Islander, AUC = 0.930"), 
-       col = c("#377eb8", "#e41a1c", "#ffd92f"), lwd = 4)
+roc_plot
 dev.off()
 
 setEPS()
 postscript(file="fig2B.eps", width=7, height=5, paper = "special")
-plot(White, col="#377eb8", lwd = 4, main = "Random Forest ROC", 
-     legacy.axes = TRUE, xlab = "False Positive Rate",
-     ylab = "True Positive Rate")
-plot(Black, col = "#e41a1c", lwd = 4, add = TRUE, legacy.axes = TRUE, 
-     xlab = "False Positive Rate",
-     ylab = "True Positive Rate")
-plot(Asian, col = "#ffd92f", lwd = 4, add = TRUE, legacy.axes = TRUE, 
-     xlab = "False Positive Rate",
-     ylab = "True Positive Rate")
-legend("bottomright", 
-       legend = c("White, AUC = 0.931", "Black, AUC = 0.965", "Asian/Pacific Islander, AUC = 0.930"), 
-       col = c("#377eb8", "#e41a1c", "#ffd92f"), lwd = 4)
+roc_plot
+dev.off()
+```
+
+```{r fig2c}
+tiff(file="fig2c.tif", 
+     res=300, width=18, height=10, units="in")
+plot2c = plot_grid(plot_OD1, plot_Enterobacteriaceae, 
+          plot_Bifidobacterium, plot_Blautia, 
+          plot_B.fragilis, plot_C.ramosum, 
+          plot_C.aerofaciens, plot_P.copri,
+          plot_R.gnavus, plot_V.dispar,
+          nrow = 2, ncol = 5,
+          axis = "tb", align = "hv")
+plot2c
+dev.off()
+
+setEPS()
+postscript(file="fig2c.eps", width=17, height=9, paper = "special")
+plot2c
+dev.off()
+```
+
+##Graphs for presentation
+
+```{r taxa_graphs}
+tiff(file="taxa_graphs_present_1.tif", 
+     res=300, width=16, height=5, units="in")
+plot1p = plot_grid(plot_Bifidobacterium, plot_Haemo, 
+          plot_P.copri, plot_Faecali, 
+          nrow = 1, ncol = 4,
+          axis = "tb", align = "hv")
+plot1p
+dev.off()
+
+setEPS()
+postscript(file="taxa_graphs_present_1.eps", width=16, height=5, paper = "special")
+plot1p
+dev.off()
+
+tiff(file="taxa_graphs_present_2.tif", 
+     res=300, width=12, height=5, units="in")
+plot2p = plot_grid(plot_V.dispar, plot_V.parvula, 
+          plot_Dialister,
+          nrow = 1, ncol = 3,
+          axis = "tb", align = "hv")
+plot2p
+dev.off()
+
+setEPS()
+postscript(file="taxa_graphs_present_2.eps", width=12, height=5, paper = "special")
+plot2p
 dev.off()
 ```
