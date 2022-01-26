@@ -27,6 +27,7 @@ phyloseq (v.1.34.0)
 ANCOMBC (v.3.13, https://bioconductor.org/packages/release/bioc/html/ANCOMBC.html)
 pROC (v.1.18.0)
 VennDiagram (v.1.6.0)
+dotwhisker (v.0.7.4)
 
 
 ```{r load_libraries}
@@ -45,6 +46,7 @@ library(phyloseq)
 library(ANCOMBC)
 library(pROC)
 library(VennDiagram)
+library(dotwhisker)
 ```
 
 ## Importing data
@@ -92,6 +94,23 @@ weighted_re_612year = read_tsv("weighted-distance-matrix-re-612year.tsv")
 unweighted_re_312year = read_tsv("unweighted-distance-matrix-re-312year.tsv")
 weighted_re_312year = read_tsv("weighted-distance-matrix-re-312year.tsv")
 bray_re_312year = read_tsv("bray-curtis-distance-matrix-312year.tsv")
+
+unweighted_kim = read_tsv("unweighted-distance-matrix-kim.tsv")
+weighted_kim = read_tsv("weighted-distance-matrix-kim.tsv")
+unweighted_robinson = read_tsv("unweighted-distance-matrix-robinson.tsv")
+weighted_robinson = read_tsv("weighted-distance-matrix-robinson.tsv")
+unweighted_chu = read_tsv("unweighted-distance-matrix-chu.tsv")
+weighted_chu = read_tsv("weighted-distance-matrix-chu.tsv")
+unweighted_herman = read_tsv("unweighted-distance-matrix-herman.tsv")
+weighted_herman = read_tsv("weighted-distance-matrix-herman.tsv")
+unweighted_planer = read_tsv("unweighted-distance-matrix-planer.tsv")
+weighted_planer = read_tsv("weighted-distance-matrix-planer.tsv")
+unweighted_levin = read_tsv("unweighted-distance-matrix-levin.tsv")
+weighted_levin = read_tsv("weighted-distance-matrix-levin.tsv")
+unweighted_db = read_tsv("unweighted-distance-matrix-db.tsv")
+weighted_db = read_tsv("weighted-distance-matrix-db.tsv")
+unweighted_cioffi = read_tsv("unweighted-distance-matrix-cioffi.tsv")
+weighted_cioffi = read_tsv("weighted-distance-matrix-cioffi.tsv")
 
 asvs = read_tsv("feature-table-full.tsv")
 
@@ -144,22 +163,33 @@ metadata_re_312year = metadata %>%
   right_join(unweighted_re_312year, by = c("SampleID" = "X1")) %>% 
                dplyr::select(1:40)
 
-metadata_re_kim = metadata_re %>% 
-  filter(Study == "Kim")
-metadata_re_herman = metadata_re %>% 
-  filter(Study == "Herman")
-metadata_re_levin = metadata_re %>% 
-  filter(Study == "Chu")
-metadata_re_robinson = metadata_re %>% 
-  filter(Study == "Robinson")
-metadata_re_planer = metadata_re %>% 
-  filter(Study == "Planer")
-metadata_re_levin = metadata_re %>% 
-  filter(Study == "Levin")
-metadata_re_db = metadata_re %>% 
-  filter(Study == "Dominguez-Bello")
-metadata_re_cioffi = metadata_re %>% 
-  filter(Study == "Cioffi")
+metadata_re_kim = metadata %>% 
+  right_join(unweighted_kim, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_herman = metadata %>% 
+  right_join(unweighted_herman, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_levin = metadata %>% 
+  right_join(unweighted_levin, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_robinson = metadata %>% 
+  right_join(unweighted_robinson, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_planer = metadata %>% 
+  right_join(unweighted_planer, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_levin = metadata %>% 
+  right_join(unweighted_levin, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_db = metadata %>% 
+  right_join(unweighted_db, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_cioffi = metadata %>% 
+  right_join(unweighted_cioffi, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
+metadata_re_chu = metadata %>% 
+  right_join(unweighted_chu, by = c("SampleID" = "X1")) %>% 
+               dplyr::select(1:40)
 
 
 unweighted_re_dist = as.dist(unweighted_re[,2:2768])
@@ -202,6 +232,111 @@ weighted_re_612year_dist = as.dist(weighted_re_612year[,2:112])
 unweighted_re_312year_dist = as.dist(unweighted_re_312year[,2:268])
 weighted_re_312year_dist = as.dist(weighted_re_312year[,2:268])
 bray_re_312year_dist = as.dist(bray_re_312year[,2:268])
+
+unweighted_kim_dist = as.dist(unweighted_kim[,2:37])
+weighted_kim_dist = as.dist(weighted_kim[,2:37])
+unweighted_chu_dist = as.dist(unweighted_chu[,2:33])
+weighted_chu_dist = as.dist(weighted_chu[,2:33])
+unweighted_cioffi_dist = as.dist(unweighted_cioffi[,2:45])
+weighted_cioffi_dist = as.dist(weighted_cioffi[,2:45])
+unweighted_db_dist = as.dist(unweighted_db[,2:328])
+weighted_db_dist = as.dist(weighted_db[,2:328])
+unweighted_herman_dist = as.dist(unweighted_herman[,2:252])
+weighted_herman_dist = as.dist(weighted_herman[,2:252])
+unweighted_levin_dist = as.dist(unweighted_levin[,2:269])
+weighted_levin_dist = as.dist(weighted_levin[,2:269])
+unweighted_planer_dist = as.dist(unweighted_planer[,2:1664])
+weighted_planer_dist = as.dist(weighted_planer[,2:1664])
+unweighted_robinson_dist = as.dist(unweighted_robinson[,2:114])
+weighted_robinson_dist = as.dist(weighted_robinson[,2:114])
+```
+
+## Analysis summary statistics
+
+Summary statistics across all studies were calculated for both the full dataset and the samples for which all metadata were present. 
+
+```{r summary_stats}
+race_stats_all = metadata_re %>% count(Race)
+race_stats_filtered = metadata_re_age_sex_delivery_feeding %>% count(Race)
+
+ethnicity_stats_all = metadata_re %>% count(Ethnicity)
+ethnicity_stats_filtered = metadata_re_age_sex_delivery_feeding %>% count(Ethnicity)
+
+sex_stats_all = metadata_re %>% count(host_sex)
+
+age_stats_all = metadata_re %>% count(Host_age_cat)
+
+del_stats_all = metadata_re %>% count(host_del_route)
+
+diet_stats_all = metadata_re %>% count(Breastfeeding)
+
+race_sex = metadata_re %>% group_by(Race) %>% count(host_sex) %>% 
+  filter(host_sex != "NA") %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("host_sex")
+chisq.test(as.data.frame(race_sex))
+chisq.test(as.data.frame(race_sex))$observed
+chisq.test(as.data.frame(race_sex))$expected
+chisq.test(as.data.frame(race_sex))$residuals
+
+race_age = metadata_re %>% group_by(Race) %>% count(Host_age_cat) %>% 
+  filter(Host_age_cat != "NA") %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("Host_age_cat")
+chisq.test(as.data.frame(race_age))
+chisq.test(as.data.frame(race_age))$observed
+chisq.test(as.data.frame(race_age))$expected
+chisq.test(as.data.frame(race_age))$residuals
+
+race_del = metadata_re %>% group_by(Race) %>% count(host_del_route) %>% 
+  filter(host_del_route != "NA") %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("host_del_route")
+chisq.test(as.data.frame(race_del))
+chisq.test(as.data.frame(race_del))$observed
+chisq.test(as.data.frame(race_del))$expected
+
+race_diet = metadata_re %>% group_by(Race) %>% count(Breastfeeding) %>% 
+  filter(Breastfeeding != "NA") %>% 
+  pivot_wider(names_from = "Race", values_from = "n")  %>% 
+  column_to_rownames("Breastfeeding")
+chisq.test(as.data.frame(race_diet))
+chisq.test(as.data.frame(race_diet))$observed
+chisq.test(as.data.frame(race_diet))$expected
+chisq.test(as.data.frame(race_diet))$residuals
+
+ethnicity_sex = metadata_re %>% group_by(Ethnicity) %>% count(host_sex) %>% 
+  filter(host_sex != "NA") %>% 
+  pivot_wider(names_from = "Ethnicity", values_from = "n")  %>% 
+  column_to_rownames("host_sex")
+chisq.test(as.data.frame(ethnicity_sex))
+chisq.test(as.data.frame(ethnicity_sex))$observed
+chisq.test(as.data.frame(ethnicity_sex))$expected
+
+ethnicity_age = metadata_re %>% group_by(Ethnicity) %>% count(Host_age_cat) %>% 
+  filter(Host_age_cat != "NA") %>% 
+  pivot_wider(names_from = "Ethnicity", values_from = "n")  %>% 
+  column_to_rownames("Host_age_cat")
+chisq.test(as.data.frame(ethnicity_age))
+chisq.test(as.data.frame(ethnicity_age))$observed
+chisq.test(as.data.frame(ethnicity_age))$expected
+
+ethnicity_del = metadata_re %>% group_by(Ethnicity) %>% count(host_del_route) %>% 
+  filter(host_del_route != "NA") %>% 
+  pivot_wider(names_from = "Ethnicity", values_from = "n")  %>% 
+  column_to_rownames("host_del_route")
+chisq.test(as.data.frame(ethnicity_del))
+chisq.test(as.data.frame(ethnicity_del))$observed
+chisq.test(as.data.frame(ethnicity_del))$expected
+
+ethnicity_diet = metadata_re %>% group_by(Ethnicity) %>% count(Breastfeeding) %>% 
+  filter(Breastfeeding != "NA") %>% 
+  pivot_wider(names_from = "Ethnicity", values_from = "n")  %>% 
+  column_to_rownames("Breastfeeding")
+chisq.test(as.data.frame(ethnicity_diet))
+chisq.test(as.data.frame(ethnicity_diet))$observed
+chisq.test(as.data.frame(ethnicity_diet))$expected
+chisq.test(as.data.frame(ethnicity_diet))$residuals
 ```
 
 ## PERMANOVAs
@@ -350,6 +485,61 @@ setBlocks(perm) = with(metadata_re_312year, Study)
 adonis2(unweighted_re_312year_dist ~ Race + Ethnicity, data = metadata_re_312year, by = "margin", permutations = perm, parallel = 4)
 anova(betadisper(unweighted_re_312year_dist, group = metadata_re_312year$Race))
 anova(betadisper(unweighted_re_312year_dist, group = metadata_re_312year$Ethnicity))
+
+adonis2(unweighted_kim_dist ~ Race + Ethnicity + host_sex, data=metadata_re_kim, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_kim_dist, group = metadata_re_kim$Race))
+anova(betadisper(unweighted_kim_dist, group = metadata_re_kim$Ethnicity))
+anova(betadisper(unweighted_kim_dist, group = metadata_re_kim$host_sex))
+
+adonis2(unweighted_herman_dist ~ Race + Ethnicity + Host_age_cat + host_sex + Breastfeeding, data=metadata_re_herman, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_herman_dist, group = metadata_re_herman$Race))
+anova(betadisper(unweighted_herman_dist, group = metadata_re_herman$Ethnicity))
+anova(betadisper(unweighted_herman_dist, group = metadata_re_herman$Host_age_cat))
+anova(betadisper(unweighted_herman_dist, group = metadata_re_herman$host_sex))
+anova(betadisper(unweighted_herman_dist, group = metadata_re_herman$Breastfeeding))
+
+adonis2(unweighted_chu_dist ~ Race + host_sex + host_del_route + Breastfeeding, data=metadata_re_chu, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_chu_dist, group = metadata_re_chu$Race))
+anova(betadisper(unweighted_chu_dist, group = metadata_re_chu$host_sex))
+anova(betadisper(unweighted_chu_dist, group = metadata_re_chu$host_del_route))
+anova(betadisper(unweighted_chu_dist, group = metadata_re_chu$Breastfeeding))
+
+adonis2(unweighted_robinson_dist ~ Race + Ethnicity + host_sex, data=metadata_re_robinson, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_robinson_dist, group = metadata_re_robinson$Race))
+anova(betadisper(unweighted_robinson_dist, group = metadata_re_robinson$Ethnicity))
+anova(betadisper(unweighted_robinson_dist, group = metadata_re_robinson$host_sex))
+
+adonis2(unweighted_planer_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=metadata_re_planer, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_planer_dist, group = metadata_re_planer$Race))
+anova(betadisper(unweighted_planer_dist, group = metadata_re_planer$Ethnicity))
+anova(betadisper(unweighted_planer_dist, group = metadata_re_planer$Host_age_cat))
+anova(betadisper(unweighted_planer_dist, group = metadata_re_planer$host_sex))
+anova(betadisper(unweighted_planer_dist, group = metadata_re_planer$host_del_route))
+anova(betadisper(unweighted_planer_dist, group = metadata_re_planer$Breastfeeding))
+
+adonis2(unweighted_levin_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=metadata_re_levin, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_levin_dist, group = metadata_re_levin$Race))
+anova(betadisper(unweighted_levin_dist, group = metadata_re_levin$Ethnicity))
+anova(betadisper(unweighted_levin_dist, group = metadata_re_levin$Host_age_cat))
+anova(betadisper(unweighted_levin_dist, group = metadata_re_levin$host_sex))
+anova(betadisper(unweighted_levin_dist, group = metadata_re_levin$host_del_route))
+anova(betadisper(unweighted_levin_dist, group = metadata_re_levin$Breastfeeding))
+
+adonis2(unweighted_db_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=metadata_re_db, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_db_dist, group = metadata_re_db$Race))
+anova(betadisper(unweighted_db_dist, group = metadata_re_db$Ethnicity))
+anova(betadisper(unweighted_db_dist, group = metadata_re_db$Host_age_cat))
+anova(betadisper(unweighted_db_dist, group = metadata_re_db$host_sex))
+anova(betadisper(unweighted_db_dist, group = metadata_re_db$host_del_route))
+anova(betadisper(unweighted_db_dist, group = metadata_re_db$Breastfeeding))
+
+adonis2(unweighted_cioffi_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=metadata_re_cioffi, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(unweighted_cioffi_dist, group = metadata_re_cioffi$Race))
+anova(betadisper(unweighted_cioffi_dist, group = metadata_re_cioffi$Ethnicity))
+anova(betadisper(unweighted_cioffi_dist, group = metadata_re_cioffi$Host_age_cat))
+anova(betadisper(unweighted_cioffi_dist, group = metadata_re_cioffi$host_sex))
+anova(betadisper(unweighted_cioffi_dist, group = metadata_re_cioffi$host_del_route))
+anova(betadisper(unweighted_cioffi_dist, group = metadata_re_cioffi$Breastfeeding))
 ```
 #### Weighted
 ```{r permanovas_weighted}
@@ -492,6 +682,61 @@ setBlocks(perm) = with(metadata_re_312year, Study)
 adonis2(weighted_re_312year_dist ~ Race + Ethnicity, data = metadata_re_312year, by = "margin", permutations = perm, parallel = 4)
 anova(betadisper(weighted_re_312year_dist, group = metadata_re_312year$Race))
 anova(betadisper(weighted_re_312year_dist, group = metadata_re_312year$Ethnicity))
+
+adonis2(weighted_kim_dist ~ Race + Ethnicity + host_sex, data=metadata_re_kim, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_kim_dist, group = metadata_re_kim$Race))
+anova(betadisper(weighted_kim_dist, group = metadata_re_kim$Ethnicity))
+anova(betadisper(weighted_kim_dist, group = metadata_re_kim$host_sex))
+
+adonis2(weighted_herman_dist ~ Race + Ethnicity + Host_age_cat + host_sex + Breastfeeding, data=metadata_re_herman, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_herman_dist, group = metadata_re_herman$Race))
+anova(betadisper(weighted_herman_dist, group = metadata_re_herman$Ethnicity))
+anova(betadisper(weighted_herman_dist, group = metadata_re_herman$Host_age_cat))
+anova(betadisper(weighted_herman_dist, group = metadata_re_herman$host_sex))
+anova(betadisper(weighted_herman_dist, group = metadata_re_herman$Breastfeeding))
+
+adonis2(weighted_chu_dist ~ Race + host_sex + host_del_route + Breastfeeding, data=metadata_re_chu, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_chu_dist, group = metadata_re_chu$Race))
+anova(betadisper(weighted_chu_dist, group = metadata_re_chu$host_sex))
+anova(betadisper(weighted_chu_dist, group = metadata_re_chu$host_del_route))
+anova(betadisper(weighted_chu_dist, group = metadata_re_chu$Breastfeeding))
+
+adonis2(weighted_robinson_dist ~ Race + Ethnicity + host_sex, data=metadata_re_robinson, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_robinson_dist, group = metadata_re_robinson$Race))
+anova(betadisper(weighted_robinson_dist, group = metadata_re_robinson$Ethnicity))
+anova(betadisper(weighted_robinson_dist, group = metadata_re_robinson$host_sex))
+
+adonis2(weighted_planer_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=metadata_re_planer, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_planer_dist, group = metadata_re_planer$Race))
+anova(betadisper(weighted_planer_dist, group = metadata_re_planer$Ethnicity))
+anova(betadisper(weighted_planer_dist, group = metadata_re_planer$Host_age_cat))
+anova(betadisper(weighted_planer_dist, group = metadata_re_planer$host_sex))
+anova(betadisper(weighted_planer_dist, group = metadata_re_planer$host_del_route))
+anova(betadisper(weighted_planer_dist, group = metadata_re_planer$Breastfeeding))
+
+adonis2(weighted_levin_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=metadata_re_levin, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_levin_dist, group = metadata_re_levin$Race))
+anova(betadisper(weighted_levin_dist, group = metadata_re_levin$Ethnicity))
+anova(betadisper(weighted_levin_dist, group = metadata_re_levin$Host_age_cat))
+anova(betadisper(weighted_levin_dist, group = metadata_re_levin$host_sex))
+anova(betadisper(weighted_levin_dist, group = metadata_re_levin$host_del_route))
+anova(betadisper(weighted_levin_dist, group = metadata_re_levin$Breastfeeding))
+
+adonis2(weighted_db_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=metadata_re_db, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_db_dist, group = metadata_re_db$Race))
+anova(betadisper(weighted_db_dist, group = metadata_re_db$Ethnicity))
+anova(betadisper(weighted_db_dist, group = metadata_re_db$Host_age_cat))
+anova(betadisper(weighted_db_dist, group = metadata_re_db$host_sex))
+anova(betadisper(weighted_db_dist, group = metadata_re_db$host_del_route))
+anova(betadisper(weighted_db_dist, group = metadata_re_db$Breastfeeding))
+
+adonis2(weighted_cioffi_dist ~ Race + Ethnicity + Host_age_cat + host_sex + host_del_route + Breastfeeding, data=metadata_re_cioffi, by = "margin", permutations = 499, parallel = 4)
+anova(betadisper(weighted_cioffi_dist, group = metadata_re_cioffi$Race))
+anova(betadisper(weighted_cioffi_dist, group = metadata_re_cioffi$Ethnicity))
+anova(betadisper(weighted_cioffi_dist, group = metadata_re_cioffi$Host_age_cat))
+anova(betadisper(weighted_cioffi_dist, group = metadata_re_cioffi$host_sex))
+anova(betadisper(weighted_cioffi_dist, group = metadata_re_cioffi$host_del_route))
+anova(betadisper(weighted_cioffi_dist, group = metadata_re_cioffi$Breastfeeding))
 ```
 
 #### Bray-Curtis
@@ -723,14 +968,15 @@ weight_age <- ggplot(mds_otus_weighted_points2_age,
   theme(axis.title.x=element_text(size=rel(1.5)), 
         axis.title.y=element_text(size=rel(1.5)),
         legend.title = element_blank(),
-        legend.text = element_text(size = rel(1.5))) + 
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Host_age_cat_new, 
                    color = Host_age_cat_new),
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "<b>Age: p = 0.002, R<sup>2</sup> = 7.9%", 
-           x = -Inf, y = Inf, size = 5,
-           hjust = 0, vjust = 1)
+           label = "<b><i>Age: p = 0.002, R<sup>2</sup> = 7.9%", 
+           x = -Inf, y = Inf, size = 7,
+           hjust = 0, vjust = 1, color = "blue1")
 
 mds_otus_weighted_points2_age_01week = mds_otus_weighted_points2_age %>% 
   filter(Host_age_cat_new == "0-1 week")
@@ -799,14 +1045,15 @@ geom_point(aes(shape = Ethnicity,
   theme(axis.title.x=element_text(size=rel(1.5)), 
         axis.title.y=element_text(size=rel(1.5)),
         legend.title = element_blank(),
-        legend.text = element_text(size = rel(1.5))) + 
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
                    color = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "Race: p = 0.620, R<sup>2</sup> = 2.0%<br>
            Ethnicity: p = 0.532, R<sup>2</sup> = 0.5%", 
-           x = -Inf, y = Inf, size = 5,
+           x = -Inf, y = Inf, size = 7,
            hjust = 0, vjust = 1)
 
 mds_otus_weighted_points2_age_312month = mds_otus_weighted_points2_age %>% 
@@ -817,26 +1064,23 @@ weight_age_312month <- ggplot(mds_otus_weighted_points2_age_312month,
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
-                     guide=guide_legend(override.aes=list(shape=23))) +
+  scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(1.5)), 
         axis.title.y=element_text(size=rel(1.5)),
-        plot.title = element_text(size=rel(3)),
-        legend.title = element_text(size=rel(2)),
-        legend.text = element_text(size = rel(1.5))) + 
+        legend.title = element_blank(),
+        legend.text = element_text(color = "white")) + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
                    color = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "<b>Race: p = 0.002, R<sup>2</sup> = 3.5%<br>
+           label = "<b><i>Race: p = 0.002, R<sup>2</sup> = 3.5%<br>
            Ethnicity: p = 0.002, R<sup>2</sup> = 0.5%", 
-           x = -Inf, y = Inf, size = 5,
-           hjust = 0, vjust = 1) + guides(fill = "none", shape = "none",
-                                          color = "none", linetype = "none")
+           x = -Inf, y = Inf, size = 7,
+           hjust = 0, vjust = 1, color = "blue1")
 
 mds_otus_weighted_points2_age_13year = mds_otus_weighted_points2_age %>% 
   filter(Host_age_cat_new == "1-3 years")
@@ -852,19 +1096,19 @@ weight_age_13year <- ggplot(mds_otus_weighted_points2_age_13year,
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
-  theme(axis.title.x=element_text(size=rel(2)), 
-        axis.title.y=element_text(size=rel(2)),
-        plot.title = element_text(size=rel(3)),
-        legend.title = element_text(size=rel(2)),
-        legend.text = element_text(size = rel(1.5))) + 
+  theme(axis.title.x=element_text(size=rel(1.5)), 
+        axis.title.y=element_text(size=rel(1.5)),
+        legend.title = element_blank(),
+        legend.text = element_text(size = rel(1.5)),
+        legend.position = "bottom") + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
                    color = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "<b>Race: p = 0.002, R<sup>2</sup> = 2.3%<br>
+           label = "<b><i>Race: p = 0.002, R<sup>2</sup> = 2.3%<br>
            Ethnicity: p = 0.002, R<sup>2</sup> = 1.6%", 
-           x = -Inf, y = Inf, size = 5,
-           hjust = 0, vjust = 1)
+           x = -Inf, y = Inf, size = 7,
+           hjust = 0, vjust = 1, color = "blue1")
 
 mds_otus_weighted_points2_age_312year = mds_otus_weighted_points2_age %>% 
   filter(Host_age_cat_new == "3-12 years")
@@ -2032,43 +2276,99 @@ alpha_threey_twelvey = alpha_all %>%
 f01 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_zero_one, na.action = na.omit)
 summary(f01)
 Anova(f01)
+f01r_df = broom::tidy(summary(glht(f01,linfct=mcp(Race="Tukey"))))
+f01e_df = broom::tidy(summary(glht(f01,linfct=mcp(Ethnicity="Tukey"))))
 
 o01 = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_zero_one, na.action = na.omit)
 summary(o01)
 Anova(o01)
+o01r_df = broom::tidy(summary(glht(o01,linfct=mcp(Race="Tukey"))))
+o01e_df = broom::tidy(summary(glht(o01,linfct=mcp(Ethnicity="Tukey"))))
 
 s01 = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_zero_one, na.action = na.omit)
 summary(s01)
 Anova(s01)
+s01r_df = broom::tidy(summary(glht(s01,linfct=mcp(Race="Tukey"))))
+s01e_df = broom::tidy(summary(glht(s01,linfct=mcp(Ethnicity="Tukey"))))
+
+p01 = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_zero_one, na.action = na.omit)
+summary(p01)
+Anova(p01)
+p01r_df = broom::tidy(summary(glht(p01,linfct=mcp(Race="Tukey"))))
+p01e_df = broom::tidy(summary(glht(p01,linfct=mcp(Ethnicity="Tukey"))))
+
+c01 = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_zero_one, na.action = na.omit)
+summary(c01)
+Anova(c01)
+c01r_df = broom::tidy(summary(glht(c01,linfct=mcp(Race="Tukey"))))
+c01e_df = broom::tidy(summary(glht(c01,linfct=mcp(Ethnicity="Tukey"))))
 
 #1-6 weeks
 f16 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_one_six, na.action = na.omit)
 summary(f16)
 Anova(f16)
 summary(glht(f16,linfct=mcp(Breastfeeding="Tukey")))
+f16r_df = broom::tidy(summary(glht(f16,linfct=mcp(Race="Tukey"))))
+f16e_df = broom::tidy(summary(glht(f16,linfct=mcp(Ethnicity="Tukey"))))
 
 o16 = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_one_six, na.action = na.omit)
 summary(o16)
 Anova(o16)
+o16r_df = broom::tidy(summary(glht(o16,linfct=mcp(Race="Tukey"))))
+o16e_df = broom::tidy(summary(glht(o16,linfct=mcp(Ethnicity="Tukey"))))
 
 s16 = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_one_six, na.action = na.omit)
 summary(s16)
 Anova(s16)
 summary(glht(s16,linfct=mcp(Breastfeeding="Tukey")))
+s16r_df = broom::tidy(summary(glht(s16,linfct=mcp(Race="Tukey"))))
+s16e_df = broom::tidy(summary(glht(s16,linfct=mcp(Ethnicity="Tukey"))))
+
+p16 = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_one_six, na.action = na.omit)
+summary(p16)
+Anova(p16)
+summary(glht(p16,linfct=mcp(Breastfeeding="Tukey")))
+p16r_df = broom::tidy(summary(glht(p16,linfct=mcp(Race="Tukey"))))
+p16e_df = broom::tidy(summary(glht(p16,linfct=mcp(Ethnicity="Tukey"))))
+
+c16 = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_one_six, na.action = na.omit)
+summary(c16)
+Anova(c16)
+c16r_df = broom::tidy(summary(glht(c16,linfct=mcp(Race="Tukey"))))
+c16e_df = broom::tidy(summary(glht(c16,linfct=mcp(Ethnicity="Tukey"))))
 
 #6 weeks - 3 months
 f63 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_six_three, na.action = na.omit)
 summary(f63)
 Anova(f63)
+f63r_df = broom::tidy(summary(glht(f63,linfct=mcp(Race="Tukey"))))
+f63e_df = broom::tidy(summary(glht(f63,linfct=mcp(Ethnicity="Tukey"))))
 
 o63 = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_six_three, na.action = na.omit)
 summary(o63)
 Anova(o63)
+o63r_df = broom::tidy(summary(glht(o63,linfct=mcp(Race="Tukey"))))
+o63e_df = broom::tidy(summary(glht(o63,linfct=mcp(Ethnicity="Tukey"))))
 
 s63 = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_six_three, na.action = na.omit)
 summary(s63)
 Anova(s63)
 summary(glht(s63,linfct=mcp(Breastfeeding="Tukey")))
+s63r_df = broom::tidy(summary(glht(s63,linfct=mcp(Race="Tukey"))))
+s63e_df = broom::tidy(summary(glht(s63,linfct=mcp(Ethnicity="Tukey"))))
+
+p63 = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_six_three, na.action = na.omit)
+summary(p63)
+Anova(p63)
+summary(glht(p63,linfct=mcp(Breastfeeding="Tukey")))
+p63r_df = broom::tidy(summary(glht(p63,linfct=mcp(Race="Tukey"))))
+p63e_df = broom::tidy(summary(glht(p63,linfct=mcp(Ethnicity="Tukey"))))
+
+c63 = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_six_three, na.action = na.omit)
+summary(c63)
+Anova(c63)
+c63r_df = broom::tidy(summary(glht(c63,linfct=mcp(Race="Tukey"))))
+c63e_df = broom::tidy(summary(glht(c63,linfct=mcp(Ethnicity="Tukey"))))
 
 #3-12 months
 f312 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
@@ -2076,51 +2376,127 @@ summary(f312)
 Anova(f312)
 summary(glht(f312,linfct=mcp(Breastfeeding="Tukey")))
 summary(glht(f312,linfct=mcp(Race="Tukey")))
+f312r_df = broom::tidy(summary(glht(f312,linfct=mcp(Race="Tukey"))))
+f312e_df = broom::tidy(summary(glht(f312,linfct=mcp(Ethnicity="Tukey"))))
 
 o312 = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
 summary(o312)
 Anova(o312)
 summary(glht(o312,linfct=mcp(Race="Tukey")))
 summary(glht(o312,linfct=mcp(Breastfeeding="Tukey")))
+o312r_df = broom::tidy(summary(glht(o312,linfct=mcp(Race="Tukey"))))
+o312e_df = broom::tidy(summary(glht(o312,linfct=mcp(Ethnicity="Tukey"))))
 
 s312 = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
 summary(s312)
 Anova(s312)
 summary(glht(s312,linfct=mcp(Race="Tukey")))
 summary(glht(s312,linfct=mcp(Breastfeeding="Tukey")))
+s312r_df = broom::tidy(summary(glht(s312,linfct=mcp(Race="Tukey"))))
+s312e_df = broom::tidy(summary(glht(s312,linfct=mcp(Ethnicity="Tukey"))))
+
+c312 = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
+summary(c312)
+Anova(c312)
+summary(glht(c312,linfct=mcp(Race="Tukey")))
+summary(glht(c312,linfct=mcp(Breastfeeding="Tukey")))
+c312r_df = broom::tidy(summary(glht(c312,linfct=mcp(Race="Tukey"))))
+c312e_df = broom::tidy(summary(glht(c312,linfct=mcp(Ethnicity="Tukey"))))
+
+p312 = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
+summary(p312)
+Anova(p312)
+summary(glht(p312,linfct=mcp(Race="Tukey")))
+summary(glht(p312,linfct=mcp(Breastfeeding="Tukey")))
+p312r_df = broom::tidy(summary(glht(p312,linfct=mcp(Race="Tukey"))))
+p312e_df = broom::tidy(summary(glht(p312,linfct=mcp(Ethnicity="Tukey"))))
 
 #1-3 years
 f13 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
 summary(f13)
 Anova(f13)
+f13a = lmer(faith_pd ~ Race + Ethnicity + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
+summary(f13a)
+Anova(f13a)
 summary(glht(f13,linfct=mcp(Race="Tukey")))
 summary(glht(f13,linfct=mcp(Ethnicity="Tukey")))
-
+f13r_df = broom::tidy(summary(glht(f13a,linfct=mcp(Race="Tukey"))))
+f13e_df = broom::tidy(summary(glht(f13,linfct=mcp(Ethnicity="Tukey"))))
 
 o13 = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
 summary(o13)
 Anova(o13)
+o13a = lmer(observed_features ~ Race + Ethnicity + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
+summary(o13a)
+Anova(o13a)
 summary(glht(o13,linfct=mcp(Race="Tukey")))
 summary(glht(o13,linfct=mcp(Ethnicity="Tukey")))
+o13r_df = broom::tidy(summary(glht(o13a,linfct=mcp(Race="Tukey"))))
+o13e_df = broom::tidy(summary(glht(o13,linfct=mcp(Ethnicity="Tukey"))))
 
 s13 = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
 summary(s13)
 Anova(s13)
+s13a = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
+summary(s13a)
+Anova(s13a)
 summary(glht(s13,linfct=mcp(Race="Tukey")))
 summary(glht(s13,linfct=mcp(Ethnicity="Tukey")))
+s13r_df = broom::tidy(summary(glht(s13a,linfct=mcp(Race="Tukey"))))
+s13e_df = broom::tidy(summary(glht(s13,linfct=mcp(Ethnicity="Tukey"))))
+
+p13 = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
+summary(p13)
+Anova(p13)
+p13a = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
+summary(p13a)
+Anova(p13a)
+summary(glht(p13,linfct=mcp(Race="Tukey")))
+summary(glht(p13,linfct=mcp(Ethnicity="Tukey")))
+p13r_df = broom::tidy(summary(glht(p13a,linfct=mcp(Race="Tukey"))))
+p13e_df = broom::tidy(summary(glht(p13,linfct=mcp(Ethnicity="Tukey"))))
+
+c13 = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
+summary(c13)
+Anova(c13)
+c13a = lmer(chao1 ~ Race + Ethnicity + host_sex + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
+summary(c13a)
+Anova(c13a)
+summary(glht(c13,linfct=mcp(Race="Tukey")))
+summary(glht(c13,linfct=mcp(Ethnicity="Tukey")))
+c13r_df = broom::tidy(summary(glht(c13a,linfct=mcp(Race="Tukey"))))
+c13e_df = broom::tidy(summary(glht(c13,linfct=mcp(Ethnicity="Tukey"))))
 
 #3-12 years
 f312y = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study), data=alpha_threey_twelvey, na.action = na.omit)
 summary(f312y)
 Anova(f312y)
+f312yr_df = broom::tidy(summary(glht(f312y,linfct=mcp(Race="Tukey"))))
+f312ye_df = broom::tidy(summary(glht(f312y,linfct=mcp(Ethnicity="Tukey"))))
 
 o312y = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study), data=alpha_threey_twelvey, na.action = na.omit)
 summary(o312y)
 Anova(o312y)
+o312yr_df = broom::tidy(summary(glht(o312y,linfct=mcp(Race="Tukey"))))
+o312ye_df = broom::tidy(summary(glht(o312y,linfct=mcp(Ethnicity="Tukey"))))
 
 s312y = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study), data=alpha_threey_twelvey, na.action = na.omit)
 summary(s312y)
 Anova(s312y)
+s312yr_df = broom::tidy(summary(glht(s312y,linfct=mcp(Race="Tukey"))))
+s312ye_df = broom::tidy(summary(glht(s312y,linfct=mcp(Ethnicity="Tukey"))))
+
+p312y = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study), data=alpha_threey_twelvey, na.action = na.omit)
+summary(p312y)
+Anova(p312y)
+p312yr_df = broom::tidy(summary(glht(p312y,linfct=mcp(Race="Tukey"))))
+p312ye_df = broom::tidy(summary(glht(p312y,linfct=mcp(Ethnicity="Tukey"))))
+
+c312y = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study), data=alpha_threey_twelvey, na.action = na.omit)
+summary(c312y)
+Anova(c312y)
+c312yr_df = broom::tidy(summary(glht(c312y,linfct=mcp(Race="Tukey"))))
+c312ye_df = broom::tidy(summary(glht(c312y,linfct=mcp(Ethnicity="Tukey"))))
 
 #0 weeks-3 months
 alpha_zero_three = alpha_all %>% 
@@ -2138,6 +2514,7 @@ Anova(s03)
 ```
 
 ####Graphs
+##### Boxplots
 ```{r alpha_div_agerace_graphs}
 alpha_all_age = alpha_all %>% filter(Host_age_cat != is.na(.)) %>% 
   mutate(Host_age_cat_new = case_when(Host_age_cat == "0-1 week" ~ 
@@ -2178,6 +2555,12 @@ alpha_all_age_13year = alpha_all_age %>%
 alpha_all_age_312year = alpha_all_age %>% 
   filter(Host_age_cat_new == "3-12 years")
 
+alpha_all_age_filtered2 = distinct(alpha_all_age_filtered, Host_age_cat_new)
+alpha_all_age_filtered2$Host_age_cat_new = factor(alpha_all_age_filtered2$Host_age_cat_new, 
+                                    levels = c("1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-12 years"))
+alpha_all_age_filtered2$yloc = max(alpha_all_age_filtered$shannon_entropy + 0.5)
+alpha_all_age_filtered2$label = c("C", "C", "A", "A", "B")
+
 alpha_all_age_graph = ggplot(alpha_all_age_filtered,
                       aes(x = Host_age_cat_new, y = shannon_entropy)) + 
   stat_boxplot(geom = 'errorbar', width = 0, 
@@ -2194,29 +2577,22 @@ alpha_all_age_graph = ggplot(alpha_all_age_filtered,
                fatten = NULL) + 
   geom_jitter(width = 0.2,
                   color = "black") +
-  ylab("All Age Categories\nShannon Diversity") +
-  ylim(0, 14) +
+  ylab("Shannon Diversity") +
+  ylim(0, max(alpha_all_age_filtered$shannon_entropy + 1.25)) +
+  ggtitle("All Age Categories") +
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(2)),
         axis.title.x=element_blank(),
-        axis.text.x=element_text(size=rel(1.5)),
-        axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.7, size = 6,
-                     comparisons = list(c("1-6 weeks", "3-12 months"),
-                                        c("1-6 weeks", "1-3 years"),
-                                        c("1-6 weeks", "3-12 years"),
-                                        c("6 weeks-3 months", "3-12 months"),
-                                        c("6 weeks-3 months", "1-3 years"),
-                                        c("6 weeks-3 months", "3-12 years"),
-                                        c("3-12 months", "1-3 years"),
-                                        c("3-12 months", "3-12 years")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+        axis.text.x=element_text(size=rel(2.4)),
+        axis.ticks.x=element_blank(),
+        plot.title=element_text(size=rel(2))) +
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = alpha_all_age_filtered2, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Age: p < 0.001</b></i>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
 
 
 alpha_16week = ggplot(alpha_all_age_16week,
@@ -2819,6 +3195,1377 @@ alpha_age_race_plot = ggarrange(alpha_16week, alpha_6week3month, alpha_312month,
 alpha_age_race_plot
 dev.off()
 ```
+
+#####Dot-whisker plots
+```{r alpha_dwp}
+#0-1 weeks
+f01r_df2 = f01r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f01e_df2 = f01e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f01r_dw = dwplot(f01r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.5),
+                                 angle = 90,
+                                 hjust = 0.5),
+        axis.title.y=element_text(size=rel(2),
+                                  hjust = 0),
+        legend.position = "none") + 
+  ylab("0-1 weeks") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black",
+                              "Asian/PI\n- White",
+                              "Black\n- White"))
+f01e_dw = dwplot(f01e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.5),
+                                 angle = 90,
+                                 hjust = 0.5),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic"))
+
+o01r_df2 = o01r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o01e_df2 = o01e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o01r_dw = dwplot(o01r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs"))
+o01e_dw = dwplot(o01e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs"))
+
+s01r_df2 = s01r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s01e_df2 = s01e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s01r_dw = dwplot(s01r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+ scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity"))
+s01e_dw = dwplot(s01e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity"))
+
+p01r_df2 = p01r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p01e_df2 = p01e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p01r_dw = dwplot(p01r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness"))
+p01e_dw = dwplot(p01e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness"))
+
+c01r_df2 = c01r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c01e_df2 = c01e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c01r_dw = dwplot(c01r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#873eff"),
+                     labels = c("Chao 1"))
+c01e_dw = dwplot(c01e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#873eff"),
+                                        labels = c("Chao 1"))
+
+legend_models = rbind(f01r_df2, s01r_df2, p01r_df2, o01r_df2, c01r_df2)
+legend_plot = dwplot(legend_models,
+       dot_args = list(aes(color = model)),
+       whisker_args = list(aes(color = model))) + 
+  xlab("Estimate") + scale_color_manual(values = c("#418204", "#834600",
+                                                   "#b05b00", "#4a228c",
+                                                   "#873eff"),
+                                        labels = c("Faith's PD", 
+                                                   "Shannon Diversity", 
+                                                   "Pielou's Evenness", 
+                                                   "Observed ASVs", "Chao 1")) +
+  theme(legend.title = element_blank(),
+        legend.key = element_rect(fill = "white", colour = "white"),
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
+  guides(colour = guide_legend(override.aes = list(size=7)))
+combo_legend = get_legend(legend_plot)
+
+tiff(file="alpha_effect_race_eth_01weeks.tif", 
+     res=300, width=15, height=8, units="in")
+ggarrange(f01r_dw, s01r_dw, p01r_dw, o01r_dw, c01r_dw, 
+          f01e_dw, s01e_dw, p01e_dw, o01e_dw, c01e_dw,
+          nrow = 2, ncol = 5, heights = c(2,1), align = "v",
+          legend.grob = combo_legend, legend = "bottom")
+dev.off()
+
+#1-6 weeks
+f16r_df2 = f16r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f16e_df2 = f16e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f16r_dw = dwplot(f16r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(2),
+                                 angle = 90,
+                                 hjust = 0.5),
+        axis.title.y=element_text(size=rel(2.5),
+                                  hjust = 0),
+        legend.position = "none") + 
+  ylab("1-6 weeks") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White"))
+f16e_dw = dwplot(f16e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(2),
+                                 angle = 90,
+                                 hjust = 0.5),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic"))
+
+o16r_df2 = o16r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o16e_df2 = o16e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o16r_dw = dwplot(o16r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs"))
+o16e_dw = dwplot(o16e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs"))
+
+s16r_df2 = s16r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s16e_df2 = s16e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s16r_dw = dwplot(s16r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+ scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity"))
+s16e_dw = dwplot(s16e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity"))
+
+p16r_df2 = p16r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p16e_df2 = p16e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p16r_dw = dwplot(p16r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness"))
+p16e_dw = dwplot(p16e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness"))
+
+c16r_df2 = c16r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c16e_df2 = c16e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c16r_dw = dwplot(c16r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#873eff"),
+                     labels = c("Chao 1"))
+c16e_dw = dwplot(c16e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#873eff"),
+                                        labels = c("Chao 1"))
+
+legend_models = rbind(f16r_df2, s16r_df2, p16r_df2, o16r_df2, c16r_df2)
+legend_plot = dwplot(legend_models,
+       dot_args = list(aes(color = model)),
+       whisker_args = list(aes(color = model))) + 
+  xlab("Estimate") + scale_color_manual(values = c("#418204", "#834600",
+                                                   "#b05b00", "#4a228c",
+                                                   "#873eff"),
+                                        labels = c("Faith's PD", 
+                                                   "Shannon Diversity", 
+                                                   "Pielou's Evenness", 
+                                                   "Observed ASVs", "Chao 1")) +
+  theme(legend.title = element_blank(),
+        legend.key = element_rect(fill = "white", colour = "white"),
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
+  guides(colour = guide_legend(override.aes = list(size=7)))
+combo_legend = get_legend(legend_plot)
+
+tiff(file="alpha_effect_race_eth_16weeks.tif", 
+     res=300, width=15, height=8, units="in")
+ggarrange(f16r_dw, s16r_dw, p16r_dw, o16r_dw, c16r_dw, 
+          f16e_dw, s16e_dw, p16e_dw, o16e_dw, c16e_dw,
+          nrow = 2, ncol = 5, heights = c(2,1), align = "v",
+          legend.grob = combo_legend, legend = "bottom")
+dev.off()
+
+#6 weeks - 3 months
+f63r_df2 = f63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f63e_df2 = f63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f63r_dw = dwplot(f63r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  ggtitle("6 weeks-3 months") +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.7),
+                                 angle = 90,
+                                 hjust = 0.5),
+        plot.title=element_text(size=rel(2)),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.374", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+f63e_dw = dwplot(f63e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.7),
+                                 angle = 90,
+                                 hjust = 0.5),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.758", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+o63r_df2 = o63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o63e_df2 = o63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o63r_dw = dwplot(o63r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs"))+
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.209", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+o63e_dw = dwplot(o63e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.973", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+s63r_df2 = s63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s63e_df2 = s63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s63r_dw = dwplot(s63r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+ scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.682", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+s63e_dw = dwplot(s63e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.839", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+p63r_df2 = p63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p63e_df2 = p63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p63r_dw = dwplot(p63r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.746", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+p63e_dw = dwplot(p63e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.533", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+c63r_df2 = c63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c63e_df2 = c63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c63r_dw = dwplot(c63r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#873eff"),
+                     labels = c("Chao 1")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.186", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+c63e_dw = dwplot(c63e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#873eff"),
+                                        labels = c("Chao 1")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.977", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+legend_models = rbind(f63r_df2, s63r_df2, p63r_df2, o63r_df2, c63r_df2)
+legend_plot = dwplot(legend_models,
+       dot_args = list(aes(color = model)),
+       whisker_args = list(aes(color = model))) + 
+  xlab("Estimate") + scale_color_manual(values = c("#418204", "#834600",
+                                                   "#b05b00", "#4a228c",
+                                                   "#873eff"),
+                                        labels = c("Faith's PD", 
+                                                   "Shannon Diversity", 
+                                                   "Pielou's Evenness", 
+                                                   "Observed ASVs", "Chao 1")) +
+  theme(legend.title = element_blank(),
+        legend.key = element_rect(fill = "white", colour = "white"),
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
+  guides(colour = guide_legend(override.aes = list(size=7)))
+combo_legend = get_legend(legend_plot)
+
+tiff(file="alpha_effect_race_eth_6weeks3months.tif", 
+     res=300, width=15, height=8, units="in")
+ggarrange(f63r_dw, s63r_dw, p63r_dw, o63r_dw, c63r_dw, 
+          f63e_dw, s63e_dw, p63e_dw, o63e_dw, c63e_dw,
+          nrow = 2, ncol = 5, heights = c(2,1), align = "v",
+          legend.grob = combo_legend, legend = "bottom")
+dev.off()
+
+#3-12 months
+f312r_df2 = f312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f312e_df2 = f312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f312r_dw = dwplot(f312r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  ggtitle("3-12 months") + 
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.7),
+                                 angle = 90,
+                                 hjust = 0.5),
+        plot.title=element_text(size=rel(2)),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.233", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+f312e_dw = dwplot(f312e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.7),
+                                 angle = 90,
+                                 hjust = 0.5),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.880", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+o312r_df2 = o312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o312e_df2 = o312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o312r_dw = dwplot(o312r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Race: p = 0.005</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+o312e_dw = dwplot(o312e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.914", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+s312r_df2 = s312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s312e_df2 = s312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s312r_dw = dwplot(s312r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+ scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Race: p = 0.006</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+s312e_dw = dwplot(s312e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.857", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+p312r_df2 = p312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p312e_df2 = p312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p312r_dw = dwplot(p312r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Race: p = 0.026</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+p312e_dw = dwplot(p312e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.815", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+c312r_df2 = c312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c312e_df2 = c312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c312r_dw = dwplot(c312r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#873eff"),
+                     labels = c("Chao 1")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Race: p = 0.001</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+c312e_dw = dwplot(c312e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#873eff"),
+                                        labels = c("Chao 1")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.945", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+legend_models = rbind(f312r_df2, s312r_df2, p312r_df2, o312r_df2, c312r_df2)
+legend_plot = dwplot(legend_models,
+       dot_args = list(aes(color = model)),
+       whisker_args = list(aes(color = model))) + 
+  xlab("Estimate") + scale_color_manual(values = c("#418204", "#834600",
+                                                   "#b05b00", "#4a228c",
+                                                   "#873eff"),
+                                        labels = c("Faith's PD", 
+                                                   "Shannon Diversity", 
+                                                   "Pielou's Evenness", 
+                                                   "Observed ASVs", "Chao 1")) +
+  theme(legend.title = element_blank(),
+        legend.key = element_rect(fill = "white", colour = "white"),
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
+  guides(colour = guide_legend(override.aes = list(size=7)))
+combo_legend = get_legend(legend_plot)
+
+tiff(file="alpha_effect_race_eth_312months.tif", 
+     res=300, width=15, height=8, units="in")
+ggarrange(f312r_dw, s312r_dw, p312r_dw, o312r_dw, c312r_dw, 
+          f312e_dw, s312e_dw, p312e_dw, o312e_dw, c312e_dw,
+          nrow = 2, ncol = 5, heights = c(2,1), align = "v",
+          legend.grob = combo_legend, legend = "bottom")
+dev.off()
+
+#1-3 years
+f13r_df2 = f13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f13e_df2 = f13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f13r_dw = dwplot(f13r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  ggtitle("1-3 years") + 
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.7),
+                                 angle = 90,
+                                 hjust = 0.5),
+        plot.title=element_text(size=rel(2)),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Race: p = 0.006</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+f13e_dw = dwplot(f13e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.7),
+                                 angle = 90,
+                                 hjust = 0.5),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Ethnicity: p = 0.015</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+o13r_df2 = o13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o13e_df2 = o13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o13r_dw = dwplot(o13r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Race: p = 0.001</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+o13e_dw = dwplot(o13e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Ethnicity: p = 0.023</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+s13r_df2 = s13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s13e_df2 = s13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s13r_dw = dwplot(s13r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+ scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Race: p = 0.020</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+s13e_dw = dwplot(s13e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Ethnicity: p = 0.042</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+p13r_df2 = p13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p13e_df2 = p13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p13r_dw = dwplot(p13r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.142", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+p13e_dw = dwplot(p13e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.174", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+c13r_df2 = c13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c13e_df2 = c13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c13r_dw = dwplot(c13r_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#873eff"),
+                     labels = c("Chao 1")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Race: p = 0.002</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+c13e_dw = dwplot(c13e_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#873eff"),
+                                        labels = c("Chao 1")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "<b><i>Ethnicity: p = 0.018</b>", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1, color = "blue1")
+
+legend_models = rbind(f13r_df2, s13r_df2, p13r_df2, o13r_df2, c13r_df2)
+legend_plot = dwplot(legend_models,
+       dot_args = list(aes(color = model)),
+       whisker_args = list(aes(color = model))) + 
+  scale_color_manual(values = c("#418204", "#834600",
+                                                   "#b05b00", "#4a228c",
+                                                   "#873eff"),
+                                        labels = c("Faith's PD", 
+                                                   "Shannon Diversity", 
+                                                   "Pielou's Evenness", 
+                                                   "Observed ASVs", "Chao 1")) +
+  theme(legend.title = element_blank(),
+        legend.key = element_rect(fill = "white", colour = "white"),
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
+  guides(colour = guide_legend(override.aes = list(size=7)))
+combo_legend = get_legend(legend_plot)
+
+tiff(file="alpha_effect_race_eth_13years.tif", 
+     res=300, width=15, height=8, units="in")
+ggarrange(f13r_dw, s13r_dw, p13r_dw, o13r_dw, c13r_dw, 
+          f13e_dw, s13e_dw, p13e_dw, o13e_dw, c13e_dw,
+          nrow = 2, ncol = 5, heights = c(2,1), align = "v",
+          legend.grob = combo_legend, legend = "bottom")
+dev.off()
+
+#3-12 years
+f312yr_df2 = f312yr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f312ye_df2 = f312ye_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f312yr_dw = dwplot(f312yr_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(2),
+                                 angle = 90,
+                                 hjust = 0.5),
+        axis.title.y=element_text(size=rel(2.5),
+                                  hjust = 0),
+        legend.position = "none") + 
+  ylab("3-12 years") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White"))
+f312ye_dw = dwplot(f312ye_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(2),
+                                 angle = 90,
+                                 hjust = 0.5),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic"))
+
+o312yr_df2 = o312yr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o312ye_df2 = o312ye_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o312yr_dw = dwplot(o312yr_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs"))
+o312ye_dw = dwplot(o312ye_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs"))
+
+s312yr_df2 = s312yr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s312ye_df2 = s312ye_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s312yr_dw = dwplot(s312yr_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+ scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity"))
+s312ye_dw = dwplot(s312ye_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity"))
+
+p312yr_df2 = p312yr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p312ye_df2 = p312ye_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p312yr_dw = dwplot(p312yr_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness"))
+p312ye_dw = dwplot(p312ye_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness"))
+
+c312yr_df2 = c312yr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c312ye_df2 = c312ye_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c312yr_dw = dwplot(c312yr_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#873eff"),
+                     labels = c("Chao 1"))
+c312ye_dw = dwplot(c312ye_df2, vline = geom_vline(xintercept = 0, color = "darkgrey",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_text(size=rel(1.5)),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  xlab("Estimate") + scale_color_manual(name = "Metric", 
+                                        values = c("#873eff"),
+                                        labels = c("Chao 1"))
+
+legend_models = rbind(f312yr_df2, o312yr_df2, c312yr_df2, s312yr_df2, p312yr_df2)
+legend_plot = dwplot(legend_models,
+       dot_args = list(aes(color = model)),
+       whisker_args = list(aes(color = model))) + 
+  xlab("Estimate") + scale_color_manual(values = c("#418204", "#4a228c",
+                                                   "#873eff", "#834600",
+                                                   "#b05b00"),
+                                        labels = c("Faith's PD", 
+                                                   "Observed ASVs", "Chao 1", 
+                                                   "Shannon Diversity", 
+                                                   "Pielou's Evenness")) +
+  theme(legend.title = element_blank(),
+        legend.key = element_rect(fill = "white", colour = "white"),
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
+  guides(colour = guide_legend(override.aes = list(size=7)))
+combo_legend = get_legend(legend_plot)
+
+tiff(file="alpha_effect_race_eth_312years.tif", 
+     res=300, width=15, height=8, units="in")
+ggarrange(f312yr_dw, o312yr_dw, c312yr_dw, s312yr_dw, p312yr_dw,  
+          f312ye_dw, o312ye_dw, c312ye_dw, s312ye_dw, p312ye_dw, 
+          nrow = 2, ncol = 5, heights = c(2,1), align = "v",
+          legend.grob = combo_legend, legend = "bottom")
+dev.off()
+```
+
 
 ###By study
 ```{r bystudy}
@@ -7031,37 +8778,50 @@ legend("bottomright",
 
 ##Graphs for publication
 ```{r pub_graphs_fig1}
-tiff(file="fig1.tif", res=300, width=20, height=20, units="in")
-row1_left = alpha_all_age_graph
-row2_left = plot_grid(alpha_6week3month_race, alpha_6week3month_eth,
-                 nrow = 1, ncol = 2, 
-          rel_widths = c(1, 1), 
-          axis = "tb", align = "hv")
-row3_left = plot_grid(alpha_312month_race, alpha_312month_eth,
-                 nrow = 1, ncol = 2, 
-          rel_widths = c(1, 1), 
-          axis = "tb", align = "hv")
-row4_left = plot_grid(alpha_13year_race, alpha_13year_eth,
-                 nrow = 1, ncol = 2, 
-          rel_widths = c(1, 1), 
-          axis = "tb", align = "hv")
-left = plot_grid(row1_left, row2_left, row3_left, row4_left,
-                 nrow = 4, ncol = 1,
-                 axis = "l", align = "v",
-                 labels = c("A", "B", "C", "D"))
-right = plot_grid(weight_age, weight_age_6week3month,
-                  weight_age_312month + theme(legend.position = "none"), 
-                  weight_age_13year + theme(legend.position = "none"),
-                  nrow = 4, ncol = 1,
-                  axis = "lr", align = "hv")
-plot = plot_grid(left, right,
-                 nrow = 1, ncol = 2, 
-          axis = "tb", align = "hv")
+age_legend = get_legend(weight_age)
+nmds_legend = get_legend(weight_age_6week3month)
+
+tiff(file="fig1v4.tif", res=300, width=27, height=28, units="in")
+row1 = plot_grid(alpha_all_age_graph, weight_age + theme(legend.position = "none"),
+                 nrow = 1, ncol = 2,
+                 rel_widths = c(2, 1.2), labels = c("A", ""),
+                 label_size = 24)
+top = plot_grid(row1, age_legend, nrow = 2, ncol = 1, 
+                rel_heights = c(1, 0.2))
+
+row3_left = plot_grid(f63r_dw, o63r_dw, c63r_dw, s63r_dw, p63r_dw,
+                      f63e_dw, o63e_dw, c63e_dw, s63e_dw, p63e_dw,
+                      nrow = 2, ncol = 5, rel_heights = c(2,1), align = "hv",
+                      axis = "ltb")
+row4_left = plot_grid(f312r_dw, o312r_dw, c312r_dw, s312r_dw, p312r_dw,
+                      f312e_dw, o312e_dw, c312e_dw, s312e_dw, p312e_dw,
+                      nrow = 2, ncol = 5, rel_heights = c(2,1), align = "hv",
+                      axis = "ltb")
+row5_left = plot_grid(f13r_dw, o13r_dw, c13r_dw, s13r_dw, p13r_dw,
+                      f13e_dw, o13e_dw, c13e_dw, s13e_dw, p13e_dw,
+                      nrow = 2, ncol = 5, rel_heights = c(2,1), align = "hv",
+                      axis = "ltb")
+
+bottom = plot_grid(row3_left, 
+                    weight_age_6week3month + theme(legend.position = "none"),
+                    row4_left, 
+                    weight_age_312month + theme(legend.position = "none"),
+                    row5_left, 
+                   weight_age_13year + theme(legend.position = "none"),
+                   combo_legend, nmds_legend,
+                 nrow = 4, ncol = 2,
+                 rel_heights = c(1,1,1,.2), rel_widths = c(2, 1.2),
+                 axis = "lb", align = "hv",
+                 labels = c("B", "", "C", "", "D", "", "", ""), label_size = 24)
+plot = plot_grid(top, bottom,
+                 nrow = 2, ncol = 1,
+                 rel_heights = c(1.2, 3.2),
+          axis = "l", align = "v")
 plot
 dev.off()
 
 setEPS()
-postscript(file="fig1.eps", width=20, height=20, paper = "special")
+postscript(file="fig1v4.eps", width=28, height=30, paper = "special")
 plot
 dev.off()
 ```
