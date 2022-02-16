@@ -7973,6 +7973,14 @@ species_meta = species_ra %>%
   pivot_wider(names_from = "Species", values_from = "rel_abund") %>% 
   inner_join(metadata_re)
 
+phyla_meta_OD1 = distinct(phyla_meta, Race)
+phyla_meta_OD1$Race = factor(phyla_meta_OD1$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+phyla_meta_OD1$yloc = max(phyla_meta$`k__Bacteria;p__OD1` + 0.05)
+phyla_meta_OD1$label = c("A", "C", "B")
+
 plot_OD1 = ggplot(phyla_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__OD1`)) + 
@@ -7995,18 +8003,17 @@ plot_OD1 = ggplot(phyla_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander"),
-                                        c("Black", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = phyla_meta_OD1, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
+family_meta_entero = distinct(family_meta, Race)
+family_meta_entero$Race = factor(family_meta_entero$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+family_meta_entero$yloc = max(family_meta$`k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae` + 0.05)
+family_meta_entero$label = c("A", "B", "B")
 plot_Enterobacteriaceae = ggplot(family_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae`)) + 
@@ -8029,17 +8036,17 @@ plot_Enterobacteriaceae = ggplot(family_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.00000001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = family_meta_entero, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
+genus_meta_bifido = distinct(genus_meta, Race)
+genus_meta_bifido$Race = factor(genus_meta_bifido$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+genus_meta_bifido$yloc = max(genus_meta$`k__Bacteria;p__Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium` + 0.05)
+genus_meta_bifido$label = c("A", "A", "B")
 plot_Bifidobacterium = ggplot(genus_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium`)) + 
@@ -8062,17 +8069,17 @@ plot_Bifidobacterium = ggplot(genus_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("Black", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = genus_meta_bifido, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
+genus_meta_blaut = distinct(genus_meta, Race)
+genus_meta_blaut$Race = factor(genus_meta_blaut$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+genus_meta_blaut$yloc = max(genus_meta$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Blautia` + 0.05)
+genus_meta_blaut$label = c("A", "C", "B")
 plot_Blautia = ggplot(genus_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Blautia`)) + 
@@ -8095,18 +8102,17 @@ plot_Blautia = ggplot(genus_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander"),
-                                        c("Black", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.1, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "***", "*",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = genus_meta_blaut, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
+species_meta_bfrag = distinct(species_meta, Race)
+species_meta_bfrag$Race = factor(species_meta_bfrag$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_bfrag$yloc = max(species_meta$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides;s__fragilis` + 0.05)
+species_meta_bfrag$label = c("A", "B", "A")
 plot_B.fragilis = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides;s__fragilis`)) + 
@@ -8129,16 +8135,17 @@ plot_B.fragilis = ggplot(species_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("White", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.9, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = species_meta_bfrag, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
+species_meta_cram = distinct(species_meta, Race)
+species_meta_cram$Race = factor(species_meta_cram$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_cram$yloc = max(species_meta$`k__Bacteria;p__Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Clostridium;s__ramosum` + 0.05)
+species_meta_cram$label = c("A", "A", "B")
 plot_C.ramosum = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Firmicutes;c__Erysipelotrichi;o__Erysipelotrichales;f__Erysipelotrichaceae;g__Clostridium;s__ramosum`)) + 
@@ -8161,16 +8168,17 @@ plot_C.ramosum = ggplot(species_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "**",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = species_meta_cram, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
+species_meta_caer = distinct(species_meta, Race)
+species_meta_caer$Race = factor(species_meta_caer$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_caer$yloc = max(species_meta$`k__Bacteria;p__Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Collinsella;s__aerofaciens` + 0.05)
+species_meta_caer$label = c("A", "B", "B")
 plot_C.aerofaciens = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Collinsella;s__aerofaciens`)) + 
@@ -8193,17 +8201,17 @@ plot_C.aerofaciens = ggplot(species_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = species_meta_caer, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
+species_meta_pcop = distinct(species_meta, Race)
+species_meta_pcop$Race = factor(species_meta_pcop$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_pcop$yloc = max(species_meta$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri` + 0.05)
+species_meta_pcop$label = c("A", "B", "B")
 plot_P.copri = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri`)) + 
@@ -8226,17 +8234,17 @@ plot_P.copri = ggplot(species_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = species_meta_pcop, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
+species_meta_rgna = distinct(species_meta, Race)
+species_meta_rgna$Race = factor(species_meta_rgna$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_rgna$yloc = max(species_meta$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__[Ruminococcus];s__gnavus` + 0.05)
+species_meta_rgna$label = c("A", "C", "B")
 plot_R.gnavus = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__[Ruminococcus];s__gnavus`)) + 
@@ -8259,18 +8267,17 @@ plot_R.gnavus = ggplot(species_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander"),
-                                        c("Black", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.00001, 
-                                            0.002, 0.9, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = species_meta_rgna, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
+species_meta_vdis = distinct(species_meta, Race)
+species_meta_vdis$Race = factor(species_meta_vdis$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_vdis$yloc = max(species_meta$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar` + 0.05)
+species_meta_vdis$label = c("A", "B", "B")
 plot_V.dispar = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar`)) + 
@@ -8293,16 +8300,9 @@ plot_V.dispar = ggplot(species_meta,
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(0.8)),
         axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  guides(fill = "none", shape = "none") + 
+  geom_text(data = species_meta_vdis, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8) 
 
 plot_Haemo = ggplot(species_meta,
                       aes(x = Race, 
@@ -8726,7 +8726,7 @@ venn.diagram(x = list(c, a),
 
 ##ROC curves
 Random Forest classification was performed in QIIME and the predictions/probabilities were exported. (pROC)
-```{r roc_curve}
+```{r roc_curve_race}
 pred = read_tsv("merged-table-filtered-race-classifier/predictions.tsv",
                 col_types = "cf")
 prob = read_tsv("merged-table-filtered-race-classifier/probabilities.tsv")
@@ -8774,6 +8774,39 @@ plot(Asian, col = "#ffd92f", lwd = 4, add = TRUE, legacy.axes = TRUE,
 legend("bottomright", 
        legend = c("White, AUC = 0.931", "Black, AUC = 0.965", "Asian/Pacific Islander, AUC = 0.930"), 
        col = c("#377eb8", "#e41a1c", "#ffd92f"), lwd = 4)
+```
+
+```{r roc_curve_eth}
+pred = read_tsv("merged-table-filtered-ethnicity-classifier/predictions.tsv",
+                col_types = "cf")
+prob = read_tsv("merged-table-filtered-ethnicity-classifier/probabilities.tsv")
+
+rf = metadata %>% inner_join(pred) %>% 
+  inner_join(prob)
+
+response_hispanic = rf %>% dplyr::select(Ethnicity, Hispanic) %>% 
+  mutate(Ethnicity_binary = if_else(Ethnicity == "Hispanic", 1, 0))
+response_nonhispanic = rf %>% dplyr::select(Ethnicity, `Non Hispanic`) %>% 
+  mutate(Ethnicity_binary = if_else(Ethnicity == "Non Hispanic", 1, 0))
+
+Hispanic = roc(response_hispanic$Ethnicity_binary ~ response_hispanic$Hispanic)
+NonHispanic = roc(response_nonhispanic$Ethnicity_binary ~ response_nonhispanic$`Non Hispanic`)
+
+roc_plot_eth = ggroc(list(Hispanic, NonHispanic), legacy.axes = TRUE, lwd = 2) + xlab("False Positive Rate") + ylab("True Positive Rate") + 
+  scale_color_manual(values = c("light gray", "dark gray"), 
+                     labels = c("Hispanic", "Non Hispanic")) + 
+  theme(axis.title.x=element_text(size=rel(1.2)), 
+        axis.title.y=element_text(size=rel(1.2)),
+        legend.title = element_blank(),
+        legend.text = element_text(size = rel(1))) +
+  annotate(geom = "richtext", 
+                                          fill = NA, label.color = NA,
+           label = "Hispanic, AUC = 0.948<br>
+           Non Hispanic, AUC = 0.948", 
+           x = Inf, y = -Inf, size = 3,
+           hjust = 1, vjust = 0) + 
+  geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1),
+               color = "grey40", linetype = "dashed", size = 1.5) 
 ```
 
 ##Graphs for publication
