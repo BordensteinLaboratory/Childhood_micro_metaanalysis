@@ -117,78 +117,78 @@ asvs = read_tsv("feature-table-full.tsv")
 metadata = read_tsv("metadata-combined-re.txt", 
                     col_types = "cccccffffffffffffdddfdffffdfdffffffffffddd") 
 metadata_re = metadata %>% 
-  right_join(unweighted_re, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 
 metadata_re_onesubj = metadata %>% 
-  right_join(unweighted_re_onesubj, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_onesubj, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 
 metadata_re_age_sex_delivery_feeding = metadata %>% 
-  right_join(unweighted_re_age_sex_delivery_feeding, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_age_sex_delivery_feeding, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 
 metadata_re_age_sex_del_fed_onesubj = metadata %>% 
-  right_join(unweighted_re_age_sex_delivery_feeding_onesubj, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_age_sex_delivery_feeding_onesubj, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 
 metadata_re_01week = metadata %>% 
-  right_join(unweighted_re_01week, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_01week, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_16week = metadata %>% 
-  right_join(unweighted_re_16week, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_16week, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_06week = metadata %>% 
-  right_join(unweighted_re_06week, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_06week, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_6week3month = metadata %>% 
-  right_join(unweighted_re_6week3month, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_6week3month, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_312month = metadata %>% 
-  right_join(unweighted_re_312month, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_312month, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_012month = metadata %>% 
-  right_join(unweighted_re_012month, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_012month, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_13year = metadata %>% 
-  right_join(unweighted_re_13year, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_13year, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_36year = metadata %>% 
-  right_join(unweighted_re_36year, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_36year, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_612year = metadata %>% 
-  right_join(unweighted_re_612year, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_612year, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_312year = metadata %>% 
-  right_join(unweighted_re_312year, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_re_312year, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 
 metadata_re_kim = metadata %>% 
-  right_join(unweighted_kim, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_kim, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_herman = metadata %>% 
-  right_join(unweighted_herman, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_herman, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_levin = metadata %>% 
-  right_join(unweighted_levin, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_levin, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_robinson = metadata %>% 
-  right_join(unweighted_robinson, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_robinson, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_planer = metadata %>% 
-  right_join(unweighted_planer, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_planer, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_levin = metadata %>% 
-  right_join(unweighted_levin, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_levin, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_db = metadata %>% 
-  right_join(unweighted_db, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_db, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_cioffi = metadata %>% 
-  right_join(unweighted_cioffi, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_cioffi, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 metadata_re_chu = metadata %>% 
-  right_join(unweighted_chu, by = c("SampleID" = "X1")) %>% 
+  right_join(unweighted_chu, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
 
 
@@ -1036,6 +1036,7 @@ weight_age_6week3month <- ggplot(mds_otus_weighted_points2_age_6week3month,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
+  ggtitle("6 weeks-3 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1046,7 +1047,8 @@ geom_point(aes(shape = Ethnicity,
         axis.title.y=element_text(size=rel(1.5)),
         legend.title = element_blank(),
         legend.text = element_text(size = rel(2)),
-        legend.position = "bottom") + 
+        legend.position = "bottom",
+        plot.title = element_text(size = rel(2.5), face = "bold")) + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
                    color = Race), 
                type = "t", level = 0.95) +
@@ -1064,6 +1066,7 @@ weight_age_312month <- ggplot(mds_otus_weighted_points2_age_312month,
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
+  ggtitle("3-12 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
@@ -1072,7 +1075,8 @@ weight_age_312month <- ggplot(mds_otus_weighted_points2_age_312month,
   theme(axis.title.x=element_text(size=rel(1.5)), 
         axis.title.y=element_text(size=rel(1.5)),
         legend.title = element_blank(),
-        legend.text = element_text(color = "white")) + 
+        legend.text = element_text(color = "white"),
+        plot.title = element_text(size = rel(2.5), face = "bold")) + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
                    color = Race), 
                type = "t", level = 0.95) +
@@ -1090,6 +1094,7 @@ weight_age_13year <- ggplot(mds_otus_weighted_points2_age_13year,
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
+  ggtitle("1-3 years") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1100,7 +1105,8 @@ weight_age_13year <- ggplot(mds_otus_weighted_points2_age_13year,
         axis.title.y=element_text(size=rel(1.5)),
         legend.title = element_blank(),
         legend.text = element_text(size = rel(1.5)),
-        legend.position = "bottom") + 
+        legend.position = "bottom",
+        plot.title = element_text(size = rel(2.5), face = "bold")) + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Race, 
                    color = Race), 
                type = "t", level = 0.95) +
@@ -2579,13 +2585,12 @@ alpha_all_age_graph = ggplot(alpha_all_age_filtered,
                   color = "black") +
   ylab("Shannon Diversity") +
   ylim(0, max(alpha_all_age_filtered$shannon_entropy + 1.25)) +
-  ggtitle("All Age Categories") +
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(2)),
         axis.title.x=element_blank(),
         axis.text.x=element_text(size=rel(2.4)),
         axis.ticks.x=element_blank(),
-        plot.title=element_text(size=rel(2))) +
+        plot.title=element_text(size=rel(2), face = "bold")) +
   guides(fill = "none", shape = "none") + 
   geom_text(data = alpha_all_age_filtered2, aes(y = yloc, label = label), 
             position = position_dodge(width = 0.75), size = 8) +
@@ -3628,7 +3633,7 @@ f63r_dw = dwplot(f63r_df2, vline = geom_vline(xintercept = 0, color = "gray40",
         axis.text.y=element_text(size=rel(1.7),
                                  angle = 90,
                                  hjust = 0.5),
-        plot.title=element_text(size=rel(2)),
+        plot.title=element_text(size=rel(2), face = "bold"),
         legend.position = "none") + 
   scale_color_manual(name = "Metric", 
                                         values = c("#418204"),
@@ -3878,7 +3883,7 @@ f312r_dw = dwplot(f312r_df2, vline = geom_vline(xintercept = 0, color = "gray40"
         axis.text.y=element_text(size=rel(1.7),
                                  angle = 90,
                                  hjust = 0.5),
-        plot.title=element_text(size=rel(2)),
+        plot.title=element_text(size=rel(2), face = "bold"),
         legend.position = "none") + 
   scale_color_manual(name = "Metric", 
                                         values = c("#418204"),
@@ -4128,7 +4133,7 @@ f13r_dw = dwplot(f13r_df2, vline = geom_vline(xintercept = 0, color = "gray40",
         axis.text.y=element_text(size=rel(1.7),
                                  angle = 90,
                                  hjust = 0.5),
-        plot.title=element_text(size=rel(2)),
+        plot.title=element_text(size=rel(2), face = "bold"),
         legend.position = "none") + 
   scale_color_manual(name = "Metric", 
                                         values = c("#418204"),
@@ -4564,6 +4569,380 @@ ggarrange(f312yr_dw, o312yr_dw, c312yr_dw, s312yr_dw, p312yr_dw,
           nrow = 2, ncol = 5, heights = c(2,1), align = "v",
           legend.grob = combo_legend, legend = "bottom")
 dev.off()
+
+###Combo
+f63r_df3 = f63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+o63r_df3 = o63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+s63r_df3 = s63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+p63r_df3 = p63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+c63r_df3 = c63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+
+f312r_df3 = f312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+o312r_df3 = o312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+s312r_df3 = s312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+p312r_df3 = p312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+c312r_df3 = c312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+
+f13r_df3 = f13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+o13r_df3 = o13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+s13r_df3 = s13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+p13r_df3 = p13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+c13r_df3 = c13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+
+faithr_df = rbind(f63r_df3, f312r_df3, f13r_df3)
+shannonr_df = rbind(s63r_df3, s312r_df3, s13r_df3)
+pielour_df = rbind(p63r_df3, p312r_df3, p13r_df3)
+observedr_df = rbind(o63r_df3, o312r_df3, o13r_df3)
+chaor_df = rbind(c63r_df3, c312r_df3, c13r_df3)
+
+faithr_dw = dwplot(faithr_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.7),
+                                 angle = 90,
+                                 hjust = 0.5),
+        plot.title=element_text(size=rel(2), face = "bold"),
+        legend.position = "none") + 
+  ggtitle("Faith's PD") +
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204","#418204","#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.374<br>
+           3-12 months: p = 0.233<br>
+           <span style='color: blue1;'><b><i>1-3 years: p = 0.006</b></i></span>", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+observedr_dw = dwplot(observedr_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        plot.title=element_text(size=rel(2), face = "bold"),
+        legend.position = "none") + 
+  ggtitle("Observed ASVs") +
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c","#4a228c","#4a228c"),
+                                        labels = c("Observed ASVs")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.209<br>
+           <span style='color: blue1;'><b><i>3-12 months: p = 0.005<br>
+           1-3 years: p = 0.001</b></i></span>", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+chaor_dw = dwplot(chaor_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        plot.title=element_text(size=rel(2), face = "bold"),
+        legend.position = "none") + 
+  ggtitle("Chao 1") +
+  scale_color_manual(name = "Metric", 
+                                        values = c("#873eff","#873eff","#873eff"),
+                                        labels = c("Chao 1")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.186<br>
+           <span style='color: blue1;'><b><i>3-12 months: p = 0.001<br>
+           1-3 years: p = 0.002</b></i></span>", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+shannonr_dw = dwplot(shannonr_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        plot.title=element_text(size=rel(2), face = "bold"),
+        legend.position = "none") + 
+  ggtitle("Shannon Diversity") +
+  scale_color_manual(name = "Metric", 
+                                        values = c("#834600","#834600","#834600"),
+                                        labels = c("Shannon Diversity")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.682<br>
+           <span style='color: blue1;'><b><i>3-12 months: p = 0.006<br>
+           1-3 years: p = 0.020</b></i></span>", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+pielour_dw = dwplot(pielour_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),,
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        plot.title=element_text(size=rel(2), face = "bold"),
+        legend.position = "none") + 
+  ggtitle("Pielou's Evenness") +
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00","#b05b00","#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.746<br>
+           <span style='color: blue1;'><b><i>3-12 months: p = 0.026</b></i><br></span>
+           1-3 years: p = 0.142", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+f63e_df3 = f63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+o63e_df3 = o63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+s63e_df3 = s63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+p63e_df3 = p63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+c63e_df3 = c63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "6 weeks - 3 months")
+
+f312e_df3 = f312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+o312e_df3 = o312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+s312e_df3 = s312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+p312e_df3 = p312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+c312e_df3 = c312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "3-12 months")
+
+f13e_df3 = f13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+o13e_df3 = o13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+s13e_df3 = s13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+p13e_df3 = p13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+c13e_df3 = c13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "1-3 years")
+
+faithe_df = rbind(f63e_df3, f312e_df3, f13e_df3)
+shannone_df = rbind(s63e_df3, s312e_df3, s13e_df3)
+pieloue_df = rbind(p63e_df3, p312e_df3, p13e_df3)
+observede_df = rbind(o63e_df3, o312e_df3, o13e_df3)
+chaoe_df = rbind(c63e_df3, c312e_df3, c13e_df3) 
+
+faithe_dw = dwplot(faithe_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(1.7),
+                                 angle = 90,
+                                 hjust = 0.5),
+        plot.title=element_blank(),
+        legend.position = "none")+
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204","#418204","#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.758<br>
+           3-12 months: p = 0.880<br>
+           <span style='color: blue1;'><b><i>1-3 years: p = 0.015</b></i></span>", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+observede_dw = dwplot(observede_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        plot.title=element_blank(),
+        legend.position = "none") +
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c","#4a228c","#4a228c"),
+                                        labels = c("Observed ASVs")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.973<br>
+           3-12 months: p = 0.914<br>
+           <span style='color: blue1;'><b><i>1-3 years: p = 0.023</b></i></span>", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+chaoe_dw = dwplot(chaoe_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        plot.title=element_blank(),
+        legend.position = "none") +
+  scale_color_manual(name = "Metric", 
+                                        values = c("#873eff","#873eff","#873eff"),
+                                        labels = c("Chao 1")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.977<br>
+           3-12 months: p = 0.945<br>
+           <span style='color: blue1;'><b><i>1-3 years: p = 0.018</b></i></span>", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+shannone_dw = dwplot(shannone_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        plot.title=element_blank(),
+        legend.position = "none") +
+  scale_color_manual(name = "Metric", 
+                                        values = c("#834600","#834600","#834600"),
+                                        labels = c("Shannon Diversity")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.839<br>
+           3-12 months: p = 0.857<br>
+           <span style='color: blue1;'><b><i>1-3 years: p = 0.042</b></i></span>", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+pieloue_dw = dwplot(pieloue_df, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(shape = model, size = 3)),
+       whisker_args = list(aes(linetype = model, size = 2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        plot.title=element_blank(),
+        legend.position = "none")+
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00","#b05b00","#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "6 weeks-3 months: p = 0.533<br>
+           3-12 months: p = 0.815<br>
+           1-3 years: p = 0.174", 
+           x = Inf, y = -Inf, size = 6,
+           hjust = 1, vjust = 0)
+
+legend_plot = dwplot(pielour_df,
+                     dot_args = list(aes(shape = model, size = 3)),
+                     whisker_args = list(aes(linetype = model, 
+                                             size = 2))) + 
+  xlab("Estimate") + scale_color_manual(values = c("black", 
+                                                   "black",
+                                                   "black"),
+                                        labels = c("6 weeks-3 months", 
+                                                   "3-12 months", 
+                                                   "1-3 years"),
+                                        guide = "none") +
+  theme(legend.title = element_blank(),
+        legend.key = element_rect(fill = "white", colour = "white"),
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
+  guides(shape = guide_legend(override.aes = list(size=7)),
+         color = "none",
+         size = "none")
+combo_legend = get_legend(legend_plot) 
 ```
 
 
@@ -6877,7 +7256,6 @@ res_r_df_ab = data.frame(
   diff_abn = unlist(race_ab$res$diff_abn))
 
 fdr_ancom_r_ab <- res_r_df_ab %>%
-  dplyr::filter(q_val < 0.05) %>% 
   rownames_to_column(var = "Comparison") %>% 
   dplyr::filter(str_detect(Comparison, "^Race")) %>% 
   inner_join(taxonomy, by = c("Species" = "Species"))
@@ -6904,7 +7282,6 @@ res_r_df_aw = data.frame(
   diff_abn = unlist(race_aw$res$diff_abn))
 
 fdr_ancom_r_aw <- res_r_df_aw %>%
-  dplyr::filter(q_val < 0.05) %>% 
   rownames_to_column(var = "Comparison") %>% 
   dplyr::filter(str_detect(Comparison, "^Race")) %>% 
   inner_join(taxonomy, by = c("Species" = "Species"))
@@ -8435,6 +8812,7 @@ plot_Dialister = ggplot(species_meta,
                                         symbols = c("***", "**", "*",
                                                     "ns")))
 ```
+
 ###Graphs of highlighted DA taxa
 Box plots of taxa that were differentially abundant based on ANCOM results and that highlighted for their relevance to health in the text.
 ```{r da_highlight_graphs}
@@ -8474,39 +8852,16 @@ species_meta = species_ra %>%
   pivot_wider(names_from = "Species", values_from = "rel_abund") %>% 
   inner_join(metadata_re)
 
-plot_Bifidobacterium = ggplot(genus_meta,
-                      aes(x = Race, 
-                          y = `k__Bacteria;p__Actinobacteria;c__Actinobacteria;o__Bifidobacteriales;f__Bifidobacteriaceae;g__Bifidobacterium`)) + 
-  stat_boxplot(geom = 'errorbar', width = 0, 
-               color = "black") +
-  geom_boxplot(coef = 0, outlier.shape = NA,
-               color = "white",
-               fill = c("#377eb8", "#f6d128", "#e41a1c"),
-               fatten = 4) +
-  geom_boxplot(coef = 0, outlier.shape = NA, 
-               color = c("#377eb8", "#f6d128", "#e41a1c"),
-               fill = NA, 
-               fatten = NULL) + 
-  geom_jitter(width = 0.2,
-              color = "black", size = 0.5) +
-  ylab("Bifidobacterium\nRelative Abundance") +
-  theme_classic() + 
-  theme(axis.title.y=element_text(size=rel(1.2)),
-        axis.text.y=element_text(size=rel(0.8)),
-        axis.title.x=element_blank(), 
-        axis.text.x=element_text(size=rel(1.1)),
-        axis.ticks.x=element_blank()) +
-  guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("Black", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+species_meta_pcop = distinct(species_meta, Race)
+species_meta_pcop$Race = factor(species_meta_pcop$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_pcop$yloc = 0.8
+species_meta_pcop$label = c("A", "B", "B")
 
+species_meta_new = species_meta %>% 
+  mutate(P_copri = log10(`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri` + 0.001))
 plot_P.copri = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri`)) + 
@@ -8522,24 +8877,27 @@ plot_P.copri = ggplot(species_meta,
                fatten = NULL) + 
   geom_jitter(width = 0.2,
               color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt", limits = c(NA, 0.8)) + 
   ylab("Prevotella copri\nRelative Abundance") +
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(1.2)),
-        axis.text.y=element_text(size=rel(0.8)),
+        axis.text.y=element_text(size=rel(1)),
         axis.title.x=element_blank(), 
-        axis.text.x=element_text(size=rel(1.1)),
+        axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  geom_text(data = species_meta_pcop, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 5) 
 
+species_meta_vdis = distinct(species_meta, Race)
+species_meta_vdis$Race = factor(species_meta_vdis$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_vdis$yloc = 0.42
+species_meta_vdis$label = c("A", "B", "B")
+species_meta_new = species_meta %>% 
+  mutate(V_dispar = log10(`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar` + 0.001))
 plot_V.dispar = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar`)) + 
@@ -8555,24 +8913,27 @@ plot_V.dispar = ggplot(species_meta,
                fatten = NULL) + 
   geom_jitter(width = 0.2,
               color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") +
   ylab("Veillonella dispar\nRelative Abundance") +
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(1.2)),
-        axis.text.y=element_text(size=rel(0.8)),
+        axis.text.y=element_text(size=rel(1)),
         axis.title.x=element_blank(), 
-        axis.text.x=element_text(size=rel(1.1)),
+        axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  geom_text(data = species_meta_vdis, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 5) 
 
+species_meta_haem = distinct(species_meta, Race)
+species_meta_haem$Race = factor(species_meta_haem$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_haem$yloc = 0.6
+species_meta_haem$label = c("A", "A", "B")
+species_meta_new = species_meta %>% 
+  mutate(Haemo = log10(`k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__` + 0.00001))
 plot_Haemo = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__`)) + 
@@ -8588,23 +8949,27 @@ plot_Haemo = ggplot(species_meta,
                fatten = NULL) + 
   geom_jitter(width = 0.2,
               color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") +
   ylab("Haemophilus\nRelative Abundance") +
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(1.2)),
-        axis.text.y=element_text(size=rel(0.8)),
+        axis.text.y=element_text(size=rel(1)),
         axis.title.x=element_blank(), 
-        axis.text.x=element_text(size=rel(1.1)),
+        axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  geom_text(data = species_meta_haem, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 5)
 
+species_meta_faec = distinct(species_meta, Race)
+species_meta_faec$Race = factor(species_meta_faec$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_faec$yloc = 0.13
+species_meta_faec$label = c("A", "A", "B")
+species_meta_new = species_meta %>% 
+  mutate(Faecali = log10(`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__` + 0.001))
 plot_Faecali = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__`)) + 
@@ -8620,24 +8985,27 @@ plot_Faecali = ggplot(species_meta,
                fatten = NULL) + 
   geom_jitter(width = 0.2,
               color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") +
   ylab("Faecalibacterium\nRelative Abundance") +
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(1.2)),
-        axis.text.y=element_text(size=rel(0.8)),
+        axis.text.y=element_text(size=rel(1)),
         axis.title.x=element_blank(), 
-        axis.text.x=element_text(size=rel(1.1)),
+        axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("Black", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  geom_text(data = species_meta_faec, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 5)
 
+species_meta_vpar = distinct(species_meta, Race)
+species_meta_vpar$Race = factor(species_meta_vpar$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_vpar$yloc = 0.8
+species_meta_vpar$label = c("A", "A", "B")
+species_meta_new = species_meta %>% 
+  mutate(V_parv = log10(`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula` + 0.0001))
 plot_V.parvula = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula`)) + 
@@ -8653,24 +9021,25 @@ plot_V.parvula = ggplot(species_meta,
                fatten = NULL) + 
   geom_jitter(width = 0.2,
               color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") +
   ylab("Veillonella parvula\nRelative Abundance") +
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(1.2)),
-        axis.text.y=element_text(size=rel(1.1)),
+        axis.text.y=element_text(size=rel(1)),
         axis.title.x=element_blank(), 
-        axis.text.x=element_text(size=rel(0.8)),
+        axis.text.x=element_text(size=rel(1.2)),
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("Black", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "*", "*",
-                                                    "ns")))
+  geom_text(data = species_meta_vpar, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 5)
 
+species_meta_dial = distinct(species_meta, Race)
+species_meta_dial$Race = factor(species_meta_dial$Race, 
+                                levels = c("White", 
+                                           "Black", 
+                                           "Asian/Pacific Islander"))
+species_meta_dial$yloc = 1.5
+species_meta_dial$label = c("A", "B", "B")
 plot_Dialister = ggplot(species_meta,
                       aes(x = Race, 
                           y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Dialister;s__`)) + 
@@ -8686,35 +9055,536 @@ plot_Dialister = ggplot(species_meta,
                fatten = NULL) + 
   geom_jitter(width = 0.2,
               color = "black", size = 0.5) +
+  scale_y_continuous(trans = 'log10') +
   ylab("Dialister\nRelative Abundance") +
   theme_classic() + 
   theme(axis.title.y=element_text(size=rel(1.2)),
-        axis.text.y=element_text(size=rel(0.8)),
+        axis.text.y=element_text(size=rel(1)),
         axis.title.x=element_blank(), 
         axis.text.x=element_text(size=rel(1.1)),
         axis.ticks.x=element_blank()) +
   guides(fill = "none", shape = "none") +
-  stat_compare_means(label = "p.signif", 
-                     bracket.size = 0.6, size = 6, 
-                     comparisons = list(c("Black", "White"),
-                                        c("White", "Asian/Pacific Islander")),
-                     symnum.args = list(cutpoints = 
-                                          c(0, 0.0001, 
-                                            0.4, 0.5, 1),
-                                        symbols = c("***", "**", "*",
-                                                    "ns")))
+  geom_text(data = species_meta_dial, aes(y = yloc, label = label), 
+            position = position_dodge(width = 0.75), size = 8)
+```
+
+### Histograms of highlighted taxa
+Regular
+```{r histogram}
+histo_P.copri = gghistogram(species_meta, 
+                            x = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Prevotella copri ",
+                            ylab = "Density",
+                            rug = T,
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8", "#f6d128", "#e41a1c"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge",
+                            facet.by = "Race")
+histo_P.copri = ggpar(histo_P.copri, xscale = "sqrt", 
+                       legend = "none") + rremove("y.text") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") +
+  coord_flip()
+
+histo_V.dispar = gghistogram(species_meta, 
+                            x = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Veillonella dispar",
+                            ylab = "Density",
+                            rug = T,
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8", "#f6d128", "#e41a1c"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge",
+                            facet.by = "Race")
+histo_V.dispar = ggpar(histo_V.dispar, xscale = "sqrt", 
+                       legend = "none") + rremove("y.text") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") + coord_flip()
+
+histo_Faecali = gghistogram(species_meta, 
+                            x = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Faecalibacterium",
+                            ylab = "Density",
+                            rug = T,
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8", "#f6d128", "#e41a1c"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge",
+                            facet.by = "Race")
+histo_Faecali = ggpar(histo_Faecali, xscale = "sqrt", 
+                       legend = "none") + rremove("y.text") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") + coord_flip()
+
+histo_Haemo = gghistogram(species_meta, 
+                            x = "k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Haemophilus",
+                            ylab = "Density",
+                            rug = T,
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8", "#f6d128", "#e41a1c"),
+                          alpha = 0.4,
+                            bins = 25,
+                            position = "dodge",
+                            facet.by = "Race")
+histo_Haemo = ggpar(histo_Haemo, xscale = "sqrt", 
+                       legend = "none") + rremove("y.text") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") + coord_flip()
+
+histo_V.parvula = gghistogram(species_meta, 
+                            x = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Veillonella parvula",
+                            ylab = "Density",
+                            rug = T,
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8", "#f6d128", "#e41a1c"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge",
+                            facet.by = "Race")
+histo_V.parvula = ggpar(histo_V.parvula, xscale = "sqrt", 
+                       legend = "none") + rremove("y.text") +
+  rremove("y.title") + rremove("y.ticks") + coord_flip()
+```
+
+Back to back
+Regular
+```{r histogram}
+species_meta_a= species_meta %>% filter(Race == "Asian/Pacific Islander")
+species_meta_b = species_meta %>% filter(Race == "Black")
+species_meta_w = species_meta %>% filter(Race == "White")
+species_meta_ab = species_meta %>% filter(Race == "Black" | Race == "Asian/Pacific Islander")
+species_meta_aw = species_meta %>% filter(Race == "White" | Race == "Asian/Pacific Islander")
+species_meta_bw = species_meta %>% filter(Race == "Black" | Race == "White")
+
+histo_P.copri2 = gghistogram(species_meta_ab, 
+                            x = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Prevotella copri ",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#f6d128", "#e41a1c"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_P.copri2 = ggpar(histo_P.copri2, xscale = "sqrt", 
+                       legend = "none", orientation = "reverse") + 
+  rremove("y.text") + rremove("y.axis") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") +
+  coord_flip()
+
+histo_P.copri3 = gghistogram(species_meta_w, 
+                            x = "k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Prevotella copri ",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_P.copri3 = ggpar(histo_P.copri3, xscale = "sqrt", 
+                       legend = "none") + rremove("y.text") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") +
+  rremove("y.axis") + coord_flip()
+
+histo_V.dispar2 = gghistogram(species_meta_ab, 
+                            x = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Veillonella dispar",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#f6d128", "#e41a1c"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_V.dispar2 = ggpar(histo_V.dispar2, xscale = "sqrt", 
+                       legend = "none", orientation = "reverse") + 
+  rremove("y.text") + rremove("y.axis") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") + coord_flip()
+
+histo_V.dispar3 = gghistogram(species_meta_w, 
+                            x = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Veillonella dispar",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_V.dispar3 = ggpar(histo_V.dispar3, xscale = "sqrt", 
+                       legend = "none") + 
+  rremove("y.text") + rremove("y.axis") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") + coord_flip()
+
+histo_Faecali2 = gghistogram(species_meta_aw, 
+                            x = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Faecalibacterium",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8", "#e41a1c"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_Faecali2 = ggpar(histo_Faecali2, xscale = "sqrt", 
+                       legend = "none", orientation = "reverse") + rremove("y.text") + rremove("y.axis") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") + coord_flip()
+
+histo_Faecali3 = gghistogram(species_meta_b, 
+                            x = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Faecalibacterium",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#f6d128"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_Faecali3 = ggpar(histo_Faecali3, xscale = "sqrt", 
+                       legend = "none") + rremove("y.text") + rremove("y.axis") +
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") + coord_flip()
+
+histo_Haemo2 = gghistogram(species_meta_aw, 
+                            x = "k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Haemophilus",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8", "#e41a1c"),
+                          alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_Haemo2 = ggpar(histo_Haemo2, xscale = "sqrt", 
+                       legend = "none", orientation = "reverse") + rremove("y.text") + rremove("y.axis") + 
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") + coord_flip()
+
+histo_Haemo3 = gghistogram(species_meta_b, 
+                            x = "k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Haemophilus",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#f6d128"),
+                          alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_Haemo3 = ggpar(histo_Haemo3, xscale = "sqrt", 
+                       legend = "none") + rremove("y.text") + rremove("y.axis") + 
+  rremove("y.title") + rremove("y.ticks") + rremove("x.title") + coord_flip()
+
+histo_V.parvula2 = gghistogram(species_meta_aw, 
+                            x = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Veillonella parvula",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#377eb8", "#e41a1c"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_V.parvula2 = ggpar(histo_V.parvula2, xscale = "sqrt", 
+                       legend = "none", orientation = "reverse") + rremove("y.text") + rremove("y.axis") + 
+  rremove("y.title") + rremove("y.ticks") + coord_flip()
+
+histo_V.parvula3 = gghistogram(species_meta_b, 
+                            x = "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula", 
+                            y = "..density..",
+                            xlab = "Relative Abundance of Veillonella parvula",
+                            ylab = "Density",
+                            color = "Race",
+                            fill = "Race",
+                            palette = c("#f6d128"),
+                            alpha = 0.4,
+                            bins = 25,
+                            position = "dodge")
+histo_V.parvula3 = ggpar(histo_V.parvula3, xscale = "sqrt", 
+                       legend = "none") + rremove("y.text") + rremove("y.axis") + 
+  rremove("y.title") + rremove("y.ticks") + coord_flip()
+```
+
+###K-S tests
+We used a Kolmogorox-Smirnov test to examine if the distribution differed between racial categories for relative abundances of taxa that were differentially abundant in children and adults in the same direction.
+```{r ks_test}
+species_meta_black = species_meta %>% filter(Race == "Black") 
+species_meta_white = species_meta %>% filter(Race == "White")
+species_meta_asian = species_meta %>% filter(Race == "Asian/Pacific Islander")
+
+V.dispar.B = species_meta_black$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar`
+V.dispar.W = species_meta_white$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar`
+V.dispar.A = species_meta_asian$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar`
+ks.test(V.dispar.B, V.dispar.W)
+ks.test(V.dispar.B, V.dispar.A)
+ks.test(V.dispar.W, V.dispar.A)
+
+P.copri.B = species_meta_black$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri`
+P.copri.W = species_meta_white$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri`
+P.copri.A = species_meta_asian$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri`
+ks.test(P.copri.B, P.copri.W)
+ks.test(P.copri.B, P.copri.A)
+ks.test(P.copri.W, P.copri.A)
+
+Bacter.B = species_meta_black$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides;__`
+Bacter.W = species_meta_white$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides;__`
+Bacter.A = species_meta_asian$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides;__`
+ks.test(Bacter.B, Bacter.W)
+ks.test(Bacter.B, Bacter.A)
+ks.test(Bacter.W, Bacter.A)
+
+R.bromii.B = species_meta_black$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus;s__bromii`
+R.bromii.W = species_meta_white$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus;s__bromii`
+R.bromii.A = species_meta_asian$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus;s__bromii`
+ks.test(R.bromii.B, R.bromii.W)
+ks.test(R.bromii.B, R.bromii.A)
+ks.test(R.bromii.W, R.bromii.A)
+
+Faecali.B = species_meta_black$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__`
+Faecali.W = species_meta_white$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__`
+Faecali.A = species_meta_asian$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__`
+ks.test(Faecali.B, Faecali.W)
+ks.test(Faecali.B, Faecali.A)
+ks.test(Faecali.W, Faecali.A)
+
+A.putre.B = species_meta_black$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes;s__putredinis`
+A.putre.W = species_meta_white$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes;s__putredinis`
+A.putre.A = species_meta_asian$`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes;s__putredinis`
+ks.test(A.putre.B, A.putre.W)
+ks.test(A.putre.B, A.putre.A)
+ks.test(A.putre.W, A.putre.A)
+
+V.parv.B = species_meta_black$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula`
+V.parv.W = species_meta_white$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula`
+V.parv.A = species_meta_asian$`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula`
+ks.test(V.parv.B, V.parv.W)
+ks.test(V.parv.B, V.parv.A)
+ks.test(V.parv.W, V.parv.A)
+
+Haemo.B = species_meta_black$`k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__`
+Haemo.W = species_meta_white$`k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__`
+Haemo.A = species_meta_asian$`k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__`
+ks.test(Haemo.B, Haemo.W)
+ks.test(Haemo.B, Haemo.A)
+ks.test(Haemo.W, Haemo.A)
+```
+
+## Presence-absence models
+We used a generalized linear mixed effects model with a binomial distribution to examine if race and/or ethnicity was associated with the presence or absence of specific taxa.
+
+### Import data
+Presence-absence features tables at the level of phyla, family, genus, species, and ASV were exported from QIIME and imported here (after modifying the heads to remove # characters).
+```{r import_pa}
+phyla_pa = read_tsv("feature-table-phyla-pa.tsv")
+phyla_pa_meta = phyla_pa %>% 
+  pivot_longer(-1, names_to = "SampleID", 
+               values_to = "presence_absence") %>% 
+  pivot_wider(names_from = "Phyla", 
+              values_from = "presence_absence") %>% 
+  inner_join(metadata_re)
+
+family_pa = read_tsv("feature-table-family-pa.tsv")
+family_pa_meta = family_pa %>% 
+  pivot_longer(-1, names_to = "SampleID", 
+               values_to = "presence_absence") %>% 
+  pivot_wider(names_from = "Family", 
+              values_from = "presence_absence") %>% 
+  inner_join(metadata_re)
+
+genus_pa = read_tsv("feature-table-genus-pa.tsv")
+genus_pa_meta = genus_pa %>% 
+  pivot_longer(-1, names_to = "SampleID", 
+               values_to = "presence_absence") %>% 
+  pivot_wider(names_from = "Genus", 
+              values_from = "presence_absence") %>% 
+  inner_join(metadata_re)
+
+species_pa = read_tsv("feature-table-species-pa.tsv")
+species_pa_meta = species_pa %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "presence_absence") %>% 
+  pivot_wider(names_from = "Species", values_from = "presence_absence") %>% 
+  inner_join(metadata_re)
+```
+###GLMMs
+Run GLMMs using a binomial distribution.
+#### Phyla
+```{r pa_glmms_phyla}
+test_glmm = Anova(glmer(`k__Bacteria;p__OD1` ~ Race + Ethnicity + Host_age_cat + (1|Study), data = phyla_pa_meta, family = binomial))
+test_glmm
+
+race_matrix = mat.or.vec(66,3)
+eth_matrix = mat.or.vec(66,3)
+
+for(i in 66:67) {
+  variable = as.data.frame(phyla_pa_meta)[,i]
+  b<-glmer(variable ~ Race + Ethnicity + Host_age_cat + (1|Study), 
+                 data = phyla_pa_meta, family = binomial)
+  anova = Anova(b)
+  race_matrix[i-1,2] = anova[1,1]
+  race_matrix[i-1,3] = anova[1,3]
+  eth_matrix[i-1,2] = anova[2,1]
+  eth_matrix[i-1,3] = anova[2,3]
+  race_matrix[i-1,1] = names(phyla_pa_meta)[i]
+  eth_matrix[i-1,1] = names(phyla_pa_meta)[i]
+}
+
+race_phyla = as.data.frame(race_matrix) %>% rename(Taxa = V1) %>% 
+  rename(`Chi-square` = V2) %>% rename(`p-value` = V3)
+write.csv(race_phyla, "phyla_race_pa.csv")
+race_phyla_nona = filter(race_phyla, race_phyla[,3] != 0)
+race_phyla_nona[,3] = as.numeric(as.character(race_phyla_nona[,3]))
+race_phyla_corrected = bind_cols(race_phyla_nona, as.data.frame(fdrtool(race_phyla_nona[,3], statistic = "pvalue", plot = F)))
+write.csv(race_phyla_corrected, "race_phyla_pa_corrected.csv")
+
+ethnicity_phyla = as.data.frame(ethnicity_matrix)
+write.csv(ethnicity_phyla, "phyla_ethnicity_pa.csv")
+ethnicity_phyla_nona = filter(ethnicity_phyla, ethnicity_phyla[,3] != 0)
+ethnicity_phyla_nona[,3] = as.numeric(as.character(ethnicity_phyla_nona[,3]))
+ethnicity_phyla_corrected = bind_cols(ethnicity_phyla_nona, as.data.frame(fdrtool(ethnicity_phyla_nona[,3], statistic = "pvalue", plot = F)))
+write.csv(ethnicity_phyla_corrected, "ethnicity_phyla_pa_corrected.csv")
+```
+#### Species
+```{r pa_glmms_species}
+test_glmm = Anova(glmer(`k__Bacteria;p__OD1;c__;o__;f__;g__;s__` ~ Race + Ethnicity + Host_age_cat + (1|Study), data = species_pa_meta, family = binomial))
+test_glmm
+
+race_matrix = mat.or.vec(1489,3)
+eth_matrix = mat.or.vec(1489,3)
+
+for(i in 2:1489) {
+  variable = as.data.frame(species_pa_meta)[,i]
+  try(b<-glmer(variable ~ Race + Ethnicity + Host_age_cat + (1|Study), 
+                 data = species_pa_meta, family = binomial))
+  anova = Anova(b)
+  race_matrix[i-1,2] = anova[1,1]
+  race_matrix[i-1,3] = anova[1,3]
+  eth_matrix[i-1,2] = anova[2,1]
+  eth_matrix[i-1,3] = anova[2,3]
+  race_matrix[i-1,1] = names(species_pa_meta)[i]
+  eth_matrix[i-1,1] = names(species_pa_meta)[i]
+}
+
+race_species = as.data.frame(race_matrix) %>% rename(Taxa = V1) %>% 
+  rename(`Chi-square` = V2) %>% rename(`p-value` = V3)
+write.csv(race_species, "species_race_pa.csv")
+race_species_nona = filter(race_species, race_species[,3] != 0)
+race_species_nona[,3] = as.numeric(as.character(race_species_nona[,3]))
+race_species_corrected = bind_cols(race_species_nona, as.data.frame(fdrtool(race_species_nona[,3], statistic = "pvalue", plot = F)))
+write.csv(race_species_corrected, "race_species_pa_corrected.csv")
+
+ethnicity_species = as.data.frame(eth_matrix)
+write.csv(ethnicity_species, "species_ethnicity_pa.csv")
+ethnicity_species_nona = filter(ethnicity_species, ethnicity_species[,3] != 0)
+ethnicity_species_nona[,3] = as.numeric(as.character(ethnicity_species_nona[,3]))
+ethnicity_species_corrected = bind_cols(ethnicity_species_nona, as.data.frame(fdrtool(ethnicity_species_nona[,3], statistic = "pvalue", plot = F)))
+write.csv(ethnicity_species_corrected, "ethnicity_species_pa_corrected.csv")
+```
+##Missing taxa comparison
+To further probe the underlying data structure of taxa that were differentially abundant in children and adults in the same direction, we did a quick comparison of the number of zero abundance values across different categories, we used a Chi-square test to examine whether the proportion of zeros within a category differed from chance.
+
+```{r prop_zero}
+V.dispar_race = species_pa_meta %>% group_by(Race) %>% 
+  count(`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar`) %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__dispar")
+chisq.test(as.data.frame(V.dispar_race))
+chisq.test(as.data.frame(V.dispar_race))$observed
+chisq.test(as.data.frame(V.dispar_race))$expected
+chisq.test(as.data.frame(V.dispar_race))$residuals
+
+P.copri_race = species_pa_meta %>% group_by(Race) %>% 
+  count(`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri`) %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella;s__copri")
+chisq.test(as.data.frame(P.copri_race))
+chisq.test(as.data.frame(P.copri_race))$observed
+chisq.test(as.data.frame(P.copri_race))$expected
+chisq.test(as.data.frame(P.copri_race))$residuals
+
+Bacter_race = species_pa_meta %>% group_by(Race) %>% 
+  count(`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides;__`) %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides;__")
+chisq.test(as.data.frame(Bacter_race))
+chisq.test(as.data.frame(Bacter_race))$observed
+chisq.test(as.data.frame(Bacter_race))$expected
+chisq.test(as.data.frame(Bacter_race))$residuals
+
+R.bromii_race = species_pa_meta %>% group_by(Race) %>% 
+  count(`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus;s__bromii`) %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus;s__bromii")
+chisq.test(as.data.frame(R.bromii_race))
+chisq.test(as.data.frame(R.bromii_race))$observed
+chisq.test(as.data.frame(R.bromii_race))$expected
+chisq.test(as.data.frame(R.bromii_race))$residuals
+
+Faecali_race = species_pa_meta %>% group_by(Race) %>% 
+  count(`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__`) %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium;__")
+chisq.test(as.data.frame(Faecali_race))
+chisq.test(as.data.frame(Faecali_race))$observed
+chisq.test(as.data.frame(Faecali_race))$expected
+chisq.test(as.data.frame(Faecali_race))$residuals
+
+A.putre_race = species_pa_meta %>% group_by(Race) %>% 
+  count(`k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes;s__putredinis`) %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes;s__putredinis")
+chisq.test(as.data.frame(A.putre_race))
+chisq.test(as.data.frame(A.putre_race))$observed
+chisq.test(as.data.frame(A.putre_race))$expected
+chisq.test(as.data.frame(A.putre_race))$residuals
+
+V.parv_race = species_pa_meta %>% group_by(Race) %>% 
+  count(`k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula`) %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella;s__parvula")
+chisq.test(as.data.frame(V.parv_race))
+chisq.test(as.data.frame(V.parv_race))$observed
+chisq.test(as.data.frame(V.parv_race))$expected
+chisq.test(as.data.frame(V.parv_race))$residuals
+
+Haemo_race = species_pa_meta %>% group_by(Race) %>% 
+  count(`k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__`) %>% 
+  pivot_wider(names_from = "Race", values_from = "n") %>% 
+  column_to_rownames("k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus;__")
+chisq.test(as.data.frame(Haemo_race))
+chisq.test(as.data.frame(Haemo_race))$observed
+chisq.test(as.data.frame(Haemo_race))$expected
+chisq.test(as.data.frame(Haemo_race))$residuals
 ```
 
 ##Venn diagram
 ```{r venn}
 venn = read_csv("venn_input.csv")
-venn_c = venn %>% filter(Children != is.na(.))
-venn_a = venn %>% filter(Adults != is.na(.))
+venn_c = venn %>% filter(!is.na(Children))
+venn_a = venn %>% filter(!is.na(Adults))
 c = venn_c$Children
 a = venn_a$Adults
 
 venn.diagram(x = list(c, a), 
-             category.names = c("Children (57)", "Adults (226)"), 
+             category.names = c("Children (57)", "Adults (144)"), 
              filename = "Venn_BW.png", output = T, imagetype = "png", 
              height = 1000, width = 1000, resolution = 300, 
              col = c("#4b265c", "#25a165"), lwd = 1,
@@ -8793,7 +9663,7 @@ Hispanic = roc(response_hispanic$Ethnicity_binary ~ response_hispanic$Hispanic)
 NonHispanic = roc(response_nonhispanic$Ethnicity_binary ~ response_nonhispanic$`Non Hispanic`)
 
 roc_plot_eth = ggroc(list(Hispanic, NonHispanic), legacy.axes = TRUE, lwd = 2) + xlab("False Positive Rate") + ylab("True Positive Rate") + 
-  scale_color_manual(values = c("light gray", "dark gray"), 
+  scale_color_manual(values = c("darkslategray4", "darkorange4"), 
                      labels = c("Hispanic", "Non Hispanic")) + 
   theme(axis.title.x=element_text(size=rel(1.2)), 
         axis.title.y=element_text(size=rel(1.2)),
@@ -8858,6 +9728,75 @@ postscript(file="fig1v4.eps", width=28, height=30, paper = "special")
 plot
 dev.off()
 ```
+```{r pub_graphs_fig1v5}
+age_legend = get_legend(weight_age)
+
+tiff(file="fig1v5.tif", res=300, width=24, height=8, units="in")
+row1 = plot_grid(alpha_all_age_graph, weight_age + theme(legend.position = "none"),
+                 nrow = 1, ncol = 2,
+                 rel_widths = c(2, 1.1), labels = c("A", "B"),
+                 label_size = 24)
+fig1 = plot_grid(row1, age_legend, nrow = 2, ncol = 1, 
+                rel_heights = c(1, 0.2))
+
+fig1
+dev.off()
+
+setEPS()
+postscript(file="fig1v5.eps", width=24, height=8, paper = "special")
+fig1
+dev.off()
+```
+
+```{r pub_graphs_fig2v2}
+nmds_legend = get_legend(weight_age_6week3month)
+
+tiff(file="fig2v2.tif", res=300, width=22, height=20, units="in")
+
+
+row1 = plot_grid(faithr_dw + theme(legend.position = "none"), 
+                 observedr_dw + theme(legend.position = "none"), 
+                 chaor_dw + theme(legend.position = "none"), 
+                 shannonr_dw + theme(legend.position = "none"), 
+                 pielour_dw + theme(legend.position = "none"),
+                 nrow = 1, ncol = 5, 
+                 align = "h", axis = "tb")
+row2 = plot_grid(faithe_dw + theme(legend.position = "none"), 
+                 observede_dw + theme(legend.position = "none"), 
+                 chaoe_dw + theme(legend.position = "none"), 
+                 shannone_dw + theme(legend.position = "none"), 
+                 pieloue_dw + theme(legend.position = "none"),
+                 nrow = 1, ncol = 5, 
+                 align = "h", axis = "tb")
+
+top = plot_grid(row1, row2, combo_legend,
+                nrow = 3, ncol = 1,
+                rel_heights = c(2,1,.2))
+
+row4 = plot_grid(weight_age_6week3month + 
+                     theme(legend.position = "none"),
+                    weight_age_312month + 
+                     theme(legend.position = "none"),
+                   weight_age_13year + 
+                     theme(legend.position = "none"),
+                 axis = "tb", align = "v", nrow = 1, ncol = 3)
+
+bottom = plot_grid(row4, nmds_legend,
+                 nrow = 2, ncol = 1,
+                 rel_heights = c(2,.2))
+
+plot = plot_grid(top, bottom,
+                 nrow = 2, ncol = 1,
+                 rel_heights = c(3,2),
+                 labels = c("A", "B"), label_size = 36)
+plot
+dev.off()
+
+setEPS()
+postscript(file="fig2v2.eps", width=22, height=20, paper = "special")
+plot
+dev.off()
+```
 
 ```{r pub_graphs_alpha_comp}
 tiff(file="alpha_comp.tif", res=90, width=15, height=15, units="in")
@@ -8869,10 +9808,10 @@ plot_grid(alpha_6week3month_race, alpha_312month_race,alpha_13year_race,
 dev.off()
 ```
 
-```{r pub_graphs_fig2a}
+```{r pub_graphs_fig3b}
 venn.diagram(x = list(c, a), 
-             category.names = c("Children (57)", "Adults (226)"), 
-             filename = "fig2A.tif", output = T, imagetype = "tiff", 
+             category.names = c("Children (57)", "Adults (144)"), 
+             filename = "fig3Bv2.tif", output = T, imagetype = "tiff", 
              height = 5, width = 5, units = "in", resolution = 300, 
              col = c("#4b265c", "#25a165"), lwd = 1,
              fill = c(alpha("#4b265c", 0.3), alpha("#25a165", 0.3)), 
@@ -8881,8 +9820,8 @@ venn.diagram(x = list(c, a),
              margin = 0.2)
 
 venn.diagram(x = list(c, a), 
-             category.names = c("Children (57)", "Adults (226)"), 
-             filename = "fig2A.svg", output = T, imagetype = "svg", 
+             category.names = c("Children (57)", "Adults (144)"), 
+             filename = "fig3Bv2.svg", output = T, imagetype = "svg", 
              height = 5, width = 5, units = "in", resolution = 300, 
              col = c("#4b265c", "#25a165"), lwd = 1,
              fill = c(alpha("#4b265c", 0.3), alpha("#25a165", 0.3)), 
@@ -8891,33 +9830,54 @@ venn.diagram(x = list(c, a),
              margin = 0.2)
 ```
 
-```{r fig2b}
-tiff(file="fig2B.tif", res=300, width=7, height=5, units="in")
-roc_plot
+```{r fig3C}
+tiff(file="fig3Cv20.tif", res=300, width=7, height=10, units="in")
+plot_grid(roc_plot, roc_plot_eth, nrow = 2, ncol = 1,
+          rel_widths = c(1, 1), align = "hv", axis = "tb")
 dev.off()
 
 setEPS()
-postscript(file="fig2B.eps", width=7, height=5, paper = "special")
-roc_plot
+postscript(file="fig3Cv20.eps", width=7, height=10, paper = "special")
+plot_grid(roc_plot, roc_plot_eth, nrow = 2, ncol = 1,
+          rel_widths = c(1, 1), align = "hv", axis = "tb")
 dev.off()
 ```
 
-```{r fig2c}
-tiff(file="fig2c.tif", 
-     res=300, width=18, height=10, units="in")
-plot2c = plot_grid(plot_OD1, plot_Enterobacteriaceae, 
-          plot_Bifidobacterium, plot_Blautia, 
-          plot_B.fragilis, plot_C.ramosum, 
-          plot_C.aerofaciens, plot_P.copri,
-          plot_R.gnavus, plot_V.dispar,
-          nrow = 2, ncol = 5,
-          axis = "tb", align = "hv")
-plot2c
+```{r fig3c}
+tiff(file="fig3Av2.tif", 
+     res=300, width=10, height=18, units="in")
+plot3c = plot_grid(plot_Haemo, histo_Haemo, 
+                   plot_P.copri, histo_P.copri, 
+                   plot_Faecali, histo_Faecali,
+                   plot_V.dispar, histo_V.dispar,
+                   plot_V.parvula, histo_V.parvula,
+          nrow = 5, ncol = 2, rel_widths = c(0.8,1.2),
+          axis = "tbl", align = "hv")
+plot3c
 dev.off()
 
 setEPS()
-postscript(file="fig2c.eps", width=17, height=9, paper = "special")
-plot2c
+postscript(file="fig3Av2.eps", width=10, height=18, paper = "special")
+plot3c
+dev.off()
+```
+
+```{r fig3c3}
+tiff(file="fig3Av3.tif", 
+     res=300, width=10, height=18, units="in")
+plot3c = plot_grid(plot_Haemo, histo_Haemo2, histo_Haemo3,
+                   plot_P.copri, histo_P.copri2, histo_P.copri3,
+                   plot_Faecali, histo_Faecali2, histo_Faecali3,
+                   plot_V.dispar, histo_V.dispar2, histo_V.dispar3,
+                   plot_V.parvula, histo_V.parvula2, histo_V.parvula3,
+          nrow = 5, ncol = 3, rel_widths = c(0.8, 0.6, 0.6),
+          axis = "tbl", align = "hv")
+plot3c
+dev.off()
+
+setEPS()
+postscript(file="fig3Av3.eps", width=10, height=18, paper = "special")
+plot3c
 dev.off()
 ```
 

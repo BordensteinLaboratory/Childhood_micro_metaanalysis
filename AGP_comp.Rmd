@@ -1,0 +1,114 @@
+---
+title: "AGP comparison"
+author: "Liz Mallott"
+date: "2/25/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Set up environment
+```{r load_libraries}
+library(tidyverse)
+library(vroom)
+```
+
+##Filter raw AGP metadata
+
+Filter metadata file downloaded on 2/7/2022 to include only fecal samples, only adult individuals who self-identify as White, Black, or Asian/Pacific Islander and live in the US. Individuals who currently have cancer, a C diff infection, IBS or IBD, PKU, or are pregnant were also removed. This results in 117 Black individuals, 580 Asian/Pacific Islander individuals, and 8634 White individuals.
+
+```{r import_meta_raw}
+agp_meta_raw = read_tsv("10317_20220207-144830.txt")
+
+agp_meta_feces = agp_meta_raw %>% filter(body_site == "UBERON:feces")
+
+agp_meta_feces_adult = agp_meta_feces %>% 
+  filter(age_cat != "child") %>% 
+  filter(age_cat != "teen") %>% 
+  filter(age_cat != "baby") %>% 
+  filter(age_cat != "not provided") %>% 
+  filter(age_cat != "Not provided") %>% 
+  filter(age_cat != "not collected") %>% 
+  filter(age_cat != "Not applicable") %>% 
+  filter(age_cat != "None") %>% 
+  filter(age_cat != "Unspecified") %>% 
+  filter(race != "Hispanic") %>% 
+  filter(race != "not applicable") %>% 
+  filter(race != "Not applicable") %>% 
+  filter(race != "not provided") %>% 
+  filter(race != "Not provided") %>% 
+  filter(race != "Other") %>% 
+  filter(race != "Unspecified") %>% 
+  filter(country == "USA")
+
+agp_meta_feces_adult_healthy = agp_meta_feces_adult %>% 
+  filter(cancer != "Diagnosed by a medical professional (doctor, physician assistant)") %>% 
+  filter(cdiff != "Diagnosed by a medical professional (doctor, physician assistant)") %>% 
+  filter(ibd != "Diagnosed by a medical professional (doctor, physician assistant)") %>% 
+  filter(ibs != "Diagnosed by a medical professional (doctor, physician assistant)") %>% 
+  filter(pku != "Diagnosed by a medical professional (doctor, physician assistant)") %>% 
+  filter(pregnant != "Yes") %>% 
+  filter(pregnant != "true")
+```
+## Link metadata and accessions
+### Import accessions
+Import EBI accession numbers for all AGP samples
+```{r import_acc}
+files <- fs::dir_ls(glob = "ebi*tsv")
+accessions = vroom(files)
+```
+### Merge accessions and metadata
+Merge filtered AGP metadata and EBI accession numbers. Filter out samples without accession numbers (are not posted publically). Select accession number column, convert from an experiment accession to run accessions and write to a tsv file. This results in 111 Black, 628 Asian/Pacific Islander, and 9055 White samples (some individuals have more than one sample).
+```{r join_agp_ebi}
+agp_filtered_accessions = accessions %>% 
+  filter(experiment_accession != "None") %>% 
+  inner_join(agp_meta_feces_adult_healthy)
+
+accessions_download = agp_filtered_accessions %>% 
+  dplyr::select(experiment_accession)
+
+write_tsv(accessions_download, "ebi_download_list.txt")
+```
+### Clean up messy accessions
+Import accession numbers for experiments with multiple runs after converting using pysradb.
+```{r import_acc_convert}
+files2 <- fs::dir_ls(glob = "ERX*txt")
+accessions2 = vroom(files2)
+accessions3 = accessions2 %>% dplyr::select(run_accession)
+write_tsv(accessions3, "ebi_download_list3.txt")
+```
+
+Find any missing accessions (ie, downloads that timed out). 
+```{r acc_check}
+download1 = read_tsv("ebi_download_list.txt")
+download2 = read_tsv("ebi_download_list2.txt")
+download3 = read_tsv("ebi_download_list3.txt")
+
+to_download_original = download1 %>% anti_join(download2)
+to_download = bind_rows(to_download_original, download3)
+
+downloaded = read_tsv("agp_files.txt")
+
+timed_out = to_download %>% anti_join(downloaded)
+```
+It turns out all were downloaded, but there are some duplicate experiment accession numbers. All data has been download and is ready for import into QIIME2!
+
+### Export merged metadata and accessions
+
+Add a SampleID column that appends "sample-" to the front of the accessions (experiment or run).
+```{r metadata_creation}
+metadata_agp = agp_filtered_accessions %>% left_join(accessions2) %>% 
+  mutate(experiment_accession2 = if_else(is.na(run_accession), 
+                                         experiment_accession, 
+                                         run_accession)) %>% 
+  mutate(SampleID = paste("sample", experiment_accession2, sep = "-")) %>% 
+  rename(sample_name_agp = sample_name) %>% 
+  relocate(SampleID) %>% distinct()
+```
+
+Export the metadata file as a .txt for use in QIIME2.
+```{r metadata_export}
+write_tsv(metadata_agp, "agp-metadata.txt")
+```
