@@ -28,6 +28,8 @@ ANCOMBC (v.3.13, https://bioconductor.org/packages/release/bioc/html/ANCOMBC.htm
 pROC (v.1.18.0)
 VennDiagram (v.1.6.0)
 dotwhisker (v.0.7.4)
+mikropml
+furrr
 
 
 ```{r load_libraries}
@@ -47,6 +49,8 @@ library(ANCOMBC)
 library(pROC)
 library(VennDiagram)
 library(dotwhisker)
+library(mikropml)
+library(furrr)
 ```
 
 ## Importing data
@@ -119,6 +123,8 @@ metadata = read_tsv("metadata-combined-re.txt",
 metadata_re = metadata %>% 
   right_join(unweighted_re, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:40)
+write_tsv(metadata_re, "metadata_re.tsv")
+metadata_re = read_tsv("metadata_re.tsv", col_types = "cccccffffffffffffdddfdffffdfdffffffffffddd")
 
 metadata_re_onesubj = metadata %>% 
   right_join(unweighted_re_onesubj, by = c("SampleID" = "...1")) %>% 
@@ -9911,4 +9917,60 @@ setEPS()
 postscript(file="taxa_graphs_present_2.eps", width=12, height=5, paper = "special")
 plot2p
 dev.off()
+```
+
+## Machine learning models
+
+In order to maximize the ability to predict categories in adults from models created in children, we used more rigorous machine learning models at the genus level.
+
+### Pre-process the data
+
+```{r child_rf}
+genus_child = read_tsv("feature-table-genus.tsv") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Gensu", values_from = "rel_abund")
+metadata_re = read_tsv("metadata_re.tsv", col_types = "cccccffffffffffffdddfdffffdfdffffffffffddd")
+
+genus_child_meta = metadata_re %>% 
+  inner_join(genus_child) %>% 
+  rename(outcome = Race) %>% 
+  dplyr::select(outcome, 41:1198)
+genus_child_meta$outcome = recode_factor(genus_child_meta$outcome, 
+                                         Black = "Black", White = "White", 
+                `Asian/Pacific Islander` = "AAPI")
+
+genus_child_meta_preprocess = genus_child_meta %>% preprocess_data(outcome_colname = "outcome")
+dat = genus_child_meta_preprocess$dat_transformed
+
+tic()
+initial_run = run_ml(dataset = dat, 
+         method = "rf", 
+         outcome_colname = "outcome", 
+         cv_times = 100, 
+         seed = 1018)
+toc()
+
+new_hp = list(mtry = c(9, 10, 11, 12, 13, 14))
+test_hp = function(seed) {
+  run_ml(dataset = dat, 
+         method = "rf", 
+         outcome_colname = "outcome", 
+         cv_times = 100, 
+         hyperparameters = new_hp,
+         seed = seed)
+}
+
+plan("multisession")
+
+tic()
+iterative_run_ml_results = future_map(c(1,2,3), test_hp,
+                                      .options = furrr_options(seed = T))
+toc()
+
+performance = iterative_run_ml_results %>%
+  map(pluck, "trained_model") %>% 
+  combine_hp_performance()
+plot_hp_performance(performance$dat, mtry, logLoss)
+
+plan("sequential")
 ```
