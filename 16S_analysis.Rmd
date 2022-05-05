@@ -1023,11 +1023,15 @@ mds_otus_weighted_points2_age = mds_otus_weighted_points2 %>%
                                       Host_age_cat == "3-12 months" ~
                                         "3-12 months",
                                       Host_age_cat == "1-3 years" ~
-                                        "1-3 years")) %>% 
+                                        "1-3 years"))
+mds_otus_weighted_points2_age2 = mds_otus_weighted_points2 %>% 
+  filter(Host_age_cat != "NA") %>%  
   mutate(Host_age_cat_new2 = case_when(Host_age_cat == "3-6 years" ~ 
                                         "3-12 years", 
                                       Host_age_cat == "6-12 years" ~ 
                                         "3-12 years",
+                                      Host_age_cat == "0-1 week" ~
+                                        "0-3 months",
                                       Host_age_cat == "1-6 weeks" ~
                                         "0-3 months",
                                       Host_age_cat == "6 weeks-3 months" ~
@@ -1038,13 +1042,16 @@ mds_otus_weighted_points2_age = mds_otus_weighted_points2 %>%
                                         "1-3 years"))
 mds_otus_weighted_points2_age$Host_age_cat_new = factor(mds_otus_weighted_points2_age$Host_age_cat_new, 
                                     levels = c("1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-12 years"))
-mds_otus_weighted_points2_age$Host_age_cat_new2 = factor(mds_otus_weighted_points2_age$Host_age_cat_new2, 
+mds_otus_weighted_points2_age2$Host_age_cat_new2 = factor(mds_otus_weighted_points2_age2$Host_age_cat_new2, 
                                     levels = c("0-3 months", "3-12 months", "1-3 years", "3-12 years"))
 mds_otus_weighted_points2_age$Host_age_cat2 = factor(mds_otus_weighted_points2_age$Host_age_cat2, 
                                     levels = c("1-6 weeks", "6 weeks-3 months", "3-6 months",
                                                "6-9 months", "9-12 months",
                                                 "1-3 years", "3-12 years"))
 mds_otus_weighted_points2_age$Race = factor(mds_otus_weighted_points2_age$Race, 
+                                    levels = c("White", "Black", 
+                                               "Asian/Pacific Islander"))
+mds_otus_weighted_points2_age2$Race = factor(mds_otus_weighted_points2_age2$Race, 
                                     levels = c("White", "Black", 
                                                "Asian/Pacific Islander"))
 weight_age <- ggplot(mds_otus_weighted_points2_age, 
@@ -1166,7 +1173,7 @@ geom_point(aes(shape = Ethnicity,
            x = -Inf, y = Inf, size = 7,
            hjust = 0, vjust = 1)
 
-mds_otus_weighted_points2_age_03month = mds_otus_weighted_points2_age %>% 
+mds_otus_weighted_points2_age_03month = mds_otus_weighted_points2_age2 %>% 
   filter(Host_age_cat_new2 == "0-3 months")
 
 weight_age_03month <- ggplot(mds_otus_weighted_points2_age_03month, 
@@ -1196,8 +1203,8 @@ geom_point(aes(shape = Ethnicity,
            x = -Inf, y = Inf, size = 7,
            hjust = 0, vjust = 1)
 
-mds_otus_weighted_points2_age_012month = mds_otus_weighted_points2_age %>% 
-  filter(Host_age_cat_new2 == "0-3 months" | Host_age_cat_new == "3-12 months")
+mds_otus_weighted_points2_age_012month = mds_otus_weighted_points2_age2 %>% 
+  filter(Host_age_cat_new2 == "0-3 months" | Host_age_cat_new2 == "3-12 months")
 
 weight_age_012month <- ggplot(mds_otus_weighted_points2_age_012month, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
@@ -2889,6 +2896,10 @@ alpha_one_three = alpha_all %>%
 alpha_threey_twelvey = alpha_all %>% 
   filter(Host_age_cat == "3-6 years" | 
            Host_age_cat == "6-12 years")
+alpha_onem_threem = alpha_all %>% 
+  filter(Host_age_cat == "0-1 week" |
+           Host_age_cat == "1-6 weeks" |
+           Host_age_cat == "6 weeks-3 months")
 
 #0-1 weeks
 f01 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_zero_one, na.action = na.omit)
@@ -2987,6 +2998,41 @@ summary(c63)
 Anova(c63)
 c63r_df = broom::tidy(summary(glht(c63,linfct=mcp(Race="Tukey"))))
 c63e_df = broom::tidy(summary(glht(c63,linfct=mcp(Ethnicity="Tukey"))))
+
+#0-3 months
+f1m3m = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_onem_threem, na.action = na.omit)
+summary(f1m3m)
+Anova(f1m3m)
+summary(glht(f1m3m,linfct=mcp(Breastfeeding="Tukey")))
+f1m3mr_df = broom::tidy(summary(glht(f1m3m,linfct=mcp(Race="Tukey"))))
+f1m3me_df = broom::tidy(summary(glht(f1m3m,linfct=mcp(Ethnicity="Tukey"))))
+
+o1m3m = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_onem_threem, na.action = na.omit)
+summary(o1m3m)
+Anova(o1m3m)
+o1m3mr_df = broom::tidy(summary(glht(o1m3m,linfct=mcp(Race="Tukey"))))
+o1m3me_df = broom::tidy(summary(glht(o1m3m,linfct=mcp(Ethnicity="Tukey"))))
+
+s1m3m = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_onem_threem, na.action = na.omit)
+summary(s1m3m)
+Anova(s1m3m)
+summary(glht(s1m3m,linfct=mcp(Breastfeeding="Tukey")))
+s1m3mr_df = broom::tidy(summary(glht(s1m3m,linfct=mcp(Race="Tukey"))))
+s1m3me_df = broom::tidy(summary(glht(s1m3m,linfct=mcp(Ethnicity="Tukey"))))
+
+p1m3m = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_onem_threem, na.action = na.omit)
+summary(p1m3m)
+Anova(p1m3m)
+summary(glht(p1m3m,linfct=mcp(host_sex="Tukey")))
+summary(glht(p1m3m,linfct=mcp(Breastfeeding="Tukey")))
+p1m3mr_df = broom::tidy(summary(glht(p1m3m,linfct=mcp(Race="Tukey"))))
+p1m3me_df = broom::tidy(summary(glht(p1m3m,linfct=mcp(Ethnicity="Tukey"))))
+
+c1m3m = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_onem_threem, na.action = na.omit)
+summary(c1m3m)
+Anova(c1m3m)
+c1m3mr_df = broom::tidy(summary(glht(c1m3m,linfct=mcp(Race="Tukey"))))
+c1m3me_df = broom::tidy(summary(glht(c1m3m,linfct=mcp(Ethnicity="Tukey"))))
 
 #3-12 months
 f312 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
@@ -4477,6 +4523,256 @@ ggarrange(f63r_dw, s63r_dw, p63r_dw, o63r_dw, c63r_dw,
           legend.grob = combo_legend, legend = "bottom")
 dev.off()
 
+#0-3 months
+f1m3mr_df2 = f1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f1m3me_df2 = f1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Faith's PD")
+f1m3mr_dw = dwplot(f1m3mr_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  ggtitle("6 weeks-3 months") +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(2),
+                                 angle = 90,
+                                 hjust = 0.5),
+        plot.title=element_text(size=rel(2), face = "bold"),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Asian/PI\n- Black", 
+                              "Asian/PI\n- White", 
+                              "Black\n- White")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.718", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+f1m3me_dw = dwplot(f1m3me_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.text.y=element_text(size=rel(2),
+                                 angle = 90,
+                                 hjust = 0.5),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#418204"),
+                                        labels = c("Faith's PD")) +
+  scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.384", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+o1m3mr_df2 = o1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o1m3me_df2 = o1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Observed ASVs")
+o1m3mr_dw = dwplot(o1m3mr_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs"))+
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.448", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+o1m3me_dw = dwplot(o1m3me_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#4a228c"),
+                                        labels = c("Observed ASVs")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.670", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+s1m3mr_df2 = s1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s1m3me_df2 = s1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Shannon Diversity")
+s1m3mr_dw = dwplot(s1m3mr_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+ scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.642", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+s1m3me_dw = dwplot(s1m3me_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#834600"),
+                                        labels = c("Shannon Diversity")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.406", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+p1m3mr_df2 = p1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p1m3me_df2 = p1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Pielou's Evenness")
+p1m3mr_dw = dwplot(p1m3mr_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.747", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+p1m3me_dw = dwplot(p1m3me_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#b05b00"),
+                                        labels = c("Pielou's Evenness")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.548", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+c1m3mr_df2 = c1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c1m3me_df2 = c1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
+  mutate(model = "Chao 1") 
+c1m3mr_dw = dwplot(c1m3mr_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", values = c("#873eff"),
+                     labels = c("Chao 1")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Race: p = 0.311", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+c1m3me_dw = dwplot(c1m3me_df2, vline = geom_vline(xintercept = 0, color = "gray40",
+                                    linetype = 2),
+       dot_args = list(aes(color = "model", size=3)),
+       whisker_args = list(aes(color = "model", size=2))) +
+  theme_classic() + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(size=rel(1.5)),
+        axis.title.y=element_blank(), 
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "none") + 
+  scale_color_manual(name = "Metric", 
+                                        values = c("#873eff"),
+                                        labels = c("Chao 1")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "Ethnicity: p = 0.668", 
+           x = -Inf, y = Inf, size = 6,
+           hjust = 0, vjust = 1)
+
+legend_models = rbind(f1m3mr_df2, s1m3mr_df2, p1m3mr_df2, o1m3mr_df2, c1m3mr_df2)
+legend_plot = dwplot(legend_models,
+       dot_args = list(aes(color = model)),
+       whisker_args = list(aes(color = model))) + 
+  xlab("Estimate") + scale_color_manual(values = c("#418204", "#834600",
+                                                   "#b05b00", "#4a228c",
+                                                   "#873eff"),
+                                        labels = c("Faith's PD", 
+                                                   "Shannon Diversity", 
+                                                   "Pielou's Evenness", 
+                                                   "Observed ASVs", "Chao 1")) +
+  theme(legend.title = element_blank(),
+        legend.key = element_rect(fill = "white", colour = "white"),
+        legend.text = element_text(size = rel(2)),
+        legend.position = "bottom") + 
+  guides(colour = guide_legend(override.aes = list(size=7)))
+combo_legend = get_legend(legend_plot)
+
+tiff(file="alpha_effect_race_eth_6weeks3months.tif", 
+     res=300, width=15, height=8, units="in")
+ggarrange(f1m3mr_dw, s1m3mr_dw, p1m3mr_dw, o1m3mr_dw, c1m3mr_dw, 
+          f1m3me_dw, s1m3me_dw, p1m3me_dw, o1m3me_dw, c1m3me_dw,
+          nrow = 2, ncol = 5, heights = c(2,1), align = "v",
+          legend.grob = combo_legend, legend = "bottom")
+dev.off()
+
 #3-12 months
 f312r_df2 = f312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
@@ -5183,21 +5479,21 @@ ggarrange(f312yr_dw, o312yr_dw, c312yr_dw, s312yr_dw, p312yr_dw,
 dev.off()
 
 ###Combo
-f63r_df3 = f63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+f1m3mr_df3 = f1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
-o63r_df3 = o63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  mutate(model = "0-3 months")
+o1m3mr_df3 = o1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
-s63r_df3 = s63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  mutate(model = "0-3 months")
+s1m3mr_df3 = s1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
-p63r_df3 = p63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  mutate(model = "0-3 months")
+p1m3mr_df3 = p1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
-c63r_df3 = c63r_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  mutate(model = "0-3 months")
+c1m3mr_df3 = c1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
+  mutate(model = "0-3 months")
 
 f312r_df3 = f312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
@@ -5231,16 +5527,16 @@ c13r_df3 = c13r_df %>% dplyr::select(contrast:adj.p.value) %>%
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
   mutate(model = "1-3 years")
 
-faithr_df = rbind(f63r_df3, f312r_df3, f13r_df3)
-faithr_df$model = factor(faithr_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
-shannonr_df = rbind(s63r_df3, s312r_df3, s13r_df3)
-shannonr_df$model = factor(shannonr_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
-pielour_df = rbind(p63r_df3, p312r_df3, p13r_df3)
-pielour_df$model = factor(pielour_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
-observedr_df = rbind(o63r_df3, o312r_df3, o13r_df3)
-observedr_df$model = factor(observedr_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
-chaor_df = rbind(c63r_df3, c312r_df3, c13r_df3)
-chaor_df$model = factor(chaor_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
+faithr_df = rbind(f1m3mr_df3, f312r_df3, f13r_df3)
+faithr_df$model = factor(faithr_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+shannonr_df = rbind(s1m3mr_df3, s312r_df3, s13r_df3)
+shannonr_df$model = factor(shannonr_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+pielour_df = rbind(p1m3mr_df3, p312r_df3, p13r_df3)
+pielour_df$model = factor(pielour_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+observedr_df = rbind(o1m3mr_df3, o312r_df3, o13r_df3)
+observedr_df$model = factor(observedr_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+chaor_df = rbind(c1m3mr_df3, c312r_df3, c13r_df3)
+chaor_df$model = factor(chaor_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
 
 faithr_dw = dwplot(faithr_df, vline = geom_vline(xintercept = 0, color = "gray40",
                                     linetype = 2),
@@ -5262,7 +5558,7 @@ faithr_dw = dwplot(faithr_df, vline = geom_vline(xintercept = 0, color = "gray40
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.374<br>
+           label = "0-3 months: p = 0.718<br>
            3-12 months: p = 0.233<br>
            <span style='color: blue1;'><b><i>1-3 years: p = 0.006</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
@@ -5288,7 +5584,7 @@ observedr_dw = dwplot(observedr_df, vline = geom_vline(xintercept = 0, color = "
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.209<br>
+           label = "0-3 months: p = 0.448<br>
            <span style='color: blue1;'><b><i>3-12 months: p = 0.005<br>
            1-3 years: p = 0.001</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
@@ -5314,7 +5610,7 @@ chaor_dw = dwplot(chaor_df, vline = geom_vline(xintercept = 0, color = "gray40",
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.186<br>
+           label = "0-3 months: p = 0.311<br>
            <span style='color: blue1;'><b><i>3-12 months: p = 0.001<br>
            1-3 years: p = 0.002</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
@@ -5340,7 +5636,7 @@ shannonr_dw = dwplot(shannonr_df, vline = geom_vline(xintercept = 0, color = "gr
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.682<br>
+           label = "0-3 months: p = 0.642<br>
            <span style='color: blue1;'><b><i>3-12 months: p = 0.006<br>
            1-3 years: p = 0.020</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
@@ -5366,27 +5662,27 @@ pielour_dw = dwplot(pielour_df, vline = geom_vline(xintercept = 0, color = "gray
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.746<br>
+           label = "0-3 months: p = 0.747<br>
            <span style='color: blue1;'><b><i>3-12 months: p = 0.026</b></i><br></span>
            1-3 years: p = 0.142", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
-f63e_df3 = f63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+f1m3me_df3 = f1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
-o63e_df3 = o63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  mutate(model = "0-3 months")
+o1m3me_df3 = o1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
-s63e_df3 = s63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  mutate(model = "0-3 months")
+s1m3me_df3 = s1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
-p63e_df3 = p63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  mutate(model = "0-3 months")
+p1m3me_df3 = p1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
-c63e_df3 = c63e_df %>% dplyr::select(contrast:adj.p.value) %>% 
+  mutate(model = "0-3 months")
+c1m3me_df3 = c1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "6 weeks - 3 months")
+  mutate(model = "0-3 months")
 
 f312e_df3 = f312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
@@ -5420,16 +5716,16 @@ c13e_df3 = c13e_df %>% dplyr::select(contrast:adj.p.value) %>%
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
   mutate(model = "1-3 years")
 
-faithe_df = rbind(f63e_df3, f312e_df3, f13e_df3)
-faithe_df$model = factor(faithe_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
-shannone_df = rbind(s63e_df3, s312e_df3, s13e_df3)
-shannone_df$model = factor(shannone_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
-pieloue_df = rbind(p63e_df3, p312e_df3, p13e_df3)
-pieloue_df$model = factor(pieloue_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
-observede_df = rbind(o63e_df3, o312e_df3, o13e_df3)
-observede_df$model = factor(observede_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
-chaoe_df = rbind(c63e_df3, c312e_df3, c13e_df3) 
-chaoe_df$model = factor(chaoe_df$model, levels = c("6 weeks - 3 months", "3-12 months", "1-3 years")) 
+faithe_df = rbind(f1m3me_df3, f312e_df3, f13e_df3)
+faithe_df$model = factor(faithe_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+shannone_df = rbind(s1m3me_df3, s312e_df3, s13e_df3)
+shannone_df$model = factor(shannone_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+pieloue_df = rbind(p1m3me_df3, p312e_df3, p13e_df3)
+pieloue_df$model = factor(pieloue_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+observede_df = rbind(o1m3me_df3, o312e_df3, o13e_df3)
+observede_df$model = factor(observede_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+chaoe_df = rbind(c1m3me_df3, c312e_df3, c13e_df3) 
+chaoe_df$model = factor(chaoe_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
 
 faithe_dw = dwplot(faithe_df, vline = geom_vline(xintercept = 0, color = "gray40",
                                     linetype = 2),
@@ -5448,7 +5744,7 @@ faithe_dw = dwplot(faithe_df, vline = geom_vline(xintercept = 0, color = "gray40
                                         labels = c("Faith's PD")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.758<br>
+           label = "0-3 months: p = 0.384<br>
            3-12 months: p = 0.880<br>
            <span style='color: blue1;'><b><i>1-3 years: p = 0.015</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
@@ -5471,7 +5767,7 @@ observede_dw = dwplot(observede_df, vline = geom_vline(xintercept = 0, color = "
                                         labels = c("Observed ASVs")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.973<br>
+           label = "0-3 months: p = 0.670<br>
            3-12 months: p = 0.914<br>
            <span style='color: blue1;'><b><i>1-3 years: p = 0.023</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
@@ -5494,8 +5790,8 @@ chaoe_dw = dwplot(chaoe_df, vline = geom_vline(xintercept = 0, color = "gray40",
                                         labels = c("Chao 1")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.977<br>
-           3-12 months: p = 0.945<br>
+           label = "0-3 months: p = 0.977<br>
+           3-12 months: p = 0.668<br>
            <span style='color: blue1;'><b><i>1-3 years: p = 0.018</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
@@ -5517,8 +5813,8 @@ shannone_dw = dwplot(shannone_df, vline = geom_vline(xintercept = 0, color = "gr
                                         labels = c("Shannon Diversity")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.839<br>
-           3-12 months: p = 0.857<br>
+           label = "0-3 months: p = 0.839<br>
+           3-12 months: p = 0.406<br>
            <span style='color: blue1;'><b><i>1-3 years: p = 0.042</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
@@ -5540,13 +5836,13 @@ pieloue_dw = dwplot(pieloue_df, vline = geom_vline(xintercept = 0, color = "gray
                                         labels = c("Pielou's Evenness")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "6 weeks-3 months: p = 0.533<br>
+           label = "0-3 months: p = 0.548<br>
            3-12 months: p = 0.815<br>
            1-3 years: p = 0.174", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
-pielour_df$model = factor(pielour_df$model, levels = c("6 weeks - 3 months",
+pielour_df$model = factor(pielour_df$model, levels = c("0-3 months",
                                                        "3-12 months",
                                                        "1-3 years"))
 legend_plot = dwplot(pielour_df,
@@ -10301,319 +10597,7 @@ roc_plot_eth = ggroc(list(Hispanic, NonHispanic), legacy.axes = TRUE, lwd = 2) +
                color = "grey40", linetype = "dashed", size = 1.5) 
 ```
 
-##Graphs for publication
-```{r pub_graphs_fig1}
-age_legend = get_legend(weight_age)
-nmds_legend = get_legend(weight_age_6week3month)
 
-tiff(file="fig1v4.tif", res=300, width=27, height=28, units="in")
-row1 = plot_grid(alpha_all_age_graph, weight_age + theme(legend.position = "none"),
-                 nrow = 1, ncol = 2,
-                 rel_widths = c(2, 1.2), labels = c("A", ""),
-                 label_size = 24)
-top = plot_grid(row1, age_legend, nrow = 2, ncol = 1, 
-                rel_heights = c(1, 0.2))
-
-row3_left = plot_grid(f63r_dw, o63r_dw, c63r_dw, s63r_dw, p63r_dw,
-                      f63e_dw, o63e_dw, c63e_dw, s63e_dw, p63e_dw,
-                      nrow = 2, ncol = 5, rel_heights = c(2,1), align = "hv",
-                      axis = "ltb")
-row4_left = plot_grid(f312r_dw, o312r_dw, c312r_dw, s312r_dw, p312r_dw,
-                      f312e_dw, o312e_dw, c312e_dw, s312e_dw, p312e_dw,
-                      nrow = 2, ncol = 5, rel_heights = c(2,1), align = "hv",
-                      axis = "ltb")
-row5_left = plot_grid(f13r_dw, o13r_dw, c13r_dw, s13r_dw, p13r_dw,
-                      f13e_dw, o13e_dw, c13e_dw, s13e_dw, p13e_dw,
-                      nrow = 2, ncol = 5, rel_heights = c(2,1), align = "hv",
-                      axis = "ltb")
-
-bottom = plot_grid(row3_left, 
-                    weight_age_6week3month + theme(legend.position = "none"),
-                    row4_left, 
-                    weight_age_312month + theme(legend.position = "none"),
-                    row5_left, 
-                   weight_age_13year + theme(legend.position = "none"),
-                   combo_legend, nmds_legend,
-                 nrow = 4, ncol = 2,
-                 rel_heights = c(1,1,1,.2), rel_widths = c(2, 1.2),
-                 axis = "lb", align = "hv",
-                 labels = c("B", "", "C", "", "D", "", "", ""), label_size = 24)
-plot = plot_grid(top, bottom,
-                 nrow = 2, ncol = 1,
-                 rel_heights = c(1.2, 3.2),
-          axis = "l", align = "v")
-plot
-dev.off()
-
-setEPS()
-postscript(file="fig1v4.eps", width=28, height=30, paper = "special")
-plot
-dev.off()
-```
-
-```{r pub_graphs_fig1v5}
-age_legend = get_legend(weight_age)
-
-tiff(file="fig1v5.tif", res=300, width=24, height=8, units="in")
-row1 = plot_grid(alpha_all_age_graph, weight_age + theme(legend.position = "none"),
-                 nrow = 1, ncol = 2,
-                 rel_widths = c(2, 1.1), labels = c("A", "B"),
-                 label_size = 24)
-fig1 = plot_grid(row1, age_legend, nrow = 2, ncol = 1, 
-                rel_heights = c(1, 0.2))
-
-fig1
-dev.off()
-
-setEPS()
-postscript(file="fig1v5.eps", width=24, height=8, paper = "special")
-fig1
-dev.off()
-```
-
-```{r pub_graphs_fig2v2}
-nmds_legend = get_legend(weight_age_6week3month)
-
-tiff(file="fig2v2.tif", res=300, width=22, height=20, units="in")
-
-
-row1 = plot_grid(faithr_dw + theme(legend.position = "none"), 
-                 observedr_dw + theme(legend.position = "none"), 
-                 chaor_dw + theme(legend.position = "none"), 
-                 shannonr_dw + theme(legend.position = "none"), 
-                 pielour_dw + theme(legend.position = "none"),
-                 nrow = 1, ncol = 5, 
-                 align = "h", axis = "tb")
-row2 = plot_grid(faithe_dw + theme(legend.position = "none"), 
-                 observede_dw + theme(legend.position = "none"), 
-                 chaoe_dw + theme(legend.position = "none"), 
-                 shannone_dw + theme(legend.position = "none"), 
-                 pieloue_dw + theme(legend.position = "none"),
-                 nrow = 1, ncol = 5, 
-                 align = "h", axis = "tb")
-
-top = plot_grid(row1, row2, combo_legend,
-                nrow = 3, ncol = 1,
-                rel_heights = c(2,1,.2))
-
-row4 = plot_grid(weight_age_6week3month + 
-                     theme(legend.position = "none"),
-                    weight_age_312month + 
-                     theme(legend.position = "none"),
-                   weight_age_13year + 
-                     theme(legend.position = "none"),
-                 axis = "tb", align = "v", nrow = 1, ncol = 3)
-
-bottom = plot_grid(row4, nmds_legend,
-                 nrow = 2, ncol = 1,
-                 rel_heights = c(2,.2))
-
-plot = plot_grid(top, bottom,
-                 nrow = 2, ncol = 1,
-                 rel_heights = c(3,2),
-                 labels = c("A", "B"), label_size = 36)
-plot
-dev.off()
-
-setEPS()
-postscript(file="fig2v2.eps", width=22, height=20, paper = "special")
-plot
-dev.off()
-```
-
-```{r pub_graphs_alpha_comp}
-tiff(file="alpha_comp.tif", res=90, width=15, height=15, units="in")
-plot_grid(alpha_6week3month_race, alpha_312month_race,alpha_13year_race,
-          alpha_6week3month_race_asvs, alpha_312month_race_asvs, 
-          alpha_13year_race_asvs, alpha_6week3month_race_faith, 
-          alpha_312month_race_faith, alpha_13year_race_faith, 
-          nrow = 3, ncol = 3, align = "hv")
-dev.off()
-```
-
-```{r pub_graphs_fig3b}
-venn.diagram(x = list(c, a), 
-             category.names = c("Children (57)", "Adults (144)"), 
-             filename = "fig3Bv2.tif", output = T, imagetype = "tiff", 
-             height = 5, width = 5, units = "in", resolution = 300, 
-             col = c("#4b265c", "#25a165"), lwd = 1,
-             fill = c(alpha("#4b265c", 0.3), alpha("#25a165", 0.3)), 
-             fontfamily = "sans", cat.fontfamily = "sans",
-             cat.default.pos = "outer", cat.dist = c(0.1, 0.1),
-             margin = 0.2)
-
-venn.diagram(x = list(c, a), 
-             category.names = c("Children (57)", "Adults (144)"), 
-             filename = "fig3Bv2.svg", output = T, imagetype = "svg", 
-             height = 5, width = 5, units = "in", resolution = 300, 
-             col = c("#4b265c", "#25a165"), lwd = 1,
-             fill = c(alpha("#4b265c", 0.3), alpha("#25a165", 0.3)), 
-             fontfamily = "sans", cat.fontfamily = "sans",
-             cat.default.pos = "outer", cat.dist = c(0.1, 0.1),
-             margin = 0.2)
-```
-
-```{r fig3C}
-tiff(file="fig3Cv20.tif", res=300, width=7, height=10, units="in")
-plot_grid(roc_curve_child_r, roc_curve_child_e, nrow = 2, ncol = 1,
-          rel_widths = c(1, 1), align = "hv", axis = "tb")
-dev.off()
-
-setEPS()
-postscript(file="fig3Cv20.eps", width=7, height=10, paper = "special")
-plot_grid(roc_curve_child_r, roc_curve_child_e, nrow = 2, ncol = 1,
-          rel_widths = c(1, 1), align = "hv", axis = "tb")
-dev.off()
-```
-
-```{r fig3c}
-tiff(file="fig3Av2.tif", 
-     res=300, width=10, height=18, units="in")
-plot3c = plot_grid(plot_Haemo, histo_Haemo, 
-                   plot_P.copri, histo_P.copri, 
-                   plot_Faecali, histo_Faecali,
-                   plot_V.dispar, histo_V.dispar,
-                   plot_V.parvula, histo_V.parvula,
-          nrow = 5, ncol = 2, rel_widths = c(0.8,1.2),
-          axis = "tbl", align = "hv")
-plot3c
-dev.off()
-
-setEPS()
-postscript(file="fig3Av2.eps", width=10, height=18, paper = "special")
-plot3c
-dev.off()
-```
-
-```{r fig3c3}
-tiff(file="fig3Av3.tif", 
-     res=300, width=10, height=18, units="in")
-plot3c = plot_grid(plot_Haemo, histo_Haemo2, histo_Haemo3,
-                   plot_P.copri, histo_P.copri2, histo_P.copri3,
-                   plot_Faecali, histo_Faecali2, histo_Faecali3,
-                   plot_V.dispar, histo_V.dispar2, histo_V.dispar3,
-                   plot_V.parvula, histo_V.parvula2, histo_V.parvula3,
-          nrow = 5, ncol = 3, rel_widths = c(0.8, 0.6, 0.6),
-          axis = "tbl", align = "hv")
-plot3c
-dev.off()
-
-setEPS()
-postscript(file="fig3Av3.eps", width=10, height=18, paper = "special")
-plot3c
-dev.off()
-```
-
-###Supplement graphs
-```{r figs1}
-tiff(file = "figs1.tif", res = 300, width = 12, height = 8, units = "in")
-unweight_age
-dev.off()
-
-setEPS()
-postscript(file="figs1.eps", width=12, height=8, paper = "special")
-unweight_age
-dev.off()
-```
-
-```{r figs2}
-tiff(file = "figs2.tif", res = 300, width = 12, height = 8, units = "in")
-unweight_race
-dev.off()
-
-setEPS()
-postscript(file="figs2.eps", width=12, height=8, paper = "special")
-unweight_race
-dev.off()
-```
-
-```{r figs3}
-nmds_legend = get_legend(weight_age_6week3month)
-
-tiff(file="figs3.tif", res=300, width=12, height=24, units="in")
-
-
-top = plot_grid(weight_age_01week + theme(legend.position = "none"), 
-                weight_age_16week + theme(legend.position = "none"),
-                weight_age_03month + theme(legend.position = "none"), 
-                weight_age_36month + theme(legend.position = "none"), 
-                weight_age_69month + theme(legend.position = "none"),
-                weight_age_912month + theme(legend.position = "none"),
-                weight_age_012month + theme(legend.position = "none"),
-                weight_age_312year + theme(legend.position = "none"),
-                nrow = 4, ncol = 2, 
-                align = "hv", axis = "lb")
-
-plot = plot_grid(top, nmds_legend,
-                 nrow = 2, ncol = 1,
-                 rel_heights = c(4, 0.2))
-plot
-dev.off()
-
-setEPS()
-postscript(file="figs3.eps", width=12, height=24, paper = "special")
-plot
-dev.off()
-```
-
-```{r figs3}
-nmds_legend = get_legend(unweight_age_6week3month)
-
-tiff(file="figs4.tif", res=300, width=18, height=24, units="in")
-plot = plot_grid(unweight_age_01week + theme(legend.position = "none"), 
-                unweight_age_16week + theme(legend.position = "none"),
-                unweight_age_6week3month + theme(legend.position = "none"),
-                unweight_age_03month + theme(legend.position = "none"), 
-                unweight_age_312month + theme(legend.position = "none"),
-                unweight_age_36month + theme(legend.position = "none"), 
-                unweight_age_69month + theme(legend.position = "none"),
-                unweight_age_912month + theme(legend.position = "none"),
-                unweight_age_012month + theme(legend.position = "none"),
-                unweight_age_13year + theme(legend.position = "none"),
-                unweight_age_312year + theme(legend.position = "none"),
-                nmds_legend,
-                nrow = 4, ncol = 3, 
-                align = "hv", axis = "lb")
-plot
-dev.off()
-
-setEPS()
-postscript(file="figs4.eps", width=18, height=24, paper = "special")
-plot
-dev.off()
-```
-
-##Graphs for presentation
-
-```{r taxa_graphs}
-tiff(file="taxa_graphs_present_1.tif", 
-     res=300, width=16, height=5, units="in")
-plot1p = plot_grid(plot_Bifidobacterium, plot_Haemo, 
-          plot_P.copri, plot_Faecali, 
-          nrow = 1, ncol = 4,
-          axis = "tb", align = "hv")
-plot1p
-dev.off()
-
-setEPS()
-postscript(file="taxa_graphs_present_1.eps", width=16, height=5, paper = "special")
-plot1p
-dev.off()
-
-tiff(file="taxa_graphs_present_2.tif", 
-     res=300, width=12, height=5, units="in")
-plot2p = plot_grid(plot_V.dispar, plot_V.parvula, 
-          plot_Dialister,
-          nrow = 1, ncol = 3,
-          axis = "tb", align = "hv")
-plot2p
-dev.off()
-
-setEPS()
-postscript(file="taxa_graphs_present_2.eps", width=12, height=5, paper = "special")
-plot2p
-dev.off()
-```
 
 ## Machine learning models - children only
 
@@ -11058,10 +11042,10 @@ Genus-level feature tables from studies included in the analysis of children and
 ```{r merge_ml_preprocess}
 Sys.setenv("VROOM_CONNECTION_SIZE" = 131072 * 2)
 
-genus_merged = read_tsv("merged-adult-child-feature-table-genus.tsv") %>% 
+genus_merged = read_tsv("AGP_comp/merged-adult-child-feature-table-genus.tsv") %>% 
   pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
   pivot_wider(names_from = "Genus", values_from = "rel_abund")
-metadata_merged = read_tsv("merged-adult-child-metadata.txt")
+metadata_merged = read_tsv("AGP_comp/merged-adult-child-metadata.txt")
 
 genus_merged_meta = metadata_merged %>% 
   inner_join(genus_merged) %>% 
@@ -11556,4 +11540,391 @@ ggsave("roc_curve_merge_down_1.tiff", width = 7, height = 5)
 ###Final model
 ```{r final_model_merged_down}
 
+```
+
+##Important feature graphs
+```{r imp_feat_graphs}
+genus_merged = read_tsv("AGP_comp/merged-adult-child-feature-table-genus.tsv") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Genus", values_from = "rel_abund")
+metadata_merged = read_tsv("AGP_comp/merged-adult-child-metadata.txt")
+
+genus_merged_graphs = metadata_merged %>% 
+  inner_join(genus_merged) %>% 
+  mutate(Age = case_when(Group == "C" ~ "Children",
+                         Group == "A" ~ "Adults")) 
+genus_merged_graphs_relab = decostand(genus_merged_graphs[,5:1507], method = "total")
+genus_merged_graphs_relab2 = cbind(genus_merged_graphs[,1:4], genus_merged_graphs[,1508], genus_merged_graphs_relab)
+
+genus_merged_graphs_relab2$Race = factor(genus_merged_graphs_relab2$Race, levels = c("White", "Black", "Asian/Pacific Islander"))
+
+plot_ac_Entero = ggplot(genus_merged_graphs_relab2,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Enterobacteriales;f__Enterobacteriaceae;__`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c", 
+                        "#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c", 
+                         "#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Enterobacteriaceae\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  facet_wrap(~ Age)
+
+plot_ac_Prevot = ggplot(genus_merged_graphs_relab2,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c", 
+                        "#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c", 
+                         "#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Prevotella\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  facet_wrap(~ Age)
+
+plot_ac_Rumin = ggplot(genus_merged_graphs_relab2,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c", 
+                        "#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c", 
+                         "#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Ruminococcus\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  facet_wrap(~ Age)
+
+legend_plot_ac = ggboxplot(genus_merged_graphs_relab2, "Race", "k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus", fill = "Race", palette = c("#377eb8", "#f6d128", "#e41a1c"), color = "white") +
+  theme(legend.position = "right")
+```
+
+##Graphs for publication
+```{r pub_graphs_fig1v5}
+age_legend = get_legend(weight_age)
+
+tiff(file="fig1v5.tif", res=300, width=24, height=8, units="in")
+row1 = plot_grid(alpha_all_age_graph, weight_age + theme(legend.position = "none"),
+                 nrow = 1, ncol = 2,
+                 rel_widths = c(2, 1.1), labels = c("A", "B"),
+                 label_size = 24)
+fig1 = plot_grid(row1, age_legend, nrow = 2, ncol = 1, 
+                rel_heights = c(1, 0.2))
+
+fig1
+dev.off()
+
+setEPS()
+postscript(file="fig1v5.eps", width=24, height=8, paper = "special")
+fig1
+dev.off()
+```
+
+```{r pub_graphs_fig2v2}
+nmds_legend = get_legend(weight_age_6week3month)
+
+tiff(file="fig2v2.tif", res=300, width=22, height=20, units="in")
+
+
+row1 = plot_grid(faithr_dw + theme(legend.position = "none"), 
+                 observedr_dw + theme(legend.position = "none"), 
+                 chaor_dw + theme(legend.position = "none"), 
+                 shannonr_dw + theme(legend.position = "none"), 
+                 pielour_dw + theme(legend.position = "none"),
+                 nrow = 1, ncol = 5, 
+                 align = "h", axis = "tb")
+row2 = plot_grid(faithe_dw + theme(legend.position = "none"), 
+                 observede_dw + theme(legend.position = "none"), 
+                 chaoe_dw + theme(legend.position = "none"), 
+                 shannone_dw + theme(legend.position = "none"), 
+                 pieloue_dw + theme(legend.position = "none"),
+                 nrow = 1, ncol = 5, 
+                 align = "h", axis = "tb")
+
+top = plot_grid(row1, row2, combo_legend,
+                nrow = 3, ncol = 1,
+                rel_heights = c(2,1,.2))
+
+row4 = plot_grid(weight_age_03month + 
+                     theme(legend.position = "none"),
+                    weight_age_312month + 
+                     theme(legend.position = "none"),
+                   weight_age_13year + 
+                     theme(legend.position = "none"),
+                 axis = "tb", align = "v", nrow = 1, ncol = 3)
+
+bottom = plot_grid(row4, nmds_legend,
+                 nrow = 2, ncol = 1,
+                 rel_heights = c(2,.2))
+
+plot = plot_grid(top, bottom,
+                 nrow = 2, ncol = 1,
+                 rel_heights = c(3,2),
+                 labels = c("A", "B"), label_size = 36)
+plot
+dev.off()
+
+setEPS()
+postscript(file="fig2v2.eps", width=22, height=20, paper = "special")
+plot
+dev.off()
+```
+
+```{r pub_graphs_alpha_comp}
+tiff(file="alpha_comp.tif", res=90, width=15, height=15, units="in")
+plot_grid(alpha_6week3month_race, alpha_312month_race,alpha_13year_race,
+          alpha_6week3month_race_asvs, alpha_312month_race_asvs, 
+          alpha_13year_race_asvs, alpha_6week3month_race_faith, 
+          alpha_312month_race_faith, alpha_13year_race_faith, 
+          nrow = 3, ncol = 3, align = "hv")
+dev.off()
+```
+
+```{r pub_graphs_fig3b}
+venn.diagram(x = list(c, a), 
+             category.names = c("Children (57)", "Adults (144)"), 
+             filename = "fig3Bv2.tif", output = T, imagetype = "tiff", 
+             height = 5, width = 5, units = "in", resolution = 300, 
+             col = c("#4b265c", "#25a165"), lwd = 1,
+             fill = c(alpha("#4b265c", 0.3), alpha("#25a165", 0.3)), 
+             fontfamily = "sans", cat.fontfamily = "sans",
+             cat.default.pos = "outer", cat.dist = c(0.1, 0.1),
+             margin = 0.2)
+
+venn.diagram(x = list(c, a), 
+             category.names = c("Children (57)", "Adults (144)"), 
+             filename = "fig3Bv2.svg", output = T, imagetype = "svg", 
+             height = 5, width = 5, units = "in", resolution = 300, 
+             col = c("#4b265c", "#25a165"), lwd = 1,
+             fill = c(alpha("#4b265c", 0.3), alpha("#25a165", 0.3)), 
+             fontfamily = "sans", cat.fontfamily = "sans",
+             cat.default.pos = "outer", cat.dist = c(0.1, 0.1),
+             margin = 0.2)
+```
+
+```{r fig3C}
+tiff(file="fig3Cv20.tif", res=300, width=7, height=10, units="in")
+plot_grid(roc_curve_child_r, roc_curve_child_e, nrow = 2, ncol = 1,
+          rel_widths = c(1, 1), align = "hv", axis = "tb")
+dev.off()
+
+setEPS()
+postscript(file="fig3Cv20.eps", width=7, height=10, paper = "special")
+plot_grid(roc_curve_child_r, roc_curve_child_e, nrow = 2, ncol = 1,
+          rel_widths = c(1, 1), align = "hv", axis = "tb")
+dev.off()
+```
+
+```{r fig3c}
+tiff(file="fig3Av2.tif", 
+     res=300, width=10, height=18, units="in")
+plot3c = plot_grid(plot_Haemo, histo_Haemo, 
+                   plot_P.copri, histo_P.copri, 
+                   plot_Faecali, histo_Faecali,
+                   plot_V.dispar, histo_V.dispar,
+                   plot_V.parvula, histo_V.parvula,
+          nrow = 5, ncol = 2, rel_widths = c(0.8,1.2),
+          axis = "tbl", align = "hv")
+plot3c
+dev.off()
+
+setEPS()
+postscript(file="fig3Av2.eps", width=10, height=18, paper = "special")
+plot3c
+dev.off()
+```
+
+```{r fig3c3}
+tiff(file="fig3Av3.tif", 
+     res=300, width=10, height=18, units="in")
+plot3c = plot_grid(plot_Haemo, histo_Haemo2, histo_Haemo3,
+                   plot_P.copri, histo_P.copri2, histo_P.copri3,
+                   plot_Faecali, histo_Faecali2, histo_Faecali3,
+                   plot_V.dispar, histo_V.dispar2, histo_V.dispar3,
+                   plot_V.parvula, histo_V.parvula2, histo_V.parvula3,
+          nrow = 5, ncol = 3, rel_widths = c(0.8, 0.6, 0.6),
+          axis = "tbl", align = "hv")
+plot3c
+dev.off()
+
+setEPS()
+postscript(file="fig3Av3.eps", width=10, height=18, paper = "special")
+plot3c
+dev.off()
+```
+
+###Supplement graphs
+```{r figs1}
+tiff(file = "figs1.tif", res = 300, width = 12, height = 8, units = "in")
+unweight_age
+dev.off()
+
+setEPS()
+postscript(file="figs1.eps", width=12, height=8, paper = "special")
+unweight_age
+dev.off()
+```
+
+```{r figs2}
+tiff(file = "figs2.tif", res = 300, width = 12, height = 8, units = "in")
+unweight_race
+dev.off()
+
+setEPS()
+postscript(file="figs2.eps", width=12, height=8, paper = "special")
+unweight_race
+dev.off()
+```
+
+```{r figs3}
+nmds_legend = get_legend(weight_age_6week3month)
+
+tiff(file="figs3.tif", res=300, width=12, height=24, units="in")
+
+
+top = plot_grid(weight_age_01week + theme(legend.position = "none"), 
+                weight_age_16week + theme(legend.position = "none"),
+                weight_age_6week3month + theme(legend.position = "none"), 
+                weight_age_36month + theme(legend.position = "none"), 
+                weight_age_69month + theme(legend.position = "none"),
+                weight_age_912month + theme(legend.position = "none"),
+                weight_age_012month + theme(legend.position = "none"),
+                weight_age_312year + theme(legend.position = "none"),
+                nrow = 4, ncol = 2, 
+                align = "hv", axis = "lb")
+
+plot = plot_grid(top, nmds_legend,
+                 nrow = 2, ncol = 1,
+                 rel_heights = c(4, 0.2))
+plot
+dev.off()
+
+setEPS()
+postscript(file="figs3.eps", width=12, height=24, paper = "special")
+plot
+dev.off()
+```
+
+```{r figs4}
+nmds_legend = get_legend(unweight_age_6week3month)
+
+tiff(file="figs4.tif", res=300, width=18, height=24, units="in")
+plot = plot_grid(unweight_age_01week + theme(legend.position = "none"), 
+                unweight_age_16week + theme(legend.position = "none"),
+                unweight_age_6week3month + theme(legend.position = "none"),
+                unweight_age_03month + theme(legend.position = "none"), 
+                unweight_age_312month + theme(legend.position = "none"),
+                unweight_age_36month + theme(legend.position = "none"), 
+                unweight_age_69month + theme(legend.position = "none"),
+                unweight_age_912month + theme(legend.position = "none"),
+                unweight_age_012month + theme(legend.position = "none"),
+                unweight_age_13year + theme(legend.position = "none"),
+                unweight_age_312year + theme(legend.position = "none"),
+                nmds_legend,
+                nrow = 4, ncol = 3, 
+                align = "hv", axis = "lb")
+plot
+dev.off()
+
+setEPS()
+postscript(file="figs4.eps", width=18, height=24, paper = "special")
+plot
+dev.off()
+```
+
+```{r figs16}
+plot_legend = get_legend(legend_plot_ac)
+
+tiff(file="figs16.tif", res=300, width=20, height=6, units="in")
+plot = plot_grid(plot_ac_Entero + theme(legend.position = "none"), 
+                plot_ac_Prevot + theme(legend.position = "none"),
+                plot_ac_Rumin + theme(legend.position = "none"),
+                plot_legend,
+                nrow = 1, ncol = 4, 
+                rel_widths = c(1,1,1,0.3),
+                align = "h", axis = "b", 
+                labels = c("A", "B", "C", ""))
+plot
+dev.off()
+
+setEPS()
+postscript(file="figs16.eps", width=20, height=6, paper = "special")
+plot
+dev.off()
+```
+
+##Graphs for presentation
+
+```{r taxa_graphs}
+tiff(file="taxa_graphs_present_1.tif", 
+     res=300, width=16, height=5, units="in")
+plot1p = plot_grid(plot_Bifidobacterium, plot_Haemo, 
+          plot_P.copri, plot_Faecali, 
+          nrow = 1, ncol = 4,
+          axis = "tb", align = "hv")
+plot1p
+dev.off()
+
+setEPS()
+postscript(file="taxa_graphs_present_1.eps", width=16, height=5, paper = "special")
+plot1p
+dev.off()
+
+tiff(file="taxa_graphs_present_2.tif", 
+     res=300, width=12, height=5, units="in")
+plot2p = plot_grid(plot_V.dispar, plot_V.parvula, 
+          plot_Dialister,
+          nrow = 1, ncol = 3,
+          axis = "tb", align = "hv")
+plot2p
+dev.off()
+
+setEPS()
+postscript(file="taxa_graphs_present_2.eps", width=12, height=5, paper = "special")
+plot2p
+dev.off()
 ```
