@@ -1013,37 +1013,37 @@ mds_otus_weighted_points2_age = mds_otus_weighted_points2 %>%
   filter(Host_age_cat != "NA") %>% 
   filter(Host_age_cat != "0-1 week") %>% 
   mutate(Host_age_cat_new = case_when(Host_age_cat == "3-6 years" ~ 
-                                        "3-12 years", 
+                                        "3-5.9 years", 
                                       Host_age_cat == "6-12 years" ~ 
-                                        "3-12 years",
+                                        "3-11.9 years",
                                       Host_age_cat == "1-6 weeks" ~
-                                        "1-6 weeks",
+                                        "1-5.9 weeks",
                                       Host_age_cat == "6 weeks-3 months" ~
-                                        "6 weeks-3 months",
+                                        "6 weeks-2.9 months",
                                       Host_age_cat == "3-12 months" ~
-                                        "3-12 months",
+                                        "3-11.9 months",
                                       Host_age_cat == "1-3 years" ~
-                                        "1-3 years"))
+                                        "1-2.9 years"))
 mds_otus_weighted_points2_age2 = mds_otus_weighted_points2 %>% 
   filter(Host_age_cat != "NA") %>%  
   mutate(Host_age_cat_new2 = case_when(Host_age_cat == "3-6 years" ~ 
-                                        "3-12 years", 
+                                        "3-11.9 years", 
                                       Host_age_cat == "6-12 years" ~ 
-                                        "3-12 years",
+                                        "3-11.9 years",
                                       Host_age_cat == "0-1 week" ~
-                                        "0-3 months",
+                                        "0-2.9 months",
                                       Host_age_cat == "1-6 weeks" ~
-                                        "0-3 months",
+                                        "0-2.9 months",
                                       Host_age_cat == "6 weeks-3 months" ~
-                                        "0-3 months",
+                                        "0-2.9 months",
                                       Host_age_cat == "3-12 months" ~
-                                        "3-12 months",
+                                        "3-11.9 months",
                                       Host_age_cat == "1-3 years" ~
-                                        "1-3 years"))
+                                        "1-2.9 years"))
 mds_otus_weighted_points2_age$Host_age_cat_new = factor(mds_otus_weighted_points2_age$Host_age_cat_new, 
-                                    levels = c("1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-12 years"))
+                                    levels = c("1-5.9 weeks", "6 weeks-2.9 months", "3-11.9 months", "1-2.9 years", "3-11.9 years"))
 mds_otus_weighted_points2_age2$Host_age_cat_new2 = factor(mds_otus_weighted_points2_age2$Host_age_cat_new2, 
-                                    levels = c("0-3 months", "3-12 months", "1-3 years", "3-12 years"))
+                                    levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years", "3-11.9 years"))
 mds_otus_weighted_points2_age$Host_age_cat2 = factor(mds_otus_weighted_points2_age$Host_age_cat2, 
                                     levels = c("1-6 weeks", "6 weeks-3 months", "3-6 months",
                                                "6-9 months", "9-12 months",
@@ -1091,7 +1091,7 @@ weight_age_01week <- ggplot(mds_otus_weighted_points2_age_01week,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("0-1 week") +
+  ggtitle("0-0.9 week") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1114,14 +1114,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_weighted_points2_age_16week = mds_otus_weighted_points2_age %>% 
-  filter(Host_age_cat_new == "1-6 weeks")
+  filter(Host_age_cat_new == "1-5.9 weeks")
 
 weight_age_16week <- ggplot(mds_otus_weighted_points2_age_16week, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("1-6 weeks") +
+  ggtitle("1-5.9 weeks") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1144,14 +1144,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_weighted_points2_age_6week3month = mds_otus_weighted_points2_age %>% 
-  filter(Host_age_cat_new == "6 weeks-3 months")
+  filter(Host_age_cat_new == "6 weeks-2.9 months")
 
 weight_age_6week3month <- ggplot(mds_otus_weighted_points2_age_6week3month, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("6 weeks-3 months") +
+  ggtitle("6 weeks-2.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1174,14 +1174,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_weighted_points2_age_03month = mds_otus_weighted_points2_age2 %>% 
-  filter(Host_age_cat_new2 == "0-3 months")
+  filter(Host_age_cat_new2 == "0-2.9 months")
 
 weight_age_03month <- ggplot(mds_otus_weighted_points2_age_03month, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("0-3 months") +
+  ggtitle("0-2.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1204,14 +1204,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_weighted_points2_age_012month = mds_otus_weighted_points2_age2 %>% 
-  filter(Host_age_cat_new2 == "0-3 months" | Host_age_cat_new2 == "3-12 months")
+  filter(Host_age_cat_new2 == "0-2.9 months" | Host_age_cat_new2 == "3-11.9 months")
 
 weight_age_012month <- ggplot(mds_otus_weighted_points2_age_012month, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("0-12 months") +
+  ggtitle("0-11.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1241,7 +1241,7 @@ weight_age_36month <- ggplot(mds_otus_weighted_points2_age_36month,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("3-6 months") +
+  ggtitle("3-5.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1271,7 +1271,7 @@ weight_age_69month <- ggplot(mds_otus_weighted_points2_age_69month,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("6-9 months") +
+  ggtitle("6-8.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1301,7 +1301,7 @@ weight_age_912month <- ggplot(mds_otus_weighted_points2_age_912month,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("9-12 months") +
+  ggtitle("9-11.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1324,14 +1324,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_weighted_points2_age_312month = mds_otus_weighted_points2_age %>% 
-  filter(Host_age_cat_new == "3-12 months")
+  filter(Host_age_cat_new == "3-11.9 months")
 
 weight_age_312month <- ggplot(mds_otus_weighted_points2_age_312month, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("3-12 months") +
+  ggtitle("3-11.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
@@ -1352,14 +1352,14 @@ weight_age_312month <- ggplot(mds_otus_weighted_points2_age_312month,
            hjust = 0, vjust = 1, color = "blue1")
 
 mds_otus_weighted_points2_age_13year = mds_otus_weighted_points2_age %>% 
-  filter(Host_age_cat_new == "1-3 years")
+  filter(Host_age_cat_new == "1-2.9 years")
 
 weight_age_13year <- ggplot(mds_otus_weighted_points2_age_13year, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("1-3 years") +
+  ggtitle("1-2.9 years") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1382,14 +1382,14 @@ weight_age_13year <- ggplot(mds_otus_weighted_points2_age_13year,
            hjust = 0, vjust = 1, color = "blue1")
 
 mds_otus_weighted_points2_age_312year = mds_otus_weighted_points2_age %>% 
-  filter(Host_age_cat_new == "3-12 years")
+  filter(Host_age_cat_new == "3-11.9 years")
 
 weight_age_312year <- ggplot(mds_otus_weighted_points2_age_312year, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("3-12 years") +
+  ggtitle("3-11.9 years") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1532,37 +1532,53 @@ mds_otus_unweighted_points2_age = mds_otus_unweighted_points2 %>%
   filter(Host_age_cat != "NA") %>% 
   filter(Host_age_cat != "0-1 week") %>% 
   mutate(Host_age_cat_new = case_when(Host_age_cat == "3-6 years" ~ 
-                                        "3-12 years", 
+                                        "3-11.9 years", 
                                       Host_age_cat == "6-12 years" ~ 
-                                        "3-12 years",
+                                        "3-11.9 years",
                                       Host_age_cat == "1-6 weeks" ~
-                                        "1-6 weeks",
+                                        "1-5.9 weeks",
                                       Host_age_cat == "6 weeks-3 months" ~
-                                        "6 weeks-3 months",
+                                        "6 weeks-2.9 months",
                                       Host_age_cat == "3-12 months" ~
-                                        "3-12 months",
+                                        "3-11.9 months",
                                       Host_age_cat == "1-3 years" ~
-                                        "1-3 years")) %>% 
+                                        "1-2.9 years")) %>% 
   mutate(Host_age_cat_new2 = case_when(Host_age_cat == "3-6 years" ~ 
-                                        "3-12 years", 
+                                        "3-11.9 years", 
                                       Host_age_cat == "6-12 years" ~ 
-                                        "3-12 years",
+                                        "3-11.9 years",
                                       Host_age_cat == "1-6 weeks" ~
-                                        "0-3 months",
+                                        "0-2.9 months",
                                       Host_age_cat == "6 weeks-3 months" ~
-                                        "0-3 months",
+                                        "0-2.9 months",
                                       Host_age_cat == "3-12 months" ~
-                                        "3-12 months",
+                                        "3-11.9 months",
                                       Host_age_cat == "1-3 years" ~
-                                        "1-3 years"))
+                                        "1-2.9 years")) %>% 
+  mutate(Host_age_cat2_new = case_when(Host_age_cat == "3-6 years" ~ 
+                                        "3-11.9 years", 
+                                      Host_age_cat == "6-12 years" ~ 
+                                        "3-11.9 years",
+                                      Host_age_cat == "1-6 weeks" ~
+                                        "1-5.9 weeks",
+                                      Host_age_cat == "6 weeks-3 months" ~
+                                        "6 weeks-2.9 months",
+                                      Host_age_cat == "3-6 months" ~
+                                        "3-5.9 months",
+                                      Host_age_cat == "6-9 months" ~
+                                        "6-8.9 months",
+                                      Host_age_cat == "9-12 months" ~
+                                        "9-11.9 months",
+                                      Host_age_cat == "1-3 years" ~
+                                        "1-2.9 years"))
 mds_otus_unweighted_points2_age$Host_age_cat_new = factor(mds_otus_unweighted_points2_age$Host_age_cat_new, 
-                                    levels = c("1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-12 years"))
+                                    levels = c("1-5.9 weeks", "6 weeks-2.9 months", "3-11.9 months", "1-2.9 years", "3-11.9 years"))
 mds_otus_unweighted_points2_age$Host_age_cat_new2 = factor(mds_otus_unweighted_points2_age$Host_age_cat_new2, 
-                                    levels = c("0-3 months", "3-12 months", "1-3 years", "3-12 years"))
-mds_otus_unweighted_points2_age$Host_age_cat2 = factor(mds_otus_unweighted_points2_age$Host_age_cat2, 
-                                    levels = c("1-6 weeks", "6 weeks-3 months", "3-6 months",
-                                               "6-9 months", "9-12 months",
-                                                "1-3 years", "3-12 years"))
+                                    levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years", "3-11.9 years"))
+mds_otus_unweighted_points2_age$Host_age_cat2_new = factor(mds_otus_unweighted_points2_age$Host_age_cat2_new, 
+                                    levels = c("1-5.9 weeks", "6 weeks-2.9 months", "3-5.9 months",
+                                               "6-8.9 months", "9-11.9 months",
+                                                "1-2.9 years", "3-11.9 years"))
 mds_otus_unweighted_points2_age$Race = factor(mds_otus_unweighted_points2_age$Race, 
                                     levels = c("White", "Black", 
                                                "Asian/Pacific Islander"))
@@ -1603,7 +1619,7 @@ unweight_age_01week <- ggplot(mds_otus_unweighted_points2_age_01week,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("0-1 week") +
+  ggtitle("0-0.9 week") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1626,14 +1642,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_unweighted_points2_age_16week = mds_otus_unweighted_points2_age %>% 
-  filter(Host_age_cat_new == "1-6 weeks")
+  filter(Host_age_cat_new == "1-5.9 weeks")
 
 unweight_age_16week <- ggplot(mds_otus_unweighted_points2_age_16week, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("1-6 weeks") +
+  ggtitle("1-5.9 weeks") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1656,14 +1672,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_unweighted_points2_age_6week3month = mds_otus_unweighted_points2_age %>% 
-  filter(Host_age_cat_new == "6 weeks-3 months")
+  filter(Host_age_cat_new == "6 weeks-2.9 months")
 
 unweight_age_6week3month <- ggplot(mds_otus_unweighted_points2_age_6week3month, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("6 weeks-3 months") +
+  ggtitle("6 weeks-2.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1686,14 +1702,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_unweighted_points2_age_03month = mds_otus_unweighted_points2_age %>% 
-  filter(Host_age_cat_new2 == "0-3 months")
+  filter(Host_age_cat_new2 == "0-2.9 months")
 
 unweight_age_03month <- ggplot(mds_otus_unweighted_points2_age_03month, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("0-3 months") +
+  ggtitle("0-2.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1716,14 +1732,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_unweighted_points2_age_012month = mds_otus_unweighted_points2_age %>% 
-  filter(Host_age_cat_new2 == "0-3 months" | Host_age_cat_new == "3-12 months")
+  filter(Host_age_cat_new2 == "0-2.9 months" | Host_age_cat_new == "3-11.9 months")
 
 unweight_age_012month <- ggplot(mds_otus_unweighted_points2_age_012month, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("0-12 months") +
+  ggtitle("0-11.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1753,7 +1769,7 @@ unweight_age_36month <- ggplot(mds_otus_unweighted_points2_age_36month,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("3-6 months") +
+  ggtitle("3-5.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1783,7 +1799,7 @@ unweight_age_69month <- ggplot(mds_otus_unweighted_points2_age_69month,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("6-9 months") +
+  ggtitle("6-8.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1813,7 +1829,7 @@ unweight_age_912month <- ggplot(mds_otus_unweighted_points2_age_912month,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("9-12 months") +
+  ggtitle("9-11.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1836,14 +1852,14 @@ geom_point(aes(shape = Ethnicity,
            hjust = 0, vjust = 1)
 
 mds_otus_unweighted_points2_age_312month = mds_otus_unweighted_points2_age %>% 
-  filter(Host_age_cat_new == "3-12 months")
+  filter(Host_age_cat_new == "3-11.9 months")
 
 unweight_age_312month <- ggplot(mds_otus_unweighted_points2_age_312month, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("3-12 months") +
+  ggtitle("3-11.9 months") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
@@ -1864,14 +1880,14 @@ unweight_age_312month <- ggplot(mds_otus_unweighted_points2_age_312month,
            hjust = 0, vjust = 1)
 
 mds_otus_unweighted_points2_age_13year = mds_otus_unweighted_points2_age %>% 
-  filter(Host_age_cat_new == "1-3 years")
+  filter(Host_age_cat_new == "1-2.9 years")
 
 unweight_age_13year <- ggplot(mds_otus_unweighted_points2_age_13year, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("1-3 years") +
+  ggtitle("1-2.9 years") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1894,14 +1910,14 @@ unweight_age_13year <- ggplot(mds_otus_unweighted_points2_age_13year,
            hjust = 0, vjust = 1)
 
 mds_otus_unweighted_points2_age_312year = mds_otus_unweighted_points2_age %>% 
-  filter(Host_age_cat_new == "3-12 years")
+  filter(Host_age_cat_new == "3-11.9 years")
 
 unweight_age_312year <- ggplot(mds_otus_unweighted_points2_age_312year, 
                       aes(x = MDS1, y = MDS2, color = Race)) +
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("3-12 years") +
+  ggtitle("3-11.9 years") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -2576,13 +2592,20 @@ dev.off()
 ```
 
 ```{r alpha_div_age_graphs}
-alpha_all_age = alpha_all %>% filter(Host_age_cat != is.na(.)) 
+alpha_all_age = alpha_all %>% filter(!is.na(Host_age_cat)) %>% 
+  mutate(Host_age_cat_new = case_when(Host_age_cat == "0-1 week" ~ "0-0.9 week",
+                                      Host_age_cat == "1-6 weeks" ~ "1-5.9 weeks",
+                                      Host_age_cat == "6 weeks-3 months" ~ "6 weeks-2.9 months",
+                                      Host_age_cat == "3-12 months" ~ "3-11.9 months",
+                                      Host_age_cat == "1-3 years" ~ "1-2.9 years",
+                                      Host_age_cat == "3-6 years" ~ "3-5.9 years",
+                                      Host_age_cat == "6-12 years" ~ "6-11.9 years"))
 
-alpha_all_age$Host_age_cat = factor(alpha_all_age$Host_age_cat, 
-                                    levels = c("0-1 week", "1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-6 years", "6-12 years"))
+alpha_all_age$Host_age_cat_new = factor(alpha_all_age$Host_age_cat_new, 
+                                    levels = c("0-0.9 week", "1-5.9 weeks", "6 weeks-2.9 months", "3-11.9 months", "1-2.9 years", "3-5.9 years", "6-11.9 years"))
 
-plot1 = ggboxplot(alpha_all_age, x = "Host_age_cat", 
-                  y = "faith_pd", color = "Host_age_cat", 
+plot1 = ggboxplot(alpha_all_age, x = "Host_age_cat_new", 
+                  y = "faith_pd", color = "Host_age_cat_new", 
                   palette = "Set3", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Faith's Phylogenetic Diversity") 
@@ -2590,26 +2613,26 @@ plot1 = ggpar(plot1, legend = "right") + rremove("xlab") +
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
-                     comparisons = list(c("0-1 week", "1-3 years"),
-                                        c("0-1 week", "3-6 years"),
-                                        c("0-1 week", "6-12 years"),
-                                        c("1-6 weeks", 
-                                          "3-12 months"),
-                                        c("1-6 weeks", "1-3 years"),
-                                        c("1-6 weeks", "3-6 years"),
-                                        c("1-6 weeks", "6-12 years"),
-                                        c("6 weeks-3 months", 
-                                          "3-12 months"),
-                                        c("6 weeks-3 months",
-                                          "1-3 years"),
-                                        c("6 weeks-3 months", 
-                                          "3-6 years"),
-                                        c("6 weeks-3 months", 
-                                          "6-12 years"),
-                                        c("3-12 months","1-3 years"),
-                                        c("3-12 months","3-6 years"),
-                                        c("3-12 months", 
-                                          "6-12 years")),
+                     comparisons = list(c("0-0.9 week", "1-2.9 years"),
+                                        c("0-0.9 week", "3-5.9 years"),
+                                        c("0-0.9 week", "6-11.9 years"),
+                                        c("1-5.9 weeks", 
+                                          "3-11.9 months"),
+                                        c("1-5.9 weeks", "1-2.9 years"),
+                                        c("1-5.9 weeks", "3-5.9 years"),
+                                        c("1-5.9 weeks", "6-11.9 years"),
+                                        c("6 weeks-2.9 months", 
+                                          "3-11.9 months"),
+                                        c("6 weeks-2.9 months",
+                                          "1-2.9 years"),
+                                        c("6 weeks-2.9 months", 
+                                          "3-5.9 years"),
+                                        c("6 weeks-2.9 months", 
+                                          "6-11.9 years"),
+                                        c("3-11.9 months","1-2.9 years"),
+                                        c("3-11.9 months","3-5.9 years"),
+                                        c("3-11.9 months", 
+                                          "6-11.9 years")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.0000000001, 
                                             0.01, 0.05, 1),
@@ -2620,8 +2643,8 @@ plot1 = ggpar(plot1, legend = "right") + rremove("xlab") +
            x = Inf, y = Inf, size = 3,
            hjust = 1, vjust = 1)
 
-plot2 = ggboxplot(alpha_all_age, x = "Host_age_cat", 
-                  y = "observed_features", color = "Host_age_cat", 
+plot2 = ggboxplot(alpha_all_age, x = "Host_age_cat_new", 
+                  y = "observed_features", color = "Host_age_cat_new", 
                   palette = "Set3", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Observed ASVs") 
@@ -2629,29 +2652,29 @@ plot2 = ggpar(plot2, legend = "right") + rremove("xlab") +
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
-                     comparisons = list(c("0-1 week", "1-6 weeks"),
-                                        c("0-1 week", 
-                                          "6 weeks-3 months"),
-                                        c("0-1 week", "1-3 years"),
-                                        c("0-1 week", "3-6 years"),
-                                        c("0-1 week", "6-12 years"),
-                                        c("1-6 weeks", 
-                                          "3-12 months"),
-                                        c("1-6 weeks", "1-3 years"),
-                                        c("1-6 weeks", "3-6 years"),
-                                        c("1-6 weeks", "6-12 years"),
-                                        c("6 weeks-3 months", 
-                                          "3-12 months"),
-                                        c("6 weeks-3 months",
-                                          "1-3 years"),
-                                        c("6 weeks-3 months", 
-                                          "3-6 years"),
-                                        c("6 weeks-3 months", 
-                                          "6-12 years"),
-                                        c("3-12 months","1-3 years"),
-                                        c("3-12 months","3-6 years"),
-                                        c("3-12 months", 
-                                          "6-12 years")),
+                     comparisons = list(c("0-0.9 week", "1-5.9 weeks"),
+                                        c("0-0.9 week", 
+                                          "6 weeks-2.9 months"),
+                                        c("0-0.9 week", "1-2.9 years"),
+                                        c("0-0.9 week", "3-5.9 years"),
+                                        c("0-0.9 week", "6-11.9 years"),
+                                        c("1-5.9 weeks", 
+                                          "3-11.9 months"),
+                                        c("1-5.9 weeks", "1-2.9 years"),
+                                        c("1-5.9 weeks", "3-5.9 years"),
+                                        c("1-5.9 weeks", "6-11.9 years"),
+                                        c("6 weeks-2.9 months", 
+                                          "3-11.9 months"),
+                                        c("6 weeks-2.9 months",
+                                          "1-2.9 years"),
+                                        c("6 weeks-2.9 months", 
+                                          "3-5.9 years"),
+                                        c("6 weeks-2.9 months", 
+                                          "6-11.9 years"),
+                                        c("3-11.9 months","1-2.9 years"),
+                                        c("3-11.9 months","3-5.9 years"),
+                                        c("3-11.9 months", 
+                                          "6-11.9 years")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.001, 
                                             0.05, 0.5, 1),
@@ -2662,8 +2685,8 @@ plot2 = ggpar(plot2, legend = "right") + rremove("xlab") +
            x = Inf, y = Inf, size = 3,
            hjust = 1, vjust = 1)
 
-plot3 = ggboxplot(alpha_all_age, x = "Host_age_cat", 
-                  y = "shannon_entropy", color = "Host_age_cat", 
+plot3 = ggboxplot(alpha_all_age, x = "Host_age_cat_new", 
+                  y = "shannon_entropy", color = "Host_age_cat_new", 
                   palette = "Set3", add = "jitter", 
                   add.params = list(fill = "white"), 
                   ylab = "Shannon Diversity") 
@@ -2671,29 +2694,29 @@ plot3 = ggpar(plot3, legend = "right") + rremove("xlab") +
   rremove("x.text") + rremove("x.ticks") + 
   rremove("legend.title") + 
   stat_compare_means(label = "p.signif", 
-                     comparisons = list(c("0-1 week", "1-6 weeks"),
-                                        c("0-1 week", "3-12 months"),
-                                        c("0-1 week", "1-3 years"),
-                                        c("0-1 week", "3-6 years"),
-                                        c("0-1 week", "6-12 years"),
-                                        c("1-6 weeks", 
-                                          "6 weeks-3 months"),
-                                        c("1-6 weeks", 
-                                          "3-12 months"),
-                                        c("1-6 weeks", "1-3 years"),
-                                        c("1-6 weeks", "3-6 years"),
-                                        c("1-6 weeks", "6-12 years"),
-                                        c("6 weeks-3 months", 
-                                          "3-12 months"),
-                                        c("6 weeks-3 months",
-                                          "1-3 years"),
-                                        c("6 weeks-3 months", 
-                                          "3-6 years"),
-                                        c("6 weeks-3 months",
-                                          "6-12 years"),
-                                        c("3-12 months","1-3 years"),
-                                        c("3-12 months",
-                                          "3-6 years")),
+                     comparisons = list(c("0-0.9 week", "1-5.9 weeks"),
+                                        c("0-0.9 week", "3-11.9 months"),
+                                        c("0-0.9 week", "1-2.9 years"),
+                                        c("0-0.9 week", "3-5.9 years"),
+                                        c("0-0.9 week", "6-11.9 years"),
+                                        c("1-5.9 weeks", 
+                                          "6 weeks-2.9 months"),
+                                        c("1-5.9 weeks", 
+                                          "3-11.9 months"),
+                                        c("1-5.9 weeks", "1-2.9 years"),
+                                        c("1-5.9 weeks", "3-5.9 years"),
+                                        c("1-5.9 weeks", "6-11.9 years"),
+                                        c("6 weeks-2.9 months", 
+                                          "3-11.9 months"),
+                                        c("6 weeks-2.9 months",
+                                          "1-2.9 years"),
+                                        c("6 weeks-2.9 months", 
+                                          "3-5.9 years"),
+                                        c("6 weeks-2.9 months",
+                                          "6-11.9 years"),
+                                        c("3-11.9 months","1-2.9 years"),
+                                        c("3-11.9 months",
+                                          "3-5.9 years")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.0000000001, 
                                             0.01, 0.5, 1),
@@ -3180,48 +3203,48 @@ Anova(s03)
 ####Graphs
 ##### Boxplots
 ```{r alpha_div_agerace_graphs}
-alpha_all_age = alpha_all %>% filter(Host_age_cat != is.na(.)) %>% 
+alpha_all_age = alpha_all %>% dplyr::filter(!is.na(Host_age_cat)) %>% 
   mutate(Host_age_cat_new = case_when(Host_age_cat == "0-1 week" ~ 
-                                        "0-1 week", 
+                                        "0-0.9 week", 
                                       Host_age_cat == "3-6 years" ~ 
-                                        "3-12 years", 
+                                        "3-11.9 years", 
                                       Host_age_cat == "6-12 years" ~ 
-                                        "3-12 years",
+                                        "3-11.9 years",
                                       Host_age_cat == "1-6 weeks" ~
-                                        "1-6 weeks",
+                                        "1-5.9 weeks",
                                       Host_age_cat == "6 weeks-3 months" ~
-                                        "6 weeks-3 months",
+                                        "6 weeks-2.9 months",
                                       Host_age_cat == "3-12 months" ~
-                                        "3-12 months",
+                                        "3-11.9 months",
                                       Host_age_cat == "1-3 years" ~
-                                        "1-3 years"))
+                                        "1-2.9 years"))
 
 alpha_all_age$Host_age_cat_new = factor(alpha_all_age$Host_age_cat_new, 
-                                    levels = c("1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-12 years"))
+                                    levels = c("0-0.9 week", "1-5.9 weeks", "6 weeks-2.9 months", "3-11.9 months", "1-2.9 years", "3-11.9 years"))
 
-alpha_all_age_filtered = alpha_all_age %>% filter(Host_age_cat != "0-1 week")
+alpha_all_age_filtered = alpha_all_age %>% filter(Host_age_cat != "0-1 week")  
 
 alpha_all_age_01week = alpha_all_age %>% 
-  filter(Host_age_cat_new == "0-1 week")
+  filter(Host_age_cat_new == "0-0.9 week")
 
 alpha_all_age_16week = alpha_all_age %>% 
-  filter(Host_age_cat_new == "1-6 weeks")
+  filter(Host_age_cat_new == "1-5.9 weeks")
 
 alpha_all_age_6week3month = alpha_all_age %>% 
-  filter(Host_age_cat_new == "6 weeks-3 months")
+  filter(Host_age_cat_new == "6 weeks-2.9 months")
 
 alpha_all_age_312month = alpha_all_age %>% 
-  filter(Host_age_cat_new == "3-12 months")
+  filter(Host_age_cat_new == "3-11.9 months")
 
 alpha_all_age_13year = alpha_all_age %>% 
-  filter(Host_age_cat_new == "1-3 years")
+  filter(Host_age_cat_new == "1-2.9 years")
 
 alpha_all_age_312year = alpha_all_age %>% 
-  filter(Host_age_cat_new == "3-12 years")
+  filter(Host_age_cat_new == "3-11.9 years")
 
 alpha_all_age_filtered2 = distinct(alpha_all_age_filtered, Host_age_cat_new)
 alpha_all_age_filtered2$Host_age_cat_new = factor(alpha_all_age_filtered2$Host_age_cat_new, 
-                                    levels = c("1-6 weeks", "6 weeks-3 months", "3-12 months", "1-3 years", "3-12 years"))
+                                    levels = c("1-5.9 weeks", "6 weeks-2.9 months", "3-11.9 months", "1-2.9 years", "3-11.9 years"))
 alpha_all_age_filtered2$yloc = max(alpha_all_age_filtered$shannon_entropy + 0.5)
 alpha_all_age_filtered2$label = c("C", "C", "A", "A", "B")
 
@@ -5481,62 +5504,62 @@ dev.off()
 ###Combo
 f1m3mr_df3 = f1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 o1m3mr_df3 = o1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 s1m3mr_df3 = s1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 p1m3mr_df3 = p1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 c1m3mr_df3 = c1m3mr_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 
 f312r_df3 = f312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 o312r_df3 = o312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 s312r_df3 = s312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 p312r_df3 = p312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 c312r_df3 = c312r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 
 f13r_df3 = f13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 o13r_df3 = o13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 s13r_df3 = s13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 p13r_df3 = p13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 c13r_df3 = c13r_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 
 faithr_df = rbind(f1m3mr_df3, f312r_df3, f13r_df3)
-faithr_df$model = factor(faithr_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+faithr_df$model = factor(faithr_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 shannonr_df = rbind(s1m3mr_df3, s312r_df3, s13r_df3)
-shannonr_df$model = factor(shannonr_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+shannonr_df$model = factor(shannonr_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 pielour_df = rbind(p1m3mr_df3, p312r_df3, p13r_df3)
-pielour_df$model = factor(pielour_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+pielour_df$model = factor(pielour_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 observedr_df = rbind(o1m3mr_df3, o312r_df3, o13r_df3)
-observedr_df$model = factor(observedr_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+observedr_df$model = factor(observedr_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 chaor_df = rbind(c1m3mr_df3, c312r_df3, c13r_df3)
-chaor_df$model = factor(chaor_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+chaor_df$model = factor(chaor_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 
 faithr_dw = dwplot(faithr_df, vline = geom_vline(xintercept = 0, color = "gray40",
                                     linetype = 2),
@@ -5558,9 +5581,9 @@ faithr_dw = dwplot(faithr_df, vline = geom_vline(xintercept = 0, color = "gray40
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.718<br>
-           3-12 months: p = 0.233<br>
-           <span style='color: blue1;'><b><i>1-3 years: p = 0.006</b></i></span>", 
+           label = "0-2.9 months: p = 0.718<br>
+           3-11.9 months: p = 0.233<br>
+           <span style='color: blue1;'><b><i>1-2.9 years: p = 0.006</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
@@ -5584,9 +5607,9 @@ observedr_dw = dwplot(observedr_df, vline = geom_vline(xintercept = 0, color = "
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.448<br>
-           <span style='color: blue1;'><b><i>3-12 months: p = 0.005<br>
-           1-3 years: p = 0.001</b></i></span>", 
+           label = "0-2.9 months: p = 0.448<br>
+           <span style='color: blue1;'><b><i>3-11.9 months: p = 0.005<br>
+           1-2.9 years: p = 0.001</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
@@ -5610,9 +5633,9 @@ chaor_dw = dwplot(chaor_df, vline = geom_vline(xintercept = 0, color = "gray40",
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.311<br>
-           <span style='color: blue1;'><b><i>3-12 months: p = 0.001<br>
-           1-3 years: p = 0.002</b></i></span>", 
+           label = "0-2.9 months: p = 0.311<br>
+           <span style='color: blue1;'><b><i>3-11.9 months: p = 0.001<br>
+           1-2.9 years: p = 0.002</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
@@ -5636,9 +5659,9 @@ shannonr_dw = dwplot(shannonr_df, vline = geom_vline(xintercept = 0, color = "gr
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.642<br>
-           <span style='color: blue1;'><b><i>3-12 months: p = 0.006<br>
-           1-3 years: p = 0.020</b></i></span>", 
+           label = "0-2.9 months: p = 0.642<br>
+           <span style='color: blue1;'><b><i>3-11.9 months: p = 0.006<br>
+           1-2.9 years: p = 0.020</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
@@ -5662,70 +5685,70 @@ pielour_dw = dwplot(pielour_df, vline = geom_vline(xintercept = 0, color = "gray
                               "Asian/PI\n- White", 
                               "Black\n- White")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.747<br>
-           <span style='color: blue1;'><b><i>3-12 months: p = 0.026</b></i><br></span>
-           1-3 years: p = 0.142", 
+           label = "0-2.9 months: p = 0.747<br>
+           <span style='color: blue1;'><b><i>3-11.9 months: p = 0.026</b></i><br></span>
+           1-2.9 years: p = 0.142", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
 f1m3me_df3 = f1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 o1m3me_df3 = o1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 s1m3me_df3 = s1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 p1m3me_df3 = p1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 c1m3me_df3 = c1m3me_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "0-3 months")
+  mutate(model = "0-2.9 months")
 
 f312e_df3 = f312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 o312e_df3 = o312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 s312e_df3 = s312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 p312e_df3 = p312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 c312e_df3 = c312e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "3-12 months")
+  mutate(model = "3-11.9 months")
 
 f13e_df3 = f13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 o13e_df3 = o13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 s13e_df3 = s13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 p13e_df3 = p13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 c13e_df3 = c13e_df %>% dplyr::select(contrast:adj.p.value) %>% 
   rename(term = contrast) %>% rename(p.value = adj.p.value) %>% 
-  mutate(model = "1-3 years")
+  mutate(model = "1-2.9 years")
 
 faithe_df = rbind(f1m3me_df3, f312e_df3, f13e_df3)
-faithe_df$model = factor(faithe_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+faithe_df$model = factor(faithe_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 shannone_df = rbind(s1m3me_df3, s312e_df3, s13e_df3)
-shannone_df$model = factor(shannone_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+shannone_df$model = factor(shannone_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 pieloue_df = rbind(p1m3me_df3, p312e_df3, p13e_df3)
-pieloue_df$model = factor(pieloue_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+pieloue_df$model = factor(pieloue_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 observede_df = rbind(o1m3me_df3, o312e_df3, o13e_df3)
-observede_df$model = factor(observede_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+observede_df$model = factor(observede_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 chaoe_df = rbind(c1m3me_df3, c312e_df3, c13e_df3) 
-chaoe_df$model = factor(chaoe_df$model, levels = c("0-3 months", "3-12 months", "1-3 years")) 
+chaoe_df$model = factor(chaoe_df$model, levels = c("0-2.9 months", "3-11.9 months", "1-2.9 years")) 
 
 faithe_dw = dwplot(faithe_df, vline = geom_vline(xintercept = 0, color = "gray40",
                                     linetype = 2),
@@ -5744,9 +5767,9 @@ faithe_dw = dwplot(faithe_df, vline = geom_vline(xintercept = 0, color = "gray40
                                         labels = c("Faith's PD")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.384<br>
-           3-12 months: p = 0.880<br>
-           <span style='color: blue1;'><b><i>1-3 years: p = 0.015</b></i></span>", 
+           label = "0-2.9 months: p = 0.384<br>
+           3-11.9 months: p = 0.880<br>
+           <span style='color: blue1;'><b><i>1-2.9 years: p = 0.015</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
@@ -5767,9 +5790,9 @@ observede_dw = dwplot(observede_df, vline = geom_vline(xintercept = 0, color = "
                                         labels = c("Observed ASVs")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.670<br>
-           3-12 months: p = 0.914<br>
-           <span style='color: blue1;'><b><i>1-3 years: p = 0.023</b></i></span>", 
+           label = "0-2.9 months: p = 0.670<br>
+           3-11.9 months: p = 0.914<br>
+           <span style='color: blue1;'><b><i>1-2.9 years: p = 0.023</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
@@ -5790,9 +5813,9 @@ chaoe_dw = dwplot(chaoe_df, vline = geom_vline(xintercept = 0, color = "gray40",
                                         labels = c("Chao 1")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.977<br>
-           3-12 months: p = 0.668<br>
-           <span style='color: blue1;'><b><i>1-3 years: p = 0.018</b></i></span>", 
+           label = "0-2.9 months: p = 0.977<br>
+           3-11.9 months: p = 0.668<br>
+           <span style='color: blue1;'><b><i>1-2.9 years: p = 0.018</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
@@ -5813,9 +5836,9 @@ shannone_dw = dwplot(shannone_df, vline = geom_vline(xintercept = 0, color = "gr
                                         labels = c("Shannon Diversity")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.839<br>
-           3-12 months: p = 0.406<br>
-           <span style='color: blue1;'><b><i>1-3 years: p = 0.042</b></i></span>", 
+           label = "0-2.9 months: p = 0.839<br>
+           3-11.9 months: p = 0.406<br>
+           <span style='color: blue1;'><b><i>1-2.9 years: p = 0.042</b></i></span>", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
@@ -5836,15 +5859,15 @@ pieloue_dw = dwplot(pieloue_df, vline = geom_vline(xintercept = 0, color = "gray
                                         labels = c("Pielou's Evenness")) +
   scale_y_discrete(labels = c("Non Hispanic\n- Hispanic")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "0-3 months: p = 0.548<br>
-           3-12 months: p = 0.815<br>
-           1-3 years: p = 0.174", 
+           label = "0-2.9 months: p = 0.548<br>
+           3-11.9 months: p = 0.815<br>
+           1-2.9 years: p = 0.174", 
            x = Inf, y = -Inf, size = 6,
            hjust = 1, vjust = 0)
 
-pielour_df$model = factor(pielour_df$model, levels = c("0-3 months",
-                                                       "3-12 months",
-                                                       "1-3 years"))
+pielour_df$model = factor(pielour_df$model, levels = c("0-2.9 months",
+                                                       "3-11.9 months",
+                                                       "1-2.9 years"))
 legend_plot = dwplot(pielour_df,
                      dot_args = list(aes(shape = model, size = 3)),
                      whisker_args = list(aes(linetype = model, 
