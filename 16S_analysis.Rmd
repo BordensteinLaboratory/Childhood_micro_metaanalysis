@@ -10778,31 +10778,12 @@ get_sensitivity = function(x, data) {
   
 }
 
-get_pooled_sens_spec_black = function(model_num, specificity) {
+get_pooled_sens_spec_wvb = function(model_num, specificity) {
   model = child_ml_results[[model_num]]
   prob = predict(model$trained_model, model$test_data, type = "prob")
   observed = model$test_data$outcome
-  prob_obs_black = bind_cols(prob, observed = observed) %>% dplyr::select(Black, observed)
-  total_black = prob_obs_black %>% count(observed) %>% 
-    pivot_wider(names_from = observed, values_from = n)
-  sens_spec_black = prob_obs_black %>% arrange(desc(Black)) %>% 
-    mutate(is_black = (observed == "Black"),
-           tp = cumsum(is_black),
-           fp = cumsum(!is_black),
-           sensitivity = tp / total_black$Black,
-           fpr = fp / (total_black$AAPI + total_black$White),
-           specificity = 1 - fpr) %>% 
-    dplyr::select(sensitivity, specificity, fpr)
-  map_dfr(specificity, get_sensitivity, sens_spec_black) %>% 
-    mutate(Race = "Black")
-  
-}
-
-get_pooled_sens_spec_white = function(model_num, specificity) {
-  model = child_ml_results[[model_num]]
-  prob = predict(model$trained_model, model$test_data, type = "prob")
-  observed = model$test_data$outcome
-  prob_obs_white = bind_cols(prob, observed = observed) %>% dplyr::select(White, observed)
+  prob_obs_white = bind_cols(prob, observed = observed) %>% dplyr::select(White, observed) %>% 
+    filter(observed == "White" | observed == "Black")
   total_white = prob_obs_white %>% count(observed) %>% 
     pivot_wider(names_from = observed, values_from = n)
   sens_spec_white = prob_obs_white %>% arrange(desc(White)) %>% 
@@ -10810,31 +10791,32 @@ get_pooled_sens_spec_white = function(model_num, specificity) {
            tp = cumsum(is_white),
            fp = cumsum(!is_white),
            sensitivity = tp / total_white$White,
-           fpr = fp / (total_white$AAPI + total_white$Black),
+           fpr = fp / (total_white$Black),
            specificity = 1 - fpr) %>% 
     dplyr::select(sensitivity, specificity, fpr)
   map_dfr(specificity, get_sensitivity, sens_spec_white) %>% 
-    mutate(Race = "White")
+    mutate(Comparison = "White vs. Black")
   
 }
 
-get_pooled_sens_spec_aapi = function(model_num, specificity) {
+get_pooled_sens_spec_wva = function(model_num, specificity) {
   model = child_ml_results[[model_num]]
   prob = predict(model$trained_model, model$test_data, type = "prob")
   observed = model$test_data$outcome
-  prob_obs_aapi = bind_cols(prob, observed = observed) %>% dplyr::select(AAPI, observed)
-  total_aapi = prob_obs_aapi %>% count(observed) %>% 
+  prob_obs_white = bind_cols(prob, observed = observed) %>% dplyr::select(White, observed) %>% 
+    filter(observed == "White" | observed == "AAPI")
+  total_white = prob_obs_white %>% count(observed) %>% 
     pivot_wider(names_from = observed, values_from = n)
-  sens_spec_aapi = prob_obs_aapi %>% arrange(desc(AAPI)) %>% 
-    mutate(is_aapi = (observed == "AAPI"),
-           tp = cumsum(is_aapi),
-           fp = cumsum(!is_aapi),
-           sensitivity = tp / total_aapi$AAPI,
-           fpr = fp / (total_aapi$White + total_aapi$Black),
+  sens_spec_white = prob_obs_white %>% arrange(desc(White)) %>% 
+    mutate(is_white = (observed == "White"),
+           tp = cumsum(is_white),
+           fp = cumsum(!is_white),
+           sensitivity = tp / total_white$White,
+           fpr = fp / (total_white$AAPI),
            specificity = 1 - fpr) %>% 
     dplyr::select(sensitivity, specificity, fpr)
-  map_dfr(specificity, get_sensitivity, sens_spec_aapi) %>% 
-    mutate(Race = "Asian/Pacific Islander")
+  map_dfr(specificity, get_sensitivity, sens_spec_white) %>% 
+    mutate(Comparison = "White vs. Asian/Pacific Islander")
   
 }
 
@@ -10852,31 +10834,26 @@ performance = lapply(child_ml_results, function(result) {
 
 specificity = seq(0, 1, 0.01)
 
-pooled_sens_spec_black = map_dfr(1:100, get_pooled_sens_spec_black, specificity)
-pooled_sens_spec_white = map_dfr(1:100, get_pooled_sens_spec_white, specificity)
-pooled_sens_spec_aapi = map_dfr(1:100, get_pooled_sens_spec_aapi, specificity)
+pooled_sens_spec_wvb = map_dfr(1:100, get_pooled_sens_spec_wvb, specificity)
+pooled_sens_spec_wva = map_dfr(1:100, get_pooled_sens_spec_wva, specificity)
 
-pooled_sens_spec = bind_rows(pooled_sens_spec_black, pooled_sens_spec_white, pooled_sens_spec_aapi)
-pooled_sens_spec$Race = factor(pooled_sens_spec$Race, levels = c("White", "Black", "Asian/Pacific Islander"))
+pooled_sens_spec = bind_rows(pooled_sens_spec_wvb, pooled_sens_spec_wva)
+pooled_sens_spec$Comparison = factor(pooled_sens_spec$Comparison, levels = c("White vs. Black", "White vs. Asian/Pacific Islander"))
 
 saveRDS(pooled_sens_spec, "pooled_sens_spec_r.rds")
 
-roc_curve_child_r = pooled_sens_spec %>% group_by(Race, specificity) %>% 
+roc_curve_child_r = pooled_sens_spec %>% group_by(Comparison, specificity) %>% 
   summarize(lquartile = quantile(sensitivity, prob = 0.25),
             uquartile = quantile(sensitivity, prob = 0.75),
             sensitivity = median(sensitivity),
             .groups = "drop") %>% 
   ggplot(aes(x=1-specificity, y=sensitivity, 
              ymin=lquartile, ymax=uquartile)) + 
-  geom_ribbon(alpha=0.25, aes(fill = Race)) + 
-  geom_step(aes(color = Race), size = 0.8) + 
+  geom_ribbon(alpha=0.25, aes(fill = Comparison)) + 
+  geom_step(aes(color = Comparison), size = 0.8) + 
   xlab("False Positive Rate") + ylab("True Positive Rate") + 
-  scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c"), 
-                     labels = c("White", "Black", 
-                                "Asian/Pacific Islander")) + 
-  scale_fill_manual(values = c("#377eb8", "#ffd92f", "#e41a1c"), 
-                     labels = c("White", "Black", 
-                                "Asian/Pacific Islander")) +
+  scale_color_manual(values = c("darkorange4", "darkslategray4")) + 
+  scale_fill_manual(values = c("darkorange4", "darkslategray4")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "AUC = 0.914<br>
            prAUC = 0.629<br>
@@ -10886,12 +10863,11 @@ roc_curve_child_r = pooled_sens_spec %>% group_by(Race, specificity) %>%
            x = Inf, y = -Inf, size = 3,
            hjust = 1, vjust = 0) + 
   geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1),
-               color = "grey40", linetype = "dashed", size = 0.6) 
+               color = "grey40", linetype = "dashed", size = 0.6)
 
 roc_curve_child_r
 
 ggsave("roc_curve_child.tiff", width = 7, height = 5)
-
 ```
 
 ```{r roc_curves_child_eth}
@@ -10920,29 +10896,10 @@ get_pooled_sens_spec_his = function(model_num, specificity) {
            specificity = 1 - fpr) %>% 
     dplyr::select(sensitivity, specificity, fpr)
   map_dfr(specificity, get_sensitivity, sens_spec_his) %>% 
-    mutate(Ethnicity = "Hispanic")
+    mutate(Comparison = "Hispanic vs. Non-Hispanic")
   
 }
 
-get_pooled_sens_spec_nhis = function(model_num, specificity) {
-  model = child_eth_ml_results[[model_num]]
-  prob = predict(model$trained_model, model$test_data, type = "prob")
-  observed = model$test_data$outcome
-  prob_obs_nhis = bind_cols(prob, observed = observed) %>% dplyr::select(NonHispanic, observed)
-  total_nhis = prob_obs_nhis %>% count(observed) %>% 
-    pivot_wider(names_from = observed, values_from = n)
-  sens_spec_nhis = prob_obs_nhis %>% arrange(desc(NonHispanic)) %>% 
-    mutate(is_nhis = (observed == "NonHispanic"),
-           tp = cumsum(is_nhis),
-           fp = cumsum(!is_nhis),
-           sensitivity = tp / total_nhis$NonHispanic,
-           fpr = fp / (total_nhis$Hispanic),
-           specificity = 1 - fpr) %>% 
-    dplyr::select(sensitivity, specificity, fpr)
-  map_dfr(specificity, get_sensitivity, sens_spec_nhis) %>% 
-    mutate(Ethnicity = "Non Hispanic")
-  
-}
 
 child_eth_ml_results = readRDS("AGP_comp/child_ml_eth_results.rds")
 
@@ -10959,27 +10916,22 @@ performance = lapply(child_eth_ml_results, function(result) {
 specificity = seq(0, 1, 0.01)
 
 pooled_sens_spec_his = map_dfr(1:100, get_pooled_sens_spec_his, specificity)
-pooled_sens_spec_nhis = map_dfr(1:100, get_pooled_sens_spec_nhis, specificity)
 
-pooled_sens_spec = bind_rows(pooled_sens_spec_his, pooled_sens_spec_nhis)
-pooled_sens_spec$Ethnicity = factor(pooled_sens_spec$Ethnicity, levels = c("Hispanic", "Non Hispanic"))
-saveRDS(pooled_sens_spec, "pooled_sens_spec_e.rds")
+saveRDS(pooled_sens_spec_his, "pooled_sens_spec_e.rds")
 pooled_sens_spec = readRDS("pooled_sens_spec_e.rds")
 
-roc_curve_child_e = pooled_sens_spec %>% group_by(Ethnicity, specificity) %>% 
+roc_curve_child_e = pooled_sens_spec_his %>% group_by(Comparison, specificity) %>% 
   summarize(lquartile = quantile(sensitivity, prob = 0.25),
             uquartile = quantile(sensitivity, prob = 0.75),
             sensitivity = median(sensitivity),
             .groups = "drop") %>% 
   ggplot(aes(x=1-specificity, y=sensitivity, 
              ymin=lquartile, ymax=uquartile)) + 
-  geom_ribbon(alpha=0.25, aes(fill = Ethnicity)) + 
-  geom_step(aes(color = Ethnicity), size = 0.8) + 
-  xlab("False Positive Rate") + ylab("True Positive Rate") + 
-  scale_color_manual(values = c("darkslategray4", "darkorange4"), 
-                     labels = c("Hispanic", "Non Hispanic")) + 
-  scale_fill_manual(values = c("darkslategray4", "darkorange4"), 
-                     labels = c("Hispanic", "Non Hispanic")) +
+  geom_ribbon(alpha=0.25, aes(fill = Comparison)) + 
+  geom_step(aes(color = Comparison), size = 0.8) + 
+  scale_color_manual(values = c("orchid4")) + 
+  scale_fill_manual(values = c("orchid4")) + 
+  xlab("False Positive Rate") + ylab("True Positive Rate") +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "AUC = 0.886<br>
            prAUC = 0.797<br>
@@ -10994,65 +10946,8 @@ roc_curve_child_e = pooled_sens_spec %>% group_by(Ethnicity, specificity) %>%
 roc_curve_child_e
 
 ggsave("roc_curve_child_eth.tiff", width = 7, height = 5)
-
 ```
 
-###AUC calculations
-Area under the curve was calculated for individual ROC curves using the pROC package.
-```{r oldroc_child}
-child_ml_results = readRDS("AGP_comp/child_ml_results.rds")
-
-get_roc_auc_black = function(model_num) {
-  rf = child_ml_results[[model_num]]$trained_model$pred 
-  response = rf %>% 
-    dplyr::select(obs, pred) %>% 
-    mutate(obs_binary = if_else(obs == "Black", 1, 0)) %>% 
-    mutate(pred_binary = if_else(pred == "Black", 1, 0))
-  roc = roc(response$obs_binary ~ response$pred_binary)
-  roc$auc[1]
-
-}  
-
-get_roc_auc_white = function(model_num) {
-  rf = child_ml_results[[model_num]]$trained_model$pred 
-  response = rf %>% 
-    dplyr::select(obs, pred) %>% 
-    mutate(obs_binary = if_else(obs == "White", 1, 0)) %>% 
-    mutate(pred_binary = if_else(pred == "White", 1, 0))
-  roc = roc(response$obs_binary ~ response$pred_binary)
-  roc$auc[1]
-
-}
-
-get_roc_auc_aapi = function(model_num) {
-  rf = child_ml_results[[model_num]]$trained_model$pred 
-  response = rf %>% 
-    dplyr::select(obs, pred) %>% 
-    mutate(obs_binary = if_else(obs == "AAPI", 1, 0)) %>% 
-    mutate(pred_binary = if_else(pred == "AAPI", 1, 0))
-  roc = roc(response$obs_binary ~ response$pred_binary)
-  roc$auc[1]
-
-}
-
-auc_black = map(1:100, get_roc_auc_black) %>% unlist() %>% median()
-auc_white = map(1:100, get_roc_auc_white) %>% unlist() %>% median()
-auc_aapi = map(1:100, get_roc_auc_aapi) %>% unlist() %>% median()
-
-rf = child_ml_results[[1]]$trained_model$pred
-
-response_black = rf %>% dplyr::select(obs, pred) %>% 
-  mutate(obs_binary = if_else(obs == "Black", 1, 0)) %>% 
-  mutate(pred_binary = if_else(pred == "Black", 1, 0))
-response_white = rf %>% dplyr::select(obs, White) %>% 
-  mutate(obs_binary = if_else(obs == "White", 1, 0))
-response_asian = rf %>% dplyr::select(obs, AAPI) %>% 
-  mutate(obs_binary = if_else(obs == "AAPI", 1, 0))
-
-White = roc(response_white$obs_binary ~ response_white$White)
-Black = roc(response_black$obs_binary ~ response_black$pred_binary)
-Asian = roc(response_asian$obs_binary ~ response_asian$AAPI)
-```
 
 ## Machine learning models - children and adults
 
@@ -11209,31 +11104,12 @@ get_sensitivity = function(x, data) {
   
 }
 
-get_pooled_sens_spec_black = function(model_num, specificity) {
+get_pooled_sens_spec_wvb = function(model_num, specificity) {
   model = merged_ml_results[[model_num]]
   prob = predict(model$trained_model, model$test_data, type = "prob")
   observed = model$test_data$outcome
-  prob_obs_black = bind_cols(prob, observed = observed) %>% dplyr::select(Black, observed)
-  total_black = prob_obs_black %>% count(observed) %>% 
-    pivot_wider(names_from = observed, values_from = n)
-  sens_spec_black = prob_obs_black %>% arrange(desc(Black)) %>% 
-    mutate(is_black = (observed == "Black"),
-           tp = cumsum(is_black),
-           fp = cumsum(!is_black),
-           sensitivity = tp / total_black$Black,
-           fpr = fp / (total_black$AAPI + total_black$White),
-           specificity = 1 - fpr) %>% 
-    dplyr::select(sensitivity, specificity, fpr)
-  map_dfr(specificity, get_sensitivity, sens_spec_black) %>% 
-    mutate(Race = "Black")
-  
-}
-
-get_pooled_sens_spec_white = function(model_num, specificity) {
-  model = merged_ml_results[[model_num]]
-  prob = predict(model$trained_model, model$test_data, type = "prob")
-  observed = model$test_data$outcome
-  prob_obs_white = bind_cols(prob, observed = observed) %>% dplyr::select(White, observed)
+  prob_obs_white = bind_cols(prob, observed = observed) %>% dplyr::select(White, observed) %>% 
+    filter(observed == "White" | observed == "Black")
   total_white = prob_obs_white %>% count(observed) %>% 
     pivot_wider(names_from = observed, values_from = n)
   sens_spec_white = prob_obs_white %>% arrange(desc(White)) %>% 
@@ -11241,31 +11117,32 @@ get_pooled_sens_spec_white = function(model_num, specificity) {
            tp = cumsum(is_white),
            fp = cumsum(!is_white),
            sensitivity = tp / total_white$White,
-           fpr = fp / (total_white$AAPI + total_white$Black),
+           fpr = fp / (total_white$Black),
            specificity = 1 - fpr) %>% 
     dplyr::select(sensitivity, specificity, fpr)
   map_dfr(specificity, get_sensitivity, sens_spec_white) %>% 
-    mutate(Race = "White")
+    mutate(Comparison = "White vs. Black")
   
 }
 
-get_pooled_sens_spec_aapi = function(model_num, specificity) {
+get_pooled_sens_spec_wva = function(model_num, specificity) {
   model = merged_ml_results[[model_num]]
   prob = predict(model$trained_model, model$test_data, type = "prob")
   observed = model$test_data$outcome
-  prob_obs_aapi = bind_cols(prob, observed = observed) %>% dplyr::select(AAPI, observed)
-  total_aapi = prob_obs_aapi %>% count(observed) %>% 
+  prob_obs_white = bind_cols(prob, observed = observed) %>% dplyr::select(White, observed) %>% 
+    filter(observed == "White" | observed == "AAPI")
+  total_white = prob_obs_white %>% count(observed) %>% 
     pivot_wider(names_from = observed, values_from = n)
-  sens_spec_aapi = prob_obs_aapi %>% arrange(desc(AAPI)) %>% 
-    mutate(is_aapi = (observed == "AAPI"),
-           tp = cumsum(is_aapi),
-           fp = cumsum(!is_aapi),
-           sensitivity = tp / total_aapi$AAPI,
-           fpr = fp / (total_aapi$White + total_aapi$Black),
+  sens_spec_white = prob_obs_white %>% arrange(desc(White)) %>% 
+    mutate(is_white = (observed == "White"),
+           tp = cumsum(is_white),
+           fp = cumsum(!is_white),
+           sensitivity = tp / total_white$White,
+           fpr = fp / (total_white$AAPI),
            specificity = 1 - fpr) %>% 
     dplyr::select(sensitivity, specificity, fpr)
-  map_dfr(specificity, get_sensitivity, sens_spec_aapi) %>% 
-    mutate(Race = "Asian/Pacific Islander")
+  map_dfr(specificity, get_sensitivity, sens_spec_white) %>% 
+    mutate(Comparison = "White vs. Asian/Pacific Islander")
   
 }
 
@@ -11281,29 +11158,26 @@ performance = lapply(merged_ml_results, function(result) {
 
 specificity = seq(0, 1, 0.01)
 
-pooled_sens_spec_black = map_dfr(1:100, get_pooled_sens_spec_black, specificity)
-pooled_sens_spec_white = map_dfr(1:100, get_pooled_sens_spec_white, specificity)
-pooled_sens_spec_aapi = map_dfr(1:100, get_pooled_sens_spec_aapi, specificity)
+pooled_sens_spec_wvb = map_dfr(1:100, get_pooled_sens_spec_wvb, specificity)
+pooled_sens_spec_wva = map_dfr(1:100, get_pooled_sens_spec_wva, specificity)
 
-pooled_sens_spec = bind_rows(pooled_sens_spec_black, pooled_sens_spec_white, pooled_sens_spec_aapi)
-pooled_sens_spec$Race = factor(pooled_sens_spec$Race, levels = c("White", "Black", "Asian/Pacific Islander"))
+pooled_sens_spec = bind_rows(pooled_sens_spec_wva, pooled_sens_spec_wvb)
+pooled_sens_spec$Comparison = factor(pooled_sens_spec$Comparison, levels = c("White vs. Black", "White vs. Asian/Pacific Islander"))
 
-pooled_sens_spec %>% group_by(Race, specificity) %>% 
+saveRDS(pooled_sens_spec, "pooled_sens_spec_adultchild_r.rds")
+
+pooled_sens_spec %>% group_by(Comparison, specificity) %>% 
   summarize(lquartile = quantile(sensitivity, prob = 0.25),
             uquartile = quantile(sensitivity, prob = 0.75),
             sensitivity = median(sensitivity),
             .groups = "drop") %>% 
   ggplot(aes(x=1-specificity, y=sensitivity, 
              ymin=lquartile, ymax=uquartile)) + 
-  geom_ribbon(alpha=0.25, aes(fill = Race)) + 
-  geom_step(aes(color = Race), size = 0.8) + 
+  geom_ribbon(alpha=0.25, aes(fill = Comparison)) + 
+  geom_step(aes(color = Comparison), size = 0.8) + 
   xlab("False Positive Rate") + ylab("True Positive Rate") + 
-  scale_color_manual(values = c("#377eb8", "#ffd92f", "#e41a1c"), 
-                     labels = c("White", "Black", 
-                                "Asian/Pacific Islander")) + 
-  scale_fill_manual(values = c("#377eb8", "#ffd92f", "#e41a1c"), 
-                     labels = c("White", "Black", 
-                                "Asian/Pacific Islander")) +
+  scale_color_manual(values = c("darkorange4", "darkslategray4")) + 
+  scale_fill_manual(values = c("darkorange4", "darkslategray4")) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "AUC = 0.570<br>
            prAUC = 0.344<br>
@@ -11318,61 +11192,7 @@ pooled_sens_spec %>% group_by(Race, specificity) %>%
 ggsave("roc_curve_merge.tiff", width = 7, height = 5)
 ```
 
-###AUC calculations
-```{r merge_ml_auc}
-merged_ml_results = readRDS("merged_ml_results.rds")
 
-get_roc_auc_black = function(model_num) {
-  rf = merged_ml_results[[model_num]]$trained_model$pred 
-  response = rf %>% 
-    dplyr::select(obs, pred) %>% 
-    mutate(obs_binary = if_else(obs == "Black", 1, 0)) %>% 
-    mutate(pred_binary = if_else(pred == "Black", 1, 0))
-  roc = roc(response$obs_binary ~ response$pred_binary)
-  roc$auc[1]
-
-}  
-
-get_roc_auc_white = function(model_num) {
-  rf = merged_ml_results[[model_num]]$trained_model$pred 
-  response = rf %>% 
-    dplyr::select(obs, pred) %>% 
-    mutate(obs_binary = if_else(obs == "White", 1, 0)) %>% 
-    mutate(pred_binary = if_else(pred == "White", 1, 0))
-  roc = roc(response$obs_binary ~ response$pred_binary)
-  roc$auc[1]
-
-}
-
-get_roc_auc_aapi = function(model_num) {
-  rf = merged_ml_results[[model_num]]$trained_model$pred 
-  response = rf %>% 
-    dplyr::select(obs, pred) %>% 
-    mutate(obs_binary = if_else(obs == "AAPI", 1, 0)) %>% 
-    mutate(pred_binary = if_else(pred == "AAPI", 1, 0))
-  roc = roc(response$obs_binary ~ response$pred_binary)
-  roc$auc[1]
-
-}
-
-auc_black = map(1:100, get_roc_auc_black) %>% unlist() %>% median()
-auc_white = map(1:100, get_roc_auc_white) %>% unlist() %>% median()
-auc_aapi = map(1:100, get_roc_auc_aapi) %>% unlist() %>% median()
-
-rf = merged_ml_results[[3]]$trained_model$pred
-
-response_black = rf %>% dplyr::select(obs, pred) %>% 
-  mutate(obs_binary = if_else(obs == "Black", 1, 0)) %>% 
-  mutate(pred_binary = if_else(pred == "Black", 1, 0))
-response_white = rf %>% dplyr::select(obs, White) %>% 
-  mutate(obs_binary = if_else(obs == "White", 1, 0))
-response_asian = rf %>% dplyr::select(obs, AAPI) %>% 
-  mutate(obs_binary = if_else(obs == "AAPI", 1, 0))
-
-White = roc(response_white$obs_binary ~ response_white$White)
-Black = roc(response_black$obs_binary ~ response_black$pred_binary)
-Asian = roc(response_asian$obs_binary ~ response_asian$AAPI)
-```
 ##Machine learning child-adult downsampled
 We then downsampled the feature tables to evenly sample across groups. 50 Black children, 50 White children, 50 Asian American children, 50 Black adults, 50 White adults, and 50 Asian American adults were randomly selected from the tables. This was repeated 9 more times for a total of 10 randomly downsampled tables. All preprocessing, hyperparameter tuning, and random forest modeling steps were then performed as above for each of the 10 tables.
 
@@ -11562,7 +11382,21 @@ ggsave("roc_curve_merge_down_1.tiff", width = 7, height = 5)
 
 ###Final model
 ```{r final_model_merged_down}
+genus_race_merged_down_1 = readRDS("AGP_comp/merged_down_ml_results_1.rds")
+genus_race_merged_down_2 = readRDS("AGP_comp/merged_down_ml_results_2.rds")
+genus_race_merged_down_3 = readRDS("AGP_comp/merged_down_ml_results_3.rds")
+genus_race_merged_down_4 = readRDS("AGP_comp/merged_down_ml_results_4.rds")
+genus_race_merged_down_5 = readRDS("AGP_comp/merged_down_ml_results_5.rds")
+genus_race_merged_down_6 = readRDS("AGP_comp/merged_down_ml_results_6.rds")
+genus_race_merged_down_7 = readRDS("AGP_comp/merged_down_ml_results_7.rds")
+genus_race_merged_down_8 = readRDS("AGP_comp/merged_down_ml_results_8.rds")
+genus_race_merged_down_9 = readRDS("AGP_comp/merged_down_ml_results_9.rds")
+genus_race_merged_down_10 = readRDS("AGP_comp/merged_down_ml_results_10.rds")
 
+genus_race_merged_all = c(genus_race_merged_down_1, genus_race_merged_down_2, genus_race_merged_down_3, genus_race_merged_down_4, genus_race_merged_down_5, genus_race_merged_down_6, genus_race_merged_down_7, genus_race_merged_down_8, genus_race_merged_down_9,
+genus_race_merged_down_10)
+
+saveRDS(genus_race_merged_all, "~/genus_race_merged_all.rds")
 ```
 
 ##Important feature graphs
@@ -11667,10 +11501,10 @@ legend_plot_ac = ggboxplot(genus_merged_graphs_relab2, "Race", "k__Bacteria;p__F
 ```
 
 ##Graphs for publication
-```{r pub_graphs_fig1v5}
+```{r pub_graphs_fig1}
 age_legend = get_legend(weight_age)
 
-tiff(file="fig1v5.tif", res=300, width=24, height=8, units="in")
+tiff(file="fig1.tif", res=300, width=24, height=8, units="in")
 row1 = plot_grid(alpha_all_age_graph, weight_age + theme(legend.position = "none"),
                  nrow = 1, ncol = 2,
                  rel_widths = c(2, 1.1), labels = c("A", "B"),
@@ -11682,15 +11516,15 @@ fig1
 dev.off()
 
 setEPS()
-postscript(file="fig1v5.eps", width=24, height=8, paper = "special")
+postscript(file="fig1.eps", width=24, height=8, paper = "special")
 fig1
 dev.off()
 ```
 
-```{r pub_graphs_fig2v2}
+```{r pub_graphs_fig2}
 nmds_legend = get_legend(weight_age_6week3month)
 
-tiff(file="fig2v2.tif", res=300, width=22, height=20, units="in")
+tiff(file="fig2.tif", res=300, width=22, height=20, units="in")
 
 
 row1 = plot_grid(faithr_dw + theme(legend.position = "none"), 
@@ -11732,7 +11566,7 @@ plot
 dev.off()
 
 setEPS()
-postscript(file="fig2v2.eps", width=22, height=20, paper = "special")
+postscript(file="fig2.eps", width=22, height=20, paper = "special")
 plot
 dev.off()
 ```
@@ -11750,7 +11584,7 @@ dev.off()
 ```{r pub_graphs_fig3b}
 venn.diagram(x = list(c, a), 
              category.names = c("Children (57)", "Adults (144)"), 
-             filename = "fig3Bv2.tif", output = T, imagetype = "tiff", 
+             filename = "fig3B.tif", output = T, imagetype = "tiff", 
              height = 5, width = 5, units = "in", resolution = 300, 
              col = c("#4b265c", "#25a165"), lwd = 1,
              fill = c(alpha("#4b265c", 0.3), alpha("#25a165", 0.3)), 
@@ -11760,7 +11594,7 @@ venn.diagram(x = list(c, a),
 
 venn.diagram(x = list(c, a), 
              category.names = c("Children (57)", "Adults (144)"), 
-             filename = "fig3Bv2.svg", output = T, imagetype = "svg", 
+             filename = "fig3B.svg", output = T, imagetype = "svg", 
              height = 5, width = 5, units = "in", resolution = 300, 
              col = c("#4b265c", "#25a165"), lwd = 1,
              fill = c(alpha("#4b265c", 0.3), alpha("#25a165", 0.3)), 
@@ -11770,13 +11604,13 @@ venn.diagram(x = list(c, a),
 ```
 
 ```{r fig3C}
-tiff(file="fig3Cv20.tif", res=300, width=7, height=10, units="in")
+tiff(file="fig3C.tif", res=300, width=7, height=10, units="in")
 plot_grid(roc_curve_child_r, roc_curve_child_e, nrow = 2, ncol = 1,
           rel_widths = c(1, 1), align = "hv", axis = "tb")
 dev.off()
 
 setEPS()
-postscript(file="fig3Cv20.eps", width=7, height=10, paper = "special")
+postscript(file="fig3C.eps", width=7, height=10, paper = "special")
 plot_grid(roc_curve_child_r, roc_curve_child_e, nrow = 2, ncol = 1,
           rel_widths = c(1, 1), align = "hv", axis = "tb")
 dev.off()
