@@ -127,10 +127,6 @@ metadata_re = metadata %>%
 write_tsv(metadata_re, "metadata_re.tsv")
 metadata_re = read_tsv("metadata_re.tsv")
 
-metadata_re_onesubj = metadata %>% 
-  right_join(unweighted_re_onesubj, by = c("SampleID" = "...1")) %>% 
-               dplyr::select(1:41)
-
 metadata_re_age_sex_delivery_feeding = metadata %>% 
   right_join(unweighted_re_age_sex_delivery_feeding, by = c("SampleID" = "...1")) %>% 
                dplyr::select(1:41)
@@ -977,6 +973,10 @@ write_csv(mds_otus_weighted_points2, "weighted_mds_full.csv")
 
 ```{r nmds_weighted_plots}
 mds_otus_weighted_points2 = read_csv("weighted_mds_full.csv")
+
+mds_otus_weighted_points2$Race = factor(mds_otus_weighted_points2$Race, 
+                                    levels = c("White", "Black", 
+                                               "Asian/Pacific Islander"))
 weight_race <- ggplot(mds_otus_weighted_points2, 
                       aes(x = MDS1, y = MDS2, color = Race, 
                           shape = Ethnicity)) +
@@ -1000,8 +1000,8 @@ geom_point(aes(shape = Ethnicity,
                    linetype = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "<b>Race: p = 0.012, R<sup>2</sup> = 0.05%</b><br>
-           Ethnicity: p = 0.738, R<sup>2</sup> = 0.01%<br>
+           label = "<b>Race: p = 0.004, R<sup>2</sup> = 0.05%</b><br>
+           Ethnicity: p = 0.720, R<sup>2</sup> = 0.01%<br>
            <b>Age: p = 0.002, R<sup>2</sup> = 7.9%<br>
            Infant diet: p = 0.004, R<sup>2</sup> = 0.09%<br>
            Subject: p = 0.002, R<sup>2</sup> = 33.7%", 
@@ -1013,7 +1013,7 @@ mds_otus_weighted_points2_age = mds_otus_weighted_points2 %>%
   filter(Host_age_cat != "NA") %>% 
   filter(Host_age_cat != "0-1 week") %>% 
   mutate(Host_age_cat_new = case_when(Host_age_cat == "3-6 years" ~ 
-                                        "3-5.9 years", 
+                                        "3-11.9 years", 
                                       Host_age_cat == "6-12 years" ~ 
                                         "3-11.9 years",
                                       Host_age_cat == "1-6 weeks" ~
@@ -1058,27 +1058,43 @@ weight_age <- ggplot(mds_otus_weighted_points2_age,
                       aes(x = MDS1, y = MDS2)) +
   geom_point(aes(shape = Race, 
                  fill = Host_age_cat_new), size=3, color = "black") + 
-    scale_shape_manual(values = c(21, 24, 22)) +
+    scale_shape_manual(values = c(21, 24, 22),
+                       labels = c("White  ", "Black  ",
+                                  "Asian/Pacific Islander  ")) +
   scale_fill_manual(values = c("#8dd3c7", "#bebada", "#fb8072", 
                                "#80b1d3", "#fdb462"),
-                     guide=guide_legend(override.aes=list(shape=21))) +
+                    labels = c("1-5.9 weeks ",
+                               "6 weeks-2.9 months  ",
+                               "3-11.9 months  ",
+                               "1-2.9 years  ",
+                               "3-11.9 years  ")) +
   scale_color_manual(values = c("#8dd3c7", "#bebada", "#fb8072", 
-                               "#80b1d3", "#fdb462")) + 
+                               "#80b1d3", "#fdb462"),
+                    labels = c("1-5.9 weeks ",
+                               "6 weeks-2.9 months  ",
+                               "3-11.9 months  ",
+                               "1-2.9 years  ",
+                               "3-11.9 years  ")) + 
   theme(panel.background = element_rect(fill = 'white', 
                                         colour = 'black'), 
         legend.key=element_blank()) + 
   theme(axis.title.x=element_text(size=rel(1.5)), 
         axis.title.y=element_text(size=rel(1.5)),
         legend.title = element_blank(),
-        legend.text = element_text(size = rel(2)),
+        legend.text = element_text(size = rel(2.5)),
         legend.position = "bottom") + 
   stat_ellipse(aes(x = MDS1, y = MDS2, group = Host_age_cat_new, 
                    color = Host_age_cat_new),
-               type = "t", level = 0.95) +
+               type = "t", level = 0.95, show.legend = F) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
            label = "<b><i>Age: p = 0.002, R<sup>2</sup> = 7.9%", 
            x = -Inf, y = Inf, size = 7,
-           hjust = 0, vjust = 1, color = "blue1")
+           hjust = 0, vjust = 1, color = "blue1") +
+  guides(shape = guide_legend(override.aes = list(size = 10),
+                              order = 2),
+         fill = guide_legend(override.aes=list(shape=21, 
+                                               size = 10),
+                             order = 1))
 
 mds_otus_weighted_points2_age_01week = mds_otus_weighted_points2 %>% 
   filter(Host_age_cat == "0-1 week")
@@ -1181,7 +1197,7 @@ weight_age_03month <- ggplot(mds_otus_weighted_points2_age_03month,
 geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("0-2.9 months") +
+  ggtitle("0-2.9 months (n=648)") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1331,7 +1347,7 @@ weight_age_312month <- ggplot(mds_otus_weighted_points2_age_312month,
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("3-11.9 months") +
+  ggtitle("3-11.9 months (n=830)") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
   theme(panel.background = element_rect(fill = 'white', 
@@ -1359,7 +1375,7 @@ weight_age_13year <- ggplot(mds_otus_weighted_points2_age_13year,
   geom_point(aes(shape = Ethnicity, 
                  fill = Race), size=3, color = "black") + 
     scale_shape_manual(values = c(23, 25)) +
-  ggtitle("1-2.9 years") +
+  ggtitle("1-2.9 years (n=1007)") +
   scale_fill_manual(values = c("#377eb8", "#f6d128", "#e41a1c"),
                      guide=guide_legend(override.aes=list(shape=23))) +
   scale_color_manual(values = c("#377eb8", "#f6d128", "#e41a1c")) +
@@ -1430,7 +1446,7 @@ weight_sex <- ggplot(mds_otus_weighted_points2_sex,
                type = "t", level = 0.95)
 
 mds_otus_weighted_points2_del = mds_otus_weighted_points2 %>% 
-  filter(host_del_route != is.na(.))
+  filter(host_del_route != "NA")
 weight_del <- ggplot(mds_otus_weighted_points2_del, 
                       aes(x = MDS1, y = MDS2, color = host_del_route)) +
   geom_point(size=3) + scale_color_manual(values = c("#8da0cb", "#a6d854")) +
@@ -1520,11 +1536,11 @@ geom_point(aes(shape = Ethnicity,
                    linetype = Race), 
                type = "t", level = 0.95) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "Race: p = 0.076, R<sup>2</sup> = 0.02%<br>
+           label = "Race: p = 0.070, R<sup>2</sup> = 0.02%<br>
            <b>Ethnicity: p = 0.024, R<sup>2</sup> = 0.03%<br>
            Age: p = 0.002, R<sup>2</sup> = 5.2%</b><br>
            Infant diet: p = 0.228, R<sup>2</sup> = 0.03%<br>
-           <b>Subject: p = 0.002, R<sup>2</sup> = 34.4%", 
+           <b>Subject: p = 0.002, R<sup>2</sup> = 34.3%", 
            x = -Inf, y = -Inf, size = 5,
            hjust = 0, vjust = 0) 
 
@@ -1957,8 +1973,8 @@ unweight_sex <- ggplot(mds_otus_unweighted_points2_sex,
                    linetype = host_sex), 
                type = "t", level = 0.95)
 
-mds_otus_unweighted_points2_del = mds_otus_unweighted_one_points2 %>% 
-  filter(host_del_route != is.na(.))
+mds_otus_unweighted_points2_del = mds_otus_unweighted_points2 %>% 
+  filter(host_del_route != "NA")
 unweight_del <- ggplot(mds_otus_unweighted_points2_del, 
                       aes(x = MDS1, y = MDS2, color = host_del_route)) +
   geom_point(size=3) + scale_color_manual(values = c("#8da0cb", "#a6d854")) +
@@ -2400,7 +2416,7 @@ legend1 = get_legend(weight_study + theme(legend.box.margin = margin(0, 0, 0, 12
 col1 = plot_grid(weight_study + theme(legend.position = "none"),
                  nrow = 1, ncol = 1, labels = c('A'), 
                  label_size = 20)
-col2 = plot_grid(bray_study + theme(legend.position = "none"),
+col2 = plot_grid(unweight_study + theme(legend.position = "none"),
                  nrow = 1, ncol = 1, labels = c('B'), 
                  label_size = 20) 
 plot = plot_grid(col1, col2, legend1, nrow = 1, ncol = 3, 
@@ -10009,6 +10025,347 @@ plot_Dialister = ggplot(species_meta,
             position = position_dodge(width = 0.75), size = 8)
 ```
 
+Box plots of taxa that were differentially abundant based on ANCOM results and that were identified as important features in the random forest model.
+
+```{r da_ancom_rf_graphs}
+genus = read_tsv("feature-table-genus.tsv")
+genus_ra = genus %>% column_to_rownames("Gensu") %>% 
+  decostand(method = "total", MARGIN = 2)
+genus_meta = genus_ra %>% 
+  rownames_to_column("Gensu") %>% 
+  pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
+  pivot_wider(names_from = "Gensu", values_from = "rel_abund") %>% 
+  inner_join(metadata_re)
+genus_meta$Race = factor(genus_meta$Race, 
+                                    levels = c("White", "Black", 
+                                               "Asian/Pacific Islander"))
+
+plot_Prevotella = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Prevotella\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Ruminococcus = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Ruminococcus`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Ruminococcus\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Collinsella = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Actinobacteria;c__Coriobacteriia;o__Coriobacteriales;f__Coriobacteriaceae;g__Collinsella`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Collinsella\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Blautia = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Blautia`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Blautia\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Alistipes = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Rikenellaceae;g__Alistipes`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Alistipes\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Coprococcus = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Coprococcus`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Coprococcus\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Veillonella = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Veillonella\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Clostridium = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Clostridium`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Clostridium\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Haemophilus = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Pasteurellales;f__Pasteurellaceae;g__Haemophilus`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Haemophilus\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Ruminococcaceae = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;__`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Ruminococcaceae sp.\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Dorea = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Lachnospiraceae;g__Dorea`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Dorea\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Bacteroides = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Bacteroidaceae;g__Bacteroides`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Bacteroides\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+
+plot_Faecalibacterium = ggplot(genus_meta,
+                      aes(x = Race, 
+                          y = `k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Ruminococcaceae;g__Faecalibacterium`)) + 
+  stat_boxplot(geom = 'errorbar', width = 0, 
+               color = "black") +
+  geom_boxplot(coef = 0, outlier.shape = NA,
+               color = "white",
+               fill = c("#377eb8", "#f6d128", "#e41a1c"),
+               fatten = 4) +
+  geom_boxplot(coef = 0, outlier.shape = NA, 
+               color = c("#377eb8", "#f6d128", "#e41a1c"),
+               fill = NA, 
+               fatten = NULL) + 
+  geom_jitter(width = 0.2,
+              color = "black", size = 0.5) +
+  scale_y_continuous(trans = "sqrt") + 
+  ylab("Faecalibacterium\nRelative Abundance") +
+  theme_classic() + 
+  theme(axis.title.y=element_text(size=rel(1.2)),
+        axis.text.y=element_text(size=rel(1)),
+        axis.title.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  guides(fill = "none", shape = "none")
+```
+
 ### Histograms of highlighted taxa
 Regular
 ```{r histogram}
@@ -10736,6 +11093,7 @@ lapply(child_ml_results, function(result) {
   bind_rows() %>%  
   write_tsv("child_genus_ml_pooled_performance.tsv")
 
+child_ml_results = readRDS("AGP_comp/child_ml_results.rds")
 get_importance = function(model_num) {
   model = child_ml_results[[model_num]]
   
@@ -10747,7 +11105,8 @@ get_importance = function(model_num) {
 importance = map_dfr(1:100, get_importance)
 write_tsv(importance, "feature_importance_children.tsv")
 
-feature_importance_plot = ggplot(as.data.frame(importance), aes(x = perf_metric, y = names)) + 
+importance = read_tsv("feature_importance_children.tsv")
+feature_importance_plot = ggplot(as.data.frame(importance), aes(x = perf_metric, y = reorder(names, perf_metric))) + 
   stat_summary(fun.data = "median_hilow",
                fun.args = list(conf.int = 0.5))
 
@@ -10765,6 +11124,39 @@ importance_summary = importance %>%
   mutate(mean_importance = rowMeans(select(., starts_with("seed"))))
 
 write_csv(importance_summary, "feature_importance_children_mean.csv")
+
+child_ml_results = readRDS("AGP_comp/child_ml_eth_results.rds")
+
+get_importance = function(model_num) {
+  model = child_ml_results[[model_num]]
+  
+  model$feature_importance %>% 
+    as_tibble() %>% 
+    mutate(seed = model_num)
+}
+
+importance = map_dfr(1:100, get_importance)
+write_tsv(importance, "feature_importance_children_ethnicity.tsv")
+
+importance = read_tsv("feature_importance_children_ethnicity.tsv")
+feature_importance_plot = ggplot(as.data.frame(importance), aes(x = perf_metric, y = reorder(names, perf_metric))) + 
+  stat_summary(fun.data = "median_hilow",
+               fun.args = list(conf.int = 0.5))
+
+tiff("feature_importance_children_ethnicity.tiff", width = 10, height = 5, units = "in", res = 300)
+feature_importance_plot
+dev.off()
+
+importance_summary = importance %>% 
+  select(-perf_metric_diff, -pvalue, 
+         -method, -perf_metric_name) %>% 
+  pivot_wider(id_cols = "names", 
+              names_from = "seed", 
+              names_prefix = "seed",
+              values_from = "perf_metric") %>% 
+  mutate(mean_importance = rowMeans(select(., starts_with("seed"))))
+
+write_csv(importance_summary, "feature_importance_children_ethnicity_mean.csv")
 ```
 
 ###Roc curves
@@ -11071,7 +11463,8 @@ get_importance = function(model_num) {
 importance = map_dfr(1:100, get_importance)
 write_tsv(importance, "feature_importance_merged.tsv")
 
-feature_importance_plot = ggplot(as.data.frame(importance), aes(x = perf_metric, y = names)) + 
+importance = read_tsv("feature_importance_merged.tsv")
+feature_importance_plot = ggplot(as.data.frame(importance), aes(x = perf_metric, y = reorder(names, perf_metric))) + 
   stat_summary(fun.data = "median_hilow",
                fun.args = list(conf.int = 0.5))
 
@@ -11382,21 +11775,151 @@ ggsave("roc_curve_merge_down_1.tiff", width = 7, height = 5)
 
 ###Final model
 ```{r final_model_merged_down}
-genus_race_merged_down_1 = readRDS("AGP_comp/merged_down_ml_results_1.rds")
-genus_race_merged_down_2 = readRDS("AGP_comp/merged_down_ml_results_2.rds")
-genus_race_merged_down_3 = readRDS("AGP_comp/merged_down_ml_results_3.rds")
-genus_race_merged_down_4 = readRDS("AGP_comp/merged_down_ml_results_4.rds")
-genus_race_merged_down_5 = readRDS("AGP_comp/merged_down_ml_results_5.rds")
-genus_race_merged_down_6 = readRDS("AGP_comp/merged_down_ml_results_6.rds")
-genus_race_merged_down_7 = readRDS("AGP_comp/merged_down_ml_results_7.rds")
-genus_race_merged_down_8 = readRDS("AGP_comp/merged_down_ml_results_8.rds")
-genus_race_merged_down_9 = readRDS("AGP_comp/merged_down_ml_results_9.rds")
-genus_race_merged_down_10 = readRDS("AGP_comp/merged_down_ml_results_10.rds")
+genus_race_merged_down = readRDS("AGP_comp/genus_race_merged_all.rds")
 
-genus_race_merged_all = c(genus_race_merged_down_1, genus_race_merged_down_2, genus_race_merged_down_3, genus_race_merged_down_4, genus_race_merged_down_5, genus_race_merged_down_6, genus_race_merged_down_7, genus_race_merged_down_8, genus_race_merged_down_9,
-genus_race_merged_down_10)
+genus_race_merged_down %>%
+  map(pluck, "trained_model") %>% 
+  combine_hp_performance() %>% 
+  pluck("dat") %>% 
+  write_tsv("genus_merged_down_ml_pooled_hp.tsv")
 
-saveRDS(genus_race_merged_all, "~/genus_race_merged_all.rds")
+
+lapply(genus_race_merged_down, function(result) {
+  result[['performance']] %>% 
+    dplyr::select(cv_metric_logLoss, Accuracy, method)
+}) %>% 
+  bind_rows() %>%  
+  write_tsv("genus_merged_down_ml_pooled_performance.tsv")
+
+get_importance = function(model_num) {
+  model = genus_race_merged_down[[model_num]]
+  
+  model$feature_importance %>% 
+    as_tibble() %>% 
+    mutate(seed = model_num)
+}
+
+importance = map_dfr(1:1000, get_importance)
+write_tsv(importance, "feature_importance_genus_down.tsv")
+
+feature_importance_plot = ggplot(as.data.frame(importance), aes(x = perf_metric, y = names)) + 
+  stat_summary(fun.data = "median_hilow",
+               fun.args = list(conf.int = 0.5))
+
+tiff("feature_importance_genus_down.tiff", width = 10, height = 10, units = "in", res = 300)
+feature_importance_plot
+dev.off()
+
+importance_summary = importance %>% 
+  dplyr::select(-perf_metric_diff, -pvalue, 
+         -method, -perf_metric_name) %>% 
+  pivot_wider(id_cols = "names", 
+              names_from = "seed", 
+              names_prefix = "seed",
+              values_from = "perf_metric") %>% 
+  mutate(mean_importance = rowMeans(dplyr::select(., starts_with("seed"))))
+
+write_csv(importance_summary, "feature_importance_genus_merged_down_mean.csv")
+```
+###Roc curves
+```{r merge_down_ml_roc}
+genus_race_merged_down = readRDS("AGP_comp/genus_race_merged_all.rds")
+
+get_sensitivity = function(x, data) {
+  data %>% 
+    filter(specificity - x >= 0) %>% 
+    top_n(sensitivity, n = 1) %>% 
+    mutate(specificity = x, fpr = 1-x) %>% 
+    distinct()
+  
+}
+
+get_pooled_sens_spec_wvb = function(model_num, specificity) {
+  model = genus_race_merged_down[[model_num]]
+  prob = predict(model$trained_model, model$test_data, type = "prob")
+  observed = model$test_data$outcome
+  prob_obs_white = bind_cols(prob, observed = observed) %>% dplyr::select(White, observed) %>% 
+    filter(observed == "White" | observed == "Black")
+  total_white = prob_obs_white %>% count(observed) %>% 
+    pivot_wider(names_from = observed, values_from = n)
+  sens_spec_white = prob_obs_white %>% arrange(desc(White)) %>% 
+    mutate(is_white = (observed == "White"),
+           tp = cumsum(is_white),
+           fp = cumsum(!is_white),
+           sensitivity = tp / total_white$White,
+           fpr = fp / (total_white$Black),
+           specificity = 1 - fpr) %>% 
+    dplyr::select(sensitivity, specificity, fpr)
+  map_dfr(specificity, get_sensitivity, sens_spec_white) %>% 
+    mutate(Comparison = "White vs. Black")
+  
+}
+
+get_pooled_sens_spec_wva = function(model_num, specificity) {
+  model = genus_race_merged_down[[model_num]]
+  prob = predict(model$trained_model, model$test_data, type = "prob")
+  observed = model$test_data$outcome
+  prob_obs_white = bind_cols(prob, observed = observed) %>% dplyr::select(White, observed) %>% 
+    filter(observed == "White" | observed == "AAPI")
+  total_white = prob_obs_white %>% count(observed) %>% 
+    pivot_wider(names_from = observed, values_from = n)
+  sens_spec_white = prob_obs_white %>% arrange(desc(White)) %>% 
+    mutate(is_white = (observed == "White"),
+           tp = cumsum(is_white),
+           fp = cumsum(!is_white),
+           sensitivity = tp / total_white$White,
+           fpr = fp / (total_white$AAPI),
+           specificity = 1 - fpr) %>% 
+    dplyr::select(sensitivity, specificity, fpr)
+  map_dfr(specificity, get_sensitivity, sens_spec_white) %>% 
+    mutate(Comparison = "White vs. Asian/Pacific Islander")
+  
+}
+
+performance = lapply(genus_race_merged_down, function(result) {
+  result[['performance']] %>% 
+    dplyr::select(AUC, prAUC, Accuracy, Mean_Sensitivity, Mean_Specificity)
+}) %>% 
+  bind_rows() %>% 
+  summarize(AUC = median(AUC), prAUC = median(prAUC),
+            Accuracy = median(Accuracy), 
+            Sensitivity = median(Mean_Sensitivity),
+            Specificity = median(Mean_Specificity))
+
+specificity = seq(0, 1, 0.01)
+
+pooled_sens_spec_wvb = map_dfr(1:1000, get_pooled_sens_spec_wvb, specificity)
+pooled_sens_spec_wva = map_dfr(1:1000, get_pooled_sens_spec_wva, specificity)
+
+pooled_sens_spec = bind_rows(pooled_sens_spec_wva, pooled_sens_spec_wvb)
+pooled_sens_spec$Comparison = factor(pooled_sens_spec$Comparison, levels = c("White vs. Black", "White vs. Asian/Pacific Islander"))
+
+saveRDS(pooled_sens_spec, "pooled_sens_spec_adultchild_down_r.rds")
+
+pooled_sens_spec %>% group_by(Comparison, specificity) %>% 
+  summarize(lquartile = quantile(sensitivity, prob = 0.25),
+            uquartile = quantile(sensitivity, prob = 0.75),
+            sensitivity = median(sensitivity),
+            .groups = "drop") %>% 
+  ggplot(aes(x=1-specificity, y=sensitivity, 
+             ymin=lquartile, ymax=uquartile)) + 
+  geom_ribbon(alpha=0.25, aes(fill = Comparison)) + 
+  geom_step(aes(color = Comparison), size = 0.8) + 
+  xlab("False Positive Rate") + ylab("True Positive Rate") + 
+  scale_color_manual(values = c("darkorange4", "darkslategray4")) + 
+  scale_fill_manual(values = c("darkorange4", "darkslategray4")) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "AUC = 0.602<br>
+           prAUC = 0.413<br>
+           Accuracy = 0.420<br>
+           Sensitivity = 0.420<br>
+           Specificity = 0.710", 
+           x = Inf, y = -Inf, size = 3,
+           hjust = 1, vjust = 0) + 
+  geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1),
+               color = "grey40", linetype = "dashed", size = 0.6) 
+
+ggsave("roc_curve_merge_down.tiff", width = 7, height = 5)
 ```
 
 ##Important feature graphs
@@ -11677,10 +12200,10 @@ unweight_race
 dev.off()
 ```
 
-```{r figs3}
+```{r figs7}
 nmds_legend = get_legend(weight_age_6week3month)
 
-tiff(file="figs3.tif", res=300, width=12, height=24, units="in")
+tiff(file="figs7.tif", res=300, width=12, height=24, units="in")
 
 
 top = plot_grid(weight_age_01week + theme(legend.position = "none"), 
@@ -11701,15 +12224,15 @@ plot
 dev.off()
 
 setEPS()
-postscript(file="figs3.eps", width=12, height=24, paper = "special")
+postscript(file="figs7.eps", width=12, height=24, paper = "special")
 plot
 dev.off()
 ```
 
-```{r figs4}
+```{r figs8}
 nmds_legend = get_legend(unweight_age_6week3month)
 
-tiff(file="figs4.tif", res=300, width=18, height=24, units="in")
+tiff(file="figs8.tif", res=300, width=18, height=24, units="in")
 plot = plot_grid(unweight_age_01week + theme(legend.position = "none"), 
                 unweight_age_16week + theme(legend.position = "none"),
                 unweight_age_6week3month + theme(legend.position = "none"),
@@ -11728,15 +12251,15 @@ plot
 dev.off()
 
 setEPS()
-postscript(file="figs4.eps", width=18, height=24, paper = "special")
+postscript(file="figs8.eps", width=18, height=24, paper = "special")
 plot
 dev.off()
 ```
 
-```{r figs16}
+```{r figs14}
 plot_legend = get_legend(legend_plot_ac)
 
-tiff(file="figs16.tif", res=300, width=20, height=6, units="in")
+tiff(file="figs14.tif", res=300, width=20, height=6, units="in")
 plot = plot_grid(plot_ac_Entero + theme(legend.position = "none"), 
                 plot_ac_Prevot + theme(legend.position = "none"),
                 plot_ac_Rumin + theme(legend.position = "none"),
@@ -11749,8 +12272,21 @@ plot
 dev.off()
 
 setEPS()
-postscript(file="figs16.eps", width=20, height=6, paper = "special")
+postscript(file="figs14.eps", width=20, height=6, paper = "special")
 plot
+dev.off()
+```
+
+```{r figs10}
+tiff(file="figS10.tif", 
+     res=300, width=20, height=16, units="in")
+plots15 = ggarrange(plot_Alistipes, plot_Bacteroides, plot_Blautia, plot_Clostridium, plot_Collinsella, plot_Coprococcus, plot_Dorea, plot_Faecalibacterium, plot_Haemophilus, plot_Prevotella, plot_Ruminococcaceae, plot_Ruminococcus, plot_Veillonella,
+          nrow = 3, ncol = 5, common.legend = T, legend = "right")
+dev.off()
+
+setEPS()
+postscript(file="figs10.eps", width=20, height=16, paper = "special")
+plots15
 dev.off()
 ```
 
