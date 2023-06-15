@@ -2701,6 +2701,8 @@ alpha_all = inner_join(metadata_re, faith2, by = "SampleID") %>%
   filter(Race != "Other") %>% 
   filter(Ethnicity != "Other")
 
+write_csv(alpha_all, "alpha_diversity_values.csv")
+
 ##Dataset check
 fs = lm(faith_pd ~ Study, data=alpha_all, na.action = na.omit)
 Anova(fs)
@@ -3339,13 +3341,17 @@ summary(f1m3m)
 Anova(f1m3m)
 summary(glht(f1m3m,linfct=mcp(Breastfeeding="Tukey")))
 f1m3mr_df = broom::tidy(summary(glht(f1m3m,linfct=mcp(Race="Tukey"))))
+write_csv(f1m3mr_df, "faith_03month_race.csv")
 f1m3me_df = broom::tidy(summary(glht(f1m3m,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(f1m3me_df, "faith_03month_ethnicity.csv")
 
 o1m3m = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_onem_threem, na.action = na.omit)
 summary(o1m3m)
 Anova(o1m3m)
 o1m3mr_df = broom::tidy(summary(glht(o1m3m,linfct=mcp(Race="Tukey"))))
 o1m3me_df = broom::tidy(summary(glht(o1m3m,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(o1m3mr_df, "observed_03month_race.csv")
+write_csv(o1m3me_df, "observed_03month_ethnicity.csv")
 
 s1m3m = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_onem_threem, na.action = na.omit)
 summary(s1m3m)
@@ -3353,6 +3359,8 @@ Anova(s1m3m)
 summary(glht(s1m3m,linfct=mcp(Breastfeeding="Tukey")))
 s1m3mr_df = broom::tidy(summary(glht(s1m3m,linfct=mcp(Race="Tukey"))))
 s1m3me_df = broom::tidy(summary(glht(s1m3m,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(s1m3mr_df, "shannon_03month_race.csv")
+write_csv(s1m3me_df, "shannon_03month_ethnicity.csv")
 
 p1m3m = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_onem_threem, na.action = na.omit)
 summary(p1m3m)
@@ -3361,12 +3369,16 @@ summary(glht(p1m3m,linfct=mcp(host_sex="Tukey")))
 summary(glht(p1m3m,linfct=mcp(Breastfeeding="Tukey")))
 p1m3mr_df = broom::tidy(summary(glht(p1m3m,linfct=mcp(Race="Tukey"))))
 p1m3me_df = broom::tidy(summary(glht(p1m3m,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(p1m3mr_df, "pielou_03month_race.csv")
+write_csv(p1m3me_df, "pielou_03month_ethnicity.csv")
 
 c1m3m = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_onem_threem, na.action = na.omit)
 summary(c1m3m)
 Anova(c1m3m)
 c1m3mr_df = broom::tidy(summary(glht(c1m3m,linfct=mcp(Race="Tukey"))))
 c1m3me_df = broom::tidy(summary(glht(c1m3m,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(c1m3mr_df, "chao_03month_race.csv")
+write_csv(c1m3me_df, "chao_03month_ethnicity.csv")
 
 #3-12 months
 f312 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
@@ -3376,6 +3388,8 @@ summary(glht(f312,linfct=mcp(Breastfeeding="Tukey")))
 summary(glht(f312,linfct=mcp(Race="Tukey")))
 f312r_df = broom::tidy(summary(glht(f312,linfct=mcp(Race="Tukey"))))
 f312e_df = broom::tidy(summary(glht(f312,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(f312r_df, "faith_312month_race.csv")
+write_csv(f312e_df, "faith_312month_ethnicity.csv")
 
 o312 = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
 summary(o312)
@@ -3384,6 +3398,8 @@ summary(glht(o312,linfct=mcp(Race="Tukey")))
 summary(glht(o312,linfct=mcp(Breastfeeding="Tukey")))
 o312r_df = broom::tidy(summary(glht(o312,linfct=mcp(Race="Tukey"))))
 o312e_df = broom::tidy(summary(glht(o312,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(o312r_df, "observed_312month_race.csv")
+write_csv(o312e_df, "observed_312month_ethnicity.csv")
 
 s312 = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
 summary(s312)
@@ -3392,6 +3408,8 @@ summary(glht(s312,linfct=mcp(Race="Tukey")))
 summary(glht(s312,linfct=mcp(Breastfeeding="Tukey")))
 s312r_df = broom::tidy(summary(glht(s312,linfct=mcp(Race="Tukey"))))
 s312e_df = broom::tidy(summary(glht(s312,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(s312r_df, "shannon_312month_race.csv")
+write_csv(s312e_df, "shannon_312month_ethnicity.csv")
 
 c312 = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
 summary(c312)
@@ -3400,6 +3418,8 @@ summary(glht(c312,linfct=mcp(Race="Tukey")))
 summary(glht(c312,linfct=mcp(Breastfeeding="Tukey")))
 c312r_df = broom::tidy(summary(glht(c312,linfct=mcp(Race="Tukey"))))
 c312e_df = broom::tidy(summary(glht(c312,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(c312r_df, "chao_312month_race.csv")
+write_csv(c312e_df, "chao_312month_ethnicity.csv")
 
 p312 = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study) + (1|host_subject_id), data=alpha_three_twelve, na.action = na.omit)
 summary(p312)
@@ -3408,6 +3428,8 @@ summary(glht(p312,linfct=mcp(Race="Tukey")))
 summary(glht(p312,linfct=mcp(Breastfeeding="Tukey")))
 p312r_df = broom::tidy(summary(glht(p312,linfct=mcp(Race="Tukey"))))
 p312e_df = broom::tidy(summary(glht(p312,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(p312r_df, "pielou_312month_race.csv")
+write_csv(p312e_df, "pielou_312month_ethnicity.csv")
 
 #1-3 years
 f13 = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
@@ -3420,6 +3442,8 @@ summary(glht(f13,linfct=mcp(Race="Tukey")))
 summary(glht(f13,linfct=mcp(Ethnicity="Tukey")))
 f13r_df = broom::tidy(summary(glht(f13a,linfct=mcp(Race="Tukey"))))
 f13e_df = broom::tidy(summary(glht(f13,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(f13r_df, "faith_13year_race.csv")
+write_csv(f13e_df, "faith_13year_ethnicity.csv")
 
 o13 = lmer(observed_features ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
 summary(o13)
@@ -3431,6 +3455,8 @@ summary(glht(o13,linfct=mcp(Race="Tukey")))
 summary(glht(o13,linfct=mcp(Ethnicity="Tukey")))
 o13r_df = broom::tidy(summary(glht(o13a,linfct=mcp(Race="Tukey"))))
 o13e_df = broom::tidy(summary(glht(o13,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(o13r_df, "observed_13year_race.csv")
+write_csv(o13e_df, "observed_13year_ethnicity.csv")
 
 s13 = lmer(shannon_entropy ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
 summary(s13)
@@ -3442,6 +3468,8 @@ summary(glht(s13,linfct=mcp(Race="Tukey")))
 summary(glht(s13,linfct=mcp(Ethnicity="Tukey")))
 s13r_df = broom::tidy(summary(glht(s13a,linfct=mcp(Race="Tukey"))))
 s13e_df = broom::tidy(summary(glht(s13,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(s13r_df, "shannon_13year_race.csv")
+write_csv(s13e_df, "shannon_13year_ethnicity.csv")
 
 p13 = lmer(pielou_evenness ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
 summary(p13)
@@ -3453,6 +3481,8 @@ summary(glht(p13,linfct=mcp(Race="Tukey")))
 summary(glht(p13,linfct=mcp(Ethnicity="Tukey")))
 p13r_df = broom::tidy(summary(glht(p13a,linfct=mcp(Race="Tukey"))))
 p13e_df = broom::tidy(summary(glht(p13,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(p13r_df, "pielou_13year_race.csv")
+write_csv(p13e_df, "pielou_13year_ethnicity.csv")
 
 c13 = lmer(chao1 ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|host_subject_id), data=alpha_one_three, na.action = na.omit)
 summary(c13)
@@ -3464,6 +3494,8 @@ summary(glht(c13,linfct=mcp(Race="Tukey")))
 summary(glht(c13,linfct=mcp(Ethnicity="Tukey")))
 c13r_df = broom::tidy(summary(glht(c13a,linfct=mcp(Race="Tukey"))))
 c13e_df = broom::tidy(summary(glht(c13,linfct=mcp(Ethnicity="Tukey"))))
+write_csv(c13r_df, "chao_13year_race.csv")
+write_csv(c13e_df, "chao_13year_ethnicity.csv")
 
 #3-12 years
 f312y = lmer(faith_pd ~ Race + Ethnicity + host_sex + host_del_route + Breastfeeding + (1|Study), data=alpha_threey_twelvey, na.action = na.omit)
@@ -9448,6 +9480,28 @@ ethnicity_corrected = bind_cols(ethnicity_nona,
                                                      statistic = "pvalue", plot = F)))
 write.csv(ethnicity_corrected, "ethnicity_corrected_genus_01week.csv")
 
+genus_meta_01week_B = genus_meta_01week %>% filter(Race == "Black")
+
+Prev_B = summary(genus_meta_01week_B$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_B_std = sd(genus_meta_01week_B$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_B_prev = sum(genus_meta_01week_B$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella'>0)
+
+Veil_B = summary(genus_meta_01week_B$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_B_std = sd(genus_meta_01week_B$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_B_prev = sum(genus_meta_01week_B$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella'>0)
+
+genus_meta_01week_W = genus_meta_01week %>% filter(Race == "White")
+
+Prev_W = summary(genus_meta_01week_W$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_W_std = sd(genus_meta_01week_W$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_W_prev = sum(genus_meta_01week_W$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella'>0)
+
+Veil_W = summary(genus_meta_01week_W$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_W_std = sd(genus_meta_01week_W$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_W_prev = sum(genus_meta_01week_W$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella'>0)
+
+
+
 ```
 
 #####Genera 1-6 weeks
@@ -9499,6 +9553,26 @@ ethnicity_corrected = bind_cols(ethnicity_nona,
                                as.data.frame(fdrtool(ethnicity_nona[,3], 
                                                      statistic = "pvalue", plot = F)))
 write.csv(ethnicity_corrected, "ethnicity_corrected_genus_16week.csv")
+
+genus_meta_16week_B = genus_meta_16week %>% filter(Race == "Black")
+
+Prev_B = summary(genus_meta_16week_B$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_B_std = sd(genus_meta_16week_B$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_B_prev = sum(genus_meta_16week_B$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella'>0)
+
+Veil_B = summary(genus_meta_16week_B$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_B_std = sd(genus_meta_16week_B$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_B_prev = sum(genus_meta_16week_B$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella'>0)
+
+genus_meta_16week_W = genus_meta_16week %>% filter(Race == "White")
+
+Prev_W = summary(genus_meta_16week_W$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_W_std = sd(genus_meta_16week_W$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_W_prev = sum(genus_meta_16week_W$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella'>0)
+
+Veil_W = summary(genus_meta_16week_W$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_W_std = sd(genus_meta_16week_W$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_W_prev = sum(genus_meta_16week_W$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella'>0)
 ```
 
 #####Genera 6 weeks-3 months
@@ -9550,6 +9624,26 @@ ethnicity_corrected = bind_cols(ethnicity_nona,
                                as.data.frame(fdrtool(ethnicity_nona[,3], 
                                                      statistic = "pvalue", plot = F)))
 write.csv(ethnicity_corrected, "ethnicity_corrected_genus_6week3month.csv")
+
+genus_meta_6week3month_B = genus_meta_6week3month %>% filter(Race == "Black")
+
+Prev_B = summary(genus_meta_6week3month_B$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_B_std = sd(genus_meta_6week3month_B$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_B_prev = sum(genus_meta_6week3month_B$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella'>0)
+
+Veil_B = summary(genus_meta_6week3month_B$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_B_std = sd(genus_meta_6week3month_B$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_B_prev = sum(genus_meta_6week3month_B$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella'>0)
+
+genus_meta_6week3month_W = genus_meta_6week3month %>% filter(Race == "White")
+
+Prev_W = summary(genus_meta_6week3month_W$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_W_std = sd(genus_meta_6week3month_W$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella')
+Prev_W_prev = sum(genus_meta_6week3month_W$'k__Bacteria;p__Bacteroidetes;c__Bacteroidia;o__Bacteroidales;f__Prevotellaceae;g__Prevotella'>0)
+
+Veil_W = summary(genus_meta_6week3month_W$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_W_std = sd(genus_meta_6week3month_W$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella')
+Veil_W_prev = sum(genus_meta_6week3month_W$'k__Bacteria;p__Firmicutes;c__Clostridia;o__Clostridiales;f__Veillonellaceae;g__Veillonella'>0)
 
 ```
 
@@ -11732,6 +11826,7 @@ species_meta = species_ra %>%
   pivot_longer(-1, names_to = "SampleID", values_to = "rel_abund") %>% 
   pivot_wider(names_from = "Species", values_from = "rel_abund") %>% 
   inner_join(metadata_re)
+write_csv(species_meta, "species_relab_meta.csv")
 
 phyla_meta_OD1 = distinct(phyla_meta, Race)
 phyla_meta_OD1$Race = factor(phyla_meta_OD1$Race, 
@@ -12465,6 +12560,7 @@ genus_meta = genus_ra %>%
 genus_meta$Race = factor(genus_meta$Race, 
                                     levels = c("White", "Black", 
                                                "Asian/Pacific Islander"))
+write_csv(genus_meta, "genus_relab_meta.csv")
 
 plot_Prevotella = ggplot(genus_meta,
                       aes(x = Race, 
@@ -13659,6 +13755,8 @@ pooled_sens_spec = bind_rows(pooled_sens_spec_wvb, pooled_sens_spec_wva)
 pooled_sens_spec$Comparison = factor(pooled_sens_spec$Comparison, levels = c("White vs. Black", "White vs. Asian/Pacific Islander"))
 
 saveRDS(pooled_sens_spec, "pooled_sens_spec_r.rds")
+pooled_sens_spec = readRDS("pooled_sens_spec_r.rds")
+write_csv(pooled_sens_spec, "childonly_rfmodel_roc_curve.csv")
 
 roc_curve_child_r = pooled_sens_spec %>% group_by(Comparison, specificity) %>% 
   summarize(lquartile = quantile(sensitivity, prob = 0.25),
@@ -13984,6 +14082,8 @@ pooled_sens_spec = bind_rows(pooled_sens_spec_wva, pooled_sens_spec_wvb)
 pooled_sens_spec$Comparison = factor(pooled_sens_spec$Comparison, levels = c("White vs. Black", "White vs. Asian/Pacific Islander"))
 
 saveRDS(pooled_sens_spec, "pooled_sens_spec_adultchild_r.rds")
+pooled_sens_spec = readRDS("pooled_sens_spec_adultchild_r.rds")
+write_csv(pooled_sens_spec, "childadult_rfmodel_roc_curve.csv")
 
 pooled_sens_spec %>% group_by(Comparison, specificity) %>% 
   summarize(lquartile = quantile(sensitivity, prob = 0.25),
@@ -14363,6 +14463,7 @@ genus_merged_graphs_relab = decostand(genus_merged_graphs[,5:1507], method = "to
 genus_merged_graphs_relab2 = cbind(genus_merged_graphs[,1:4], genus_merged_graphs[,1508], genus_merged_graphs_relab)
 
 genus_merged_graphs_relab2$Race = factor(genus_merged_graphs_relab2$Race, levels = c("White", "Black", "Asian/Pacific Islander"))
+write_csv(genus_merged_graphs_relab2, "genus_adultchild_meta.csv")
 
 plot_ac_Entero = ggplot(genus_merged_graphs_relab2,
                       aes(x = Race, 
@@ -14522,17 +14623,6 @@ plot
 dev.off()
 ```
 
-### Figure ?
-```{r pub_graphs_alpha_comp}
-tiff(file="alpha_comp.tif", res=90, width=15, height=15, units="in")
-plot_grid(alpha_6week3month_race, alpha_312month_race,alpha_13year_race,
-          alpha_6week3month_race_asvs, alpha_312month_race_asvs, 
-          alpha_13year_race_asvs, alpha_6week3month_race_faith, 
-          alpha_312month_race_faith, alpha_13year_race_faith, 
-          nrow = 3, ncol = 3, align = "hv")
-dev.off()
-```
-
 ### Figure 3a
 ```{r fig3a}
 tiff(file="fig3Av2.tif", 
@@ -14595,32 +14685,158 @@ dev.off()
 #### Figure S1
 ```{r figs1}
 tiff(file = "figs1.tif", res = 300, width = 12, height = 8, units = "in")
-unweight_age
+unweight_race
 dev.off()
 
 setEPS()
 postscript(file="figs1.eps", width=12, height=8, paper = "special")
-unweight_age
+unweight_race
 dev.off()
 ```
 
 #### Figure S2
 ```{r figs2}
 tiff(file = "figs2.tif", res = 300, width = 12, height = 8, units = "in")
-unweight_race
+unweight_age
 dev.off()
 
 setEPS()
 postscript(file="figs2.eps", width=12, height=8, paper = "special")
-unweight_race
+unweight_age
 dev.off()
 ```
 
-#### Figure S7
-```{r figs7}
+
+####Figure S10
+Barplots of observed vs. expected values for factors included in models by race.
+```{r figs10}
+figs23_data = read_tsv("tableS11_barplots_race.txt", col_types = "ffd")
+
+figs23_data_sex = figs23_data %>% 
+  filter(Factor == "Female Observed" | Factor == "Female Expected" |
+           Factor == "Male Observed" | Factor == "Male Expected")
+
+figs23_sex = ggbarplot(figs23_data_sex, x = "Race", y = "Individuals",
+                       fill = "Factor", 
+                       palette = c("#4daf4a", "#91cd89", "#ff7f00", "#ffae6d"),
+                       position = position_dodge(0.9), legend = "right") +
+  rremove("legend.title")
+
+figs23_data_age = figs23_data %>% 
+  filter(Factor == "0-0.9 week Observed" | Factor == "0-0.9 week Expected" |
+           Factor == "1-5.9 weeks Observed" | Factor == "1-5.9 weeks Expected" |
+           Factor == "6 weeks-2.9 months Observed" | Factor == "6 weeks-2.9 months Expected" |
+           Factor == "3-11.9 months Observed" | Factor == "3-11.9 months Expected" |
+           Factor == "12-35.9 months Observed" | Factor == "12-35.9 months Expected" | Factor == "3-5.9 years Observed" | Factor == "3-5.9 years Expected" |
+           Factor == "6-11.9 years Observed" | Factor == "6-11.9 years Expected")
+
+figs23_data_age$Factor = factor(figs23_data_age$Factor, levels = c("0-0.9 week Observed", "0-0.9 week Expected", "1-5.9 weeks Observed", "1-5.9 weeks Expected", "6 weeks-2.9 months Observed", "6 weeks-2.9 months Expected", "3-11.9 months Observed", "3-11.9 months Expected", "12-35.9 months Observed", "12-35.9 months Expected", "3-5.9 years Observed", "3-5.9 years Expected", "6-11.9 years Observed", "6-11.9 years Expected"))
+
+figs23_age = ggbarplot(figs23_data_age, x = "Race", y = "Individuals",
+                       fill = "Factor", 
+                       palette = c("#bc80bd", "#f9d9f8", "#8dd3c7", 
+                                   "#b5eee3", "#bebada", 
+                                   "#e3deff", "#fb8072", "#ffd7cf",
+                                   "#80b1d3", "#bfe8ff", "#fdb462", 
+                                   "#fdddbf", "#b3de69", "#dbe7c2"),
+                       position = position_dodge(0.9), legend = "right") +
+  rremove("legend.title")
+
+figs23_data_del = figs23_data %>% 
+  filter(Factor == "Cesarean Observed" | Factor == "Cesarean Expected" |
+           Factor == "Vaginal Observed" | Factor == "Vaginal Expected")
+
+figs23_del = ggbarplot(figs23_data_del, x = "Race", y = "Individuals",
+                       fill = "Factor", 
+                       palette = c("#8da0cb", "#d4e2ff", "#a6d854", "#dbe7c2"),
+                       position = position_dodge(0.9), legend = "right") +
+  rremove("legend.title")
+
+figs23_data_fed = figs23_data %>% 
+  filter(Factor == "Exclusively Breastfed Observed" | Factor == "Exclusively Breastfed Expected" |
+           Factor == "Formula Feeding Observed" | Factor == "Formula Feeding Expected" |
+           Factor == "Mixed Feeding Observed" | Factor == "Mixed Feeding Expected")
+
+figs23_fed = ggbarplot(figs23_data_fed, x = "Race", y = "Individuals",
+                       fill = "Factor", 
+                       palette = c("#66c2a6", "#baeddb", "#fc8d62", "#ffd9c7", "#b3b3b3", "#e2e2e2"),
+                       position = position_dodge(0.9), legend = "right") +
+  rremove("legend.title")
+
+setEPS()
+postscript(file="figS10.eps", width=15, height=9, paper = "special")
+ggarrange(figs23_age, figs23_sex, figs23_del, figs23_fed, 
+          nrow = 2, ncol = 2, align = "hv")
+dev.off()
+```
+
+####Figure S11
+Barplots of observed vs. expected values for factors included in models by ethnicity
+```{r figs11}
+figs24_data = read_tsv("tableS11_barplots_ethnicity.txt", col_types = "ffd")
+
+figs24_data_sex = figs24_data %>% 
+  filter(Factor == "Female Observed" | Factor == "Female Expected" |
+           Factor == "Male Observed" | Factor == "Male Expected")
+
+figs24_sex = ggbarplot(figs24_data_sex, x = "Ethnicity", y = "Individuals",
+                       fill = "Factor", 
+                       palette = c("#4daf4a", "#91cd89", "#ff7f00", "#ffae6d"),
+                       position = position_dodge(0.9), legend = "right") +
+  rremove("legend.title")
+
+figs24_data_age = figs24_data %>% 
+  filter(Factor == "0-0.9 week Observed" | Factor == "0-0.9 week Expected" |
+           Factor == "1-5.9 weeks Observed" | Factor == "1-5.9 weeks Expected" |
+           Factor == "6 weeks-2.9 months Observed" | Factor == "6 weeks-2.9 months Expected" |
+           Factor == "3-11.9 months Observed" | Factor == "3-11.9 months Expected" |
+           Factor == "12-35.9 months Observed" | Factor == "12-35.9 months Expected" | Factor == "3-5.9 years Observed" | Factor == "3-5.9 years Expected" |
+           Factor == "6-11.9 years Observed" | Factor == "6-11.9 years Expected")
+
+figs24_data_age$Factor = factor(figs24_data_age$Factor, levels = c("0-0.9 week Observed", "0-0.9 week Expected", "1-5.9 weeks Observed", "1-5.9 weeks Expected", "6 weeks-2.9 months Observed", "6 weeks-2.9 months Expected", "3-11.9 months Observed", "3-11.9 months Expected", "12-35.9 months Observed", "12-35.9 months Expected", "3-5.9 years Observed", "3-5.9 years Expected", "6-11.9 years Observed", "6-11.9 years Expected"))
+
+figs24_age = ggbarplot(figs24_data_age, x = "Ethnicity", y = "Individuals",
+                       fill = "Factor", 
+                       palette = c("#bc80bd", "#f9d9f8", "#8dd3c7", 
+                                   "#b5eee3", "#bebada", 
+                                   "#e3deff", "#fb8072", "#ffd7cf",
+                                   "#80b1d3", "#bfe8ff", "#fdb462", 
+                                   "#fdddbf", "#b3de69", "#dbe7c2"),
+                       position = position_dodge(0.9), legend = "right") +
+  rremove("legend.title")
+
+figs24_data_del = figs24_data %>% 
+  filter(Factor == "Cesarean Observed" | Factor == "Cesarean Expected" |
+           Factor == "Vaginal Observed" | Factor == "Vaginal Expected")
+
+figs24_del = ggbarplot(figs24_data_del, x = "Ethnicity", y = "Individuals",
+                       fill = "Factor", 
+                       palette = c("#8da0cb", "#d4e2ff", "#a6d854", "#dbe7c2"),
+                       position = position_dodge(0.9), legend = "right") +
+  rremove("legend.title")
+
+figs24_data_fed = figs24_data %>% 
+  filter(Factor == "Exclusively Breastfed Observed" | Factor == "Exclusively Breastfed Expected" |
+           Factor == "Formula Feeding Observed" | Factor == "Formula Feeding Expected" |
+           Factor == "Mixed Feeding Observed" | Factor == "Mixed Feeding Expected")
+
+figs24_fed = ggbarplot(figs24_data_fed, x = "Ethnicity", y = "Individuals",
+                       fill = "Factor", 
+                       palette = c("#66c2a6", "#baeddb", "#fc8d62", "#ffd9c7", "#b3b3b3", "#e2e2e2"),
+                       position = position_dodge(0.9), legend = "right") +
+  rremove("legend.title")
+
+setEPS()
+postscript(file="figs11.eps", width=12, height=9, paper = "special")
+ggarrange(figs24_age, figs24_sex, figs24_del, figs24_fed, 
+          nrow = 2, ncol = 2, align = "hv")
+dev.off()
+```
+#### Figure S12
+```{r figs12}
 nmds_legend = get_legend(weight_age_6week3month)
 
-tiff(file="figs7.tif", res=300, width=12, height=24, units="in")
+tiff(file="figs12.tif", res=300, width=12, height=24, units="in")
 
 
 top = plot_grid(weight_age_01week + theme(legend.position = "none"), 
@@ -14641,16 +14857,16 @@ plot
 dev.off()
 
 setEPS()
-postscript(file="figs7.eps", width=12, height=24, paper = "special")
+postscript(file="figs12.eps", width=12, height=24, paper = "special")
 plot
 dev.off()
 ```
 
-#### Figure S8
-```{r figs8}
+#### Figure S13
+```{r figs13}
 nmds_legend = get_legend(unweight_age_6week3month)
 
-tiff(file="figs8.tif", res=300, width=18, height=24, units="in")
+tiff(file="figs13.tif", res=300, width=18, height=24, units="in")
 plot = plot_grid(unweight_age_01week + theme(legend.position = "none"), 
                 unweight_age_16week + theme(legend.position = "none"),
                 unweight_age_6week3month + theme(legend.position = "none"),
@@ -14669,61 +14885,12 @@ plot
 dev.off()
 
 setEPS()
-postscript(file="figs8.eps", width=18, height=24, paper = "special")
+postscript(file="figs13.eps", width=18, height=24, paper = "special")
 plot
 dev.off()
 ```
 
-#### Figure S10
-```{r figs10}
-tiff(file="figS10.tif", 
-     res=300, width=20, height=16, units="in")
-plots15 = ggarrange(plot_Alistipes, plot_Bacteroides, plot_Blautia, plot_Clostridium, plot_Collinsella, plot_Coprococcus, plot_Dorea, plot_Faecalibacterium, plot_Haemophilus, plot_Prevotella, plot_Ruminococcaceae, plot_Ruminococcus, plot_Veillonella,
-          nrow = 3, ncol = 5, common.legend = T, legend = "right")
-dev.off()
-
-setEPS()
-postscript(file="figs10.eps", width=20, height=16, paper = "special")
-plots15
-dev.off()
-```
-
-#### Figure S14
-```{r figs14}
-plot_legend = get_legend(legend_plot_ac)
-
-tiff(file="figs14.tif", res=300, width=20, height=6, units="in")
-plot = plot_grid(plot_ac_Entero + theme(legend.position = "none"), 
-                plot_ac_Prevot + theme(legend.position = "none"),
-                plot_ac_Rumin + theme(legend.position = "none"),
-                plot_legend,
-                nrow = 1, ncol = 4, 
-                rel_widths = c(1,1,1,0.3),
-                align = "h", axis = "b", 
-                labels = c("A", "B", "C", ""))
-plot
-dev.off()
-
-setEPS()
-postscript(file="figs14.eps", width=20, height=6, paper = "special")
-plot
-dev.off()
-```
-
-#### Figure S20
-```{r figure_s20}
-tiff(file="figS20.tif", 
-     res=300, width=10, height=6, units="in")
-seq_depth_plot
-dev.off()
-
-setEPS()
-postscript(file="figs20.eps", width=10, height=6, paper = "special")
-seq_depth_plot
-dev.off()
-```
-
-####Figure S21
+####Figure S14
 Correlation plots of taxa that were differentially abundant across ages (from ANCOMBC results) and differed in abundance between racial categories EITHER in the overall results OR in specific age categories.
 ```{r dif_abund_age}
 species_meta_clean = clean_names(species_meta)
@@ -15288,7 +15455,7 @@ r64plot = ggscatter(species_meta_clean, x = "host_age_years",
            label.y.npc = "top", size = 3)
 
 setEPS()
-postscript(file="figs21a.eps", width=18, height=22, paper = "special")
+postscript(file="figs14a.eps", width=18, height=22, paper = "special")
 ggarrange(r1plot, r2plot, r3plot, r4plot, r5plot, r6plot, r7plot, r8plot,
           r9plot, r10plot, r11plot, r12plot, r13plot, r14plot, r15plot,
           r16plot, r17plot, r18plot, r19plot, r20plot, r21plot, r22plot,
@@ -15299,7 +15466,7 @@ ggarrange(r1plot, r2plot, r3plot, r4plot, r5plot, r6plot, r7plot, r8plot,
 dev.off()
 
 setEPS()
-postscript(file="figs21b.eps", width=18, height=19, paper = "special")
+postscript(file="figs14a.eps", width=18, height=19, paper = "special")
 ggarrange(r36plot,
           r37plot, r38plot, r39plot, r40plot, r41plot, r42plot, r43plot,
           r44plot, r45plot, r47plot, r48plot, r50plot, r51plot, r52plot,
@@ -15309,9 +15476,9 @@ ggarrange(r36plot,
 dev.off()
 ```
 
-####Figure S22
+####Figure S15
 Correlation plots of taxa that were differentially abundant across ages (from ANCOMBC results) and differed in abundance between ethnic categories EITHER in the overall results OR in specific age categories.
-```{r plot_s22}
+```{r plot_s15}
 
 species_meta_clean = clean_names(species_meta)
 species_meta_clean$ethnicity = factor(species_meta_clean$ethnicity, levels = c("Hispanic", "Non Hispanic"))
@@ -15803,7 +15970,7 @@ e53plot = ggscatter(species_meta_clean, x = "host_age_years",
            label.y.npc = "top", size = 3)
 
 setEPS()
-postscript(file="figs22a.eps", width=18, height=20, paper = "special")
+postscript(file="figs15a.eps", width=18, height=20, paper = "special")
 ggarrange(e1plot, e2plot, e3plot, e4plot, e5plot, e6plot, e7plot, e8plot,
           e9plot, e10plot, e11plot, e12plot, e13plot, e14plot, e15plot,
           e16plot, e17plot, e18plot, e19plot, e20plot, e21plot, e22plot,
@@ -15813,7 +15980,7 @@ ggarrange(e1plot, e2plot, e3plot, e4plot, e5plot, e6plot, e7plot, e8plot,
 dev.off()
 
 setEPS()
-postscript(file="figs22b.eps", width=18, height=20, paper = "special")
+postscript(file="figs15b.eps", width=18, height=20, paper = "special")
 ggarrange(e31plot, e32plot, e33plot, e34plot, e35plot, e36plot,
           e37plot, e38plot, e39plot, e40plot, e41plot, e42plot, e43plot,
           e44plot, e45plot, e47plot, e48plot, e50plot, e51plot, e52plot,
@@ -15822,129 +15989,52 @@ ggarrange(e31plot, e32plot, e33plot, e34plot, e35plot, e36plot,
 dev.off()
 ```
 
-####Figure S23
-Barplots of observed vs. expected values for factors included in models by race.
-```{r figs23}
-figs23_data = read_tsv("tableS11_barplots_race.txt", col_types = "ffd")
-
-figs23_data_sex = figs23_data %>% 
-  filter(Factor == "Female Observed" | Factor == "Female Expected" |
-           Factor == "Male Observed" | Factor == "Male Expected")
-
-figs23_sex = ggbarplot(figs23_data_sex, x = "Race", y = "Individuals",
-                       fill = "Factor", 
-                       palette = c("#4daf4a", "#91cd89", "#ff7f00", "#ffae6d"),
-                       position = position_dodge(0.9), legend = "right") +
-  rremove("legend.title")
-
-figs23_data_age = figs23_data %>% 
-  filter(Factor == "0-0.9 week Observed" | Factor == "0-0.9 week Expected" |
-           Factor == "1-5.9 weeks Observed" | Factor == "1-5.9 weeks Expected" |
-           Factor == "6 weeks-2.9 months Observed" | Factor == "6 weeks-2.9 months Expected" |
-           Factor == "3-11.9 months Observed" | Factor == "3-11.9 months Expected" |
-           Factor == "12-35.9 months Observed" | Factor == "12-35.9 months Expected" | Factor == "3-5.9 years Observed" | Factor == "3-5.9 years Expected" |
-           Factor == "6-11.9 years Observed" | Factor == "6-11.9 years Expected")
-
-figs23_data_age$Factor = factor(figs23_data_age$Factor, levels = c("0-0.9 week Observed", "0-0.9 week Expected", "1-5.9 weeks Observed", "1-5.9 weeks Expected", "6 weeks-2.9 months Observed", "6 weeks-2.9 months Expected", "3-11.9 months Observed", "3-11.9 months Expected", "12-35.9 months Observed", "12-35.9 months Expected", "3-5.9 years Observed", "3-5.9 years Expected", "6-11.9 years Observed", "6-11.9 years Expected"))
-
-figs23_age = ggbarplot(figs23_data_age, x = "Race", y = "Individuals",
-                       fill = "Factor", 
-                       palette = c("#bc80bd", "#f9d9f8", "#8dd3c7", 
-                                   "#b5eee3", "#bebada", 
-                                   "#e3deff", "#fb8072", "#ffd7cf",
-                                   "#80b1d3", "#bfe8ff", "#fdb462", 
-                                   "#fdddbf", "#b3de69", "#dbe7c2"),
-                       position = position_dodge(0.9), legend = "right") +
-  rremove("legend.title")
-
-figs23_data_del = figs23_data %>% 
-  filter(Factor == "Cesarean Observed" | Factor == "Cesarean Expected" |
-           Factor == "Vaginal Observed" | Factor == "Vaginal Expected")
-
-figs23_del = ggbarplot(figs23_data_del, x = "Race", y = "Individuals",
-                       fill = "Factor", 
-                       palette = c("#8da0cb", "#d4e2ff", "#a6d854", "#dbe7c2"),
-                       position = position_dodge(0.9), legend = "right") +
-  rremove("legend.title")
-
-figs23_data_fed = figs23_data %>% 
-  filter(Factor == "Exclusively Breastfed Observed" | Factor == "Exclusively Breastfed Expected" |
-           Factor == "Formula Feeding Observed" | Factor == "Formula Feeding Expected" |
-           Factor == "Mixed Feeding Observed" | Factor == "Mixed Feeding Expected")
-
-figs23_fed = ggbarplot(figs23_data_fed, x = "Race", y = "Individuals",
-                       fill = "Factor", 
-                       palette = c("#66c2a6", "#baeddb", "#fc8d62", "#ffd9c7", "#b3b3b3", "#e2e2e2"),
-                       position = position_dodge(0.9), legend = "right") +
-  rremove("legend.title")
+#### Figure S17
+```{r figs17}
+tiff(file="figS17.tif", 
+     res=300, width=20, height=16, units="in")
+plots15 = ggarrange(plot_Alistipes, plot_Bacteroides, plot_Blautia, plot_Clostridium, plot_Collinsella, plot_Coprococcus, plot_Dorea, plot_Faecalibacterium, plot_Haemophilus, plot_Prevotella, plot_Ruminococcaceae, plot_Ruminococcus, plot_Veillonella,
+          nrow = 3, ncol = 5, common.legend = T, legend = "right")
+dev.off()
 
 setEPS()
-postscript(file="figS23.eps", width=15, height=9, paper = "special")
-ggarrange(figs23_age, figs23_sex, figs23_del, figs23_fed, 
-          nrow = 2, ncol = 2, align = "hv")
+postscript(file="figs17.eps", width=20, height=16, paper = "special")
+plots15
 dev.off()
 ```
 
-####Figure S24
-Barplots of observed vs. expected values for factors included in models by ethnicity
-```{r figs24}
-figs24_data = read_tsv("tableS11_barplots_ethnicity.txt", col_types = "ffd")
+#### Figure S20
+```{r figs20}
+plot_legend = get_legend(legend_plot_ac)
 
-figs24_data_sex = figs24_data %>% 
-  filter(Factor == "Female Observed" | Factor == "Female Expected" |
-           Factor == "Male Observed" | Factor == "Male Expected")
-
-figs24_sex = ggbarplot(figs24_data_sex, x = "Ethnicity", y = "Individuals",
-                       fill = "Factor", 
-                       palette = c("#4daf4a", "#91cd89", "#ff7f00", "#ffae6d"),
-                       position = position_dodge(0.9), legend = "right") +
-  rremove("legend.title")
-
-figs24_data_age = figs24_data %>% 
-  filter(Factor == "0-0.9 week Observed" | Factor == "0-0.9 week Expected" |
-           Factor == "1-5.9 weeks Observed" | Factor == "1-5.9 weeks Expected" |
-           Factor == "6 weeks-2.9 months Observed" | Factor == "6 weeks-2.9 months Expected" |
-           Factor == "3-11.9 months Observed" | Factor == "3-11.9 months Expected" |
-           Factor == "12-35.9 months Observed" | Factor == "12-35.9 months Expected" | Factor == "3-5.9 years Observed" | Factor == "3-5.9 years Expected" |
-           Factor == "6-11.9 years Observed" | Factor == "6-11.9 years Expected")
-
-figs24_data_age$Factor = factor(figs24_data_age$Factor, levels = c("0-0.9 week Observed", "0-0.9 week Expected", "1-5.9 weeks Observed", "1-5.9 weeks Expected", "6 weeks-2.9 months Observed", "6 weeks-2.9 months Expected", "3-11.9 months Observed", "3-11.9 months Expected", "12-35.9 months Observed", "12-35.9 months Expected", "3-5.9 years Observed", "3-5.9 years Expected", "6-11.9 years Observed", "6-11.9 years Expected"))
-
-figs24_age = ggbarplot(figs24_data_age, x = "Ethnicity", y = "Individuals",
-                       fill = "Factor", 
-                       palette = c("#bc80bd", "#f9d9f8", "#8dd3c7", 
-                                   "#b5eee3", "#bebada", 
-                                   "#e3deff", "#fb8072", "#ffd7cf",
-                                   "#80b1d3", "#bfe8ff", "#fdb462", 
-                                   "#fdddbf", "#b3de69", "#dbe7c2"),
-                       position = position_dodge(0.9), legend = "right") +
-  rremove("legend.title")
-
-figs24_data_del = figs24_data %>% 
-  filter(Factor == "Cesarean Observed" | Factor == "Cesarean Expected" |
-           Factor == "Vaginal Observed" | Factor == "Vaginal Expected")
-
-figs24_del = ggbarplot(figs24_data_del, x = "Ethnicity", y = "Individuals",
-                       fill = "Factor", 
-                       palette = c("#8da0cb", "#d4e2ff", "#a6d854", "#dbe7c2"),
-                       position = position_dodge(0.9), legend = "right") +
-  rremove("legend.title")
-
-figs24_data_fed = figs24_data %>% 
-  filter(Factor == "Exclusively Breastfed Observed" | Factor == "Exclusively Breastfed Expected" |
-           Factor == "Formula Feeding Observed" | Factor == "Formula Feeding Expected" |
-           Factor == "Mixed Feeding Observed" | Factor == "Mixed Feeding Expected")
-
-figs24_fed = ggbarplot(figs24_data_fed, x = "Ethnicity", y = "Individuals",
-                       fill = "Factor", 
-                       palette = c("#66c2a6", "#baeddb", "#fc8d62", "#ffd9c7", "#b3b3b3", "#e2e2e2"),
-                       position = position_dodge(0.9), legend = "right") +
-  rremove("legend.title")
+tiff(file="figs20.tif", res=300, width=20, height=6, units="in")
+plot = plot_grid(plot_ac_Entero + theme(legend.position = "none"), 
+                plot_ac_Prevot + theme(legend.position = "none"),
+                plot_ac_Rumin + theme(legend.position = "none"),
+                plot_legend,
+                nrow = 1, ncol = 4, 
+                rel_widths = c(1,1,1,0.3),
+                align = "h", axis = "b", 
+                labels = c("A", "B", "C", ""))
+plot
+dev.off()
 
 setEPS()
-postscript(file="figs24.eps", width=12, height=9, paper = "special")
-ggarrange(figs24_age, figs24_sex, figs24_del, figs24_fed, 
-          nrow = 2, ncol = 2, align = "hv")
+postscript(file="figs20.eps", width=20, height=6, paper = "special")
+plot
+dev.off()
+```
+
+#### Figure S21
+```{r figure_s21}
+tiff(file="figS21.tif", 
+     res=300, width=10, height=6, units="in")
+seq_depth_plot
+dev.off()
+
+setEPS()
+postscript(file="figs21.eps", width=10, height=6, paper = "special")
+seq_depth_plot
 dev.off()
 ```
 
